@@ -1,49 +1,29 @@
 ﻿using Radzen;
 using Radzen.Blazor;
-using NumberSequenceEntity = Domain.Entity.WMS.NumberSequences;
+using NumberSequenceModel = Domain.Entity.WMS.NumberSequences;
 
 namespace WebUIFinal.Pages.NumberSequence
 {
-    public partial class NumberSequence
+    public partial class NumberSequenceMaster
     {
-        private List<NumberSequenceEntity> _numberSequences = new List<NumberSequenceEntity>();
-        RadzenDataGrid<NumberSequenceEntity> _profileNumberSequenceGrid;
+        List<NumberSequenceModel>? _dataGrid = null;
+        RadzenDataGrid<NumberSequenceModel>? _profileGrid;
+
+        IEnumerable<int> _pageSizeOptions = new int[] { 5, 10, 20, 30, 100, 200 };
         bool _showPagerSummary = true;
+        string _pagingSummaryFormat = "Displaying page {0} of {1} <b>(total {2} records)</b>";
 
         protected override async Task OnInitializedAsync()
         {
-            try
-            {
-                await base.OnInitializedAsync();
-                var result = await _numberSequenceServices.GetAllAsync();
-
-                if (result != null)
-                {
-                    _numberSequences.AddRange(result.Data);
-                    _filteredModel = _numberSequences;
-                }
-
-                _filteredModel = new List<NumberSequenceEntity>(_numberSequences);
-            }
-            catch (Exception ex)
-            {
-                throw new Exception();
-            }
-            finally
-            {
-                await RefreshDataAsync();
-            }
+            await base.OnInitializedAsync();
+            RefreshDataAsync();
         }
 
-        async Task AddNewItemAsync() => _navigation.NavigateTo($"/addnumbersequence/Create Number Sequence");
-
-        async Task EditItemAsync(Guid ID) => _navigation.NavigateTo($"/addnumbersequence/Edit Number Sequence|{ID}");
-
-        async Task DeleteItemAsync(NumberSequenceEntity numberSequence)
+        async Task DeleteItemAsync(NumberSequenceModel model)
         {
             try
             {
-                var confirm = await _dialogService.Confirm($"Are you sure you want to delete number sequence: {numberSequence.JournalType}?", "Delete", new ConfirmOptions()
+                var confirm = await _dialogService.Confirm($"Are you sure you want to delete this: {model.JournalType}?", "Delete", new ConfirmOptions()
                 {
                     OkButtonText = "Yes",
                     CancelButtonText = "No",
@@ -52,7 +32,7 @@ namespace WebUIFinal.Pages.NumberSequence
 
                 if (confirm == null || confirm == false) return;
 
-                var res = await _numberSequenceServices.DeleteAsync(numberSequence);
+                var res = await _numberSequenceServices.DeleteAsync(model);
 
                 if (res.Succeeded)
                 {
@@ -60,11 +40,11 @@ namespace WebUIFinal.Pages.NumberSequence
                     {
                         Severity = NotificationSeverity.Success,
                         Summary = "Success",
-                        Detail = res.Messages.ToString(),
+                        Detail = $"Delete {model.JournalType} successfully.",
                         Duration = 5000
                     });
 
-                    StateHasChanged();
+                    RefreshDataAsync();
                 }
                 else
                 {
@@ -76,8 +56,6 @@ namespace WebUIFinal.Pages.NumberSequence
                         Duration = 5000
                     });
                 }
-
-                await RefreshDataAsync();
             }
             catch (Exception ex)
             {
@@ -88,25 +66,47 @@ namespace WebUIFinal.Pages.NumberSequence
                     Detail = ex.Message,
                     Duration = 5000
                 });
-
                 return;
             }
         }
 
-        void NavigateDetailPage(Guid ID) => _navigation.NavigateTo($"/addnumbersequence/Number Sequence Detail|{ID}");
+        async Task ViewItemAsync(NumberSequenceModel model)
+        {
+            _navigation.NavigateTo($"/detailnumbersequence/Detail Number Sequence|{model.Id}");
+        }
 
-        async Task RefreshDataAsync()
+        async Task EditItemAsync(NumberSequenceModel model)
+        {
+            _navigation.NavigateTo($"/detailnumbersequence/Edit Number Sequence|{model.Id}");
+        }
+
+        async Task AddNewItemAsync()
+        {
+            _navigation.NavigateTo("/detailnumbersequence/Create Number Sequence");
+        }
+
+        async void RefreshDataAsync()
         {
             try
             {
                 var res = await _numberSequenceServices.GetAllAsync();
-                _numberSequences = null;
-                _numberSequences = new();
 
-                if (res != null)
-                    _numberSequences.AddRange(res.Data);
+                if (!res.Succeeded)
+                {
+                    _notificationService.Notify(new NotificationMessage()
+                    {
+                        Severity = NotificationSeverity.Error,
+                        Summary = "Error",
+                        Detail = res.Messages.ToString(),
+                    });
+                    return;
+                }
 
-                //await _profileGrid.RefreshDataAsync();
+                _dataGrid = null;
+                _dataGrid = new List<NumberSequenceModel>();
+                _dataGrid = res.Data.ToList();
+
+                filteredData = _dataGrid;
 
                 StateHasChanged();
             }

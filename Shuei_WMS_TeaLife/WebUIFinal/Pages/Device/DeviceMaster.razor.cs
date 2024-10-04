@@ -4,7 +4,7 @@ using DeviceModel = Domain.Entity.WMS.Device;
 
 namespace WebUIFinal.Pages.Device
 {
-    public partial class Master
+    public partial class DeviceMaster
     {
         List<DeviceModel>? _dataGrid = null;
         RadzenDataGrid<DeviceModel>? _profileGrid;
@@ -24,7 +24,7 @@ namespace WebUIFinal.Pages.Device
         {
             try
             {
-                var confirm = await _dialogService.Confirm($"Are you sure you want to delete this device: {model.Name}?", "Delete", new ConfirmOptions()
+                var confirm = await _dialogService.Confirm($"Are you sure you want to delete this: {model.Name}?", "Delete", new ConfirmOptions()
                 {
                     OkButtonText = "Yes",
                     CancelButtonText = "No",
@@ -41,7 +41,7 @@ namespace WebUIFinal.Pages.Device
                     {
                         Severity = NotificationSeverity.Success,
                         Summary = "Success",
-                        Detail = $"Delete device {model.Name} successfully.",
+                        Detail = $"Delete{model.Name} successfully.",
                         Duration = 5000
                     });
 
@@ -74,17 +74,17 @@ namespace WebUIFinal.Pages.Device
 
         async Task ViewItemAsync(DeviceModel model)
         {
-            _navigation.NavigateTo($"/device/detail/view|{model.Id}");
+            _navigation.NavigateTo($"/detaildevice/Detail Device|{model.Id}");
         }
 
         async Task EditItemAsync(DeviceModel model)
         {
-            _navigation.NavigateTo($"/device/create/edit|{model.Id}");
+            _navigation.NavigateTo($"/detaildevice/Edit Device|{model.Id}");
         }
 
         async Task AddNewItemAsync()
         {
-            _navigation.NavigateTo("/device/create/add");
+            _navigation.NavigateTo("/detaildevice/Create Device");
         }
 
         async void RefreshDataAsync()
