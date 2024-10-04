@@ -1,4 +1,5 @@
-﻿using Application.Extentions;
+﻿using Application.DTOs;
+using Application.Extentions;
 using RestEase;
 using System;
 using System.Collections.Generic;

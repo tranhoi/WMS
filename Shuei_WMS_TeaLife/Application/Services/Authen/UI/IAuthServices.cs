@@ -1,4 +1,5 @@
-﻿using Application.DTOs.Request;
+﻿using Application.DTOs;
+using Application.DTOs.Request;
 using Application.DTOs.Request.Account;
 using Application.DTOs.Response;
 using Application.DTOs.Response.Account;
@@ -40,5 +41,7 @@ namespace Application.Services.Authen.UI
 
         Task<string> GetReportBase64(string id);
         Task<string> GeneratePdf();
+        Task<List<LabelInfoDto>> GetLabelByIdAsync(string id);
+        Task<List<LabelInfoDto>> GetLabelsAllAsync();
     }
 }

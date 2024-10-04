@@ -10,6 +10,8 @@ using Radzen.Blazor;
 using QRCoder;
 using Microsoft.JSInterop;
 using QRCoder.Core;
+using WebUIFinal.TemplateHtmlPrintLabel;
+using WebUIFinal.Pages.Account;
 
 namespace WebUIFinal.Pages.Components
 {
@@ -160,121 +162,135 @@ namespace WebUIFinal.Pages.Components
 
         async void Submit(CreateAccountRequestDTO arg)
         {
-            var confirm = await _dialogService.Confirm($"Do you want to create a new account: {arg.UserName}?", "Create user", new ConfirmOptions()
+            try
             {
-                OkButtonText = "Yes",
-                CancelButtonText = "No",
-                AutoFocusFirstElement = true,
-            });
-
-            if (confirm == null || confirm == false) return;
-
-            //If edit user then clear roles for adding new roles
-            if (!string.IsNullOrEmpty(_id))
-            {
-                arg.Roles = null;
-                arg.Roles = new List<CreateRoleRequestDTO>();
-
-                //get danh sach tenant duoc dang ky cho user
-                var resU2T = await _userToTenantServices.GetByUserIdAsync(_id);
-            }
-
-            //lay dang sachs role moi
-            foreach (var role in _selectedRoles)
-            {
-                var r = _roles.FirstOrDefault(x => x.Id == role);
-                arg.Roles.Add(new CreateRoleRequestDTO() { Id = r.Id, Name = r.Name });
-            }
-
-            arg.Status = _selectStatus.ToString();
-            arg.ConfirmPassword = arg.Password;
-
-            //lay danh sach tenant moi dc chon
-            foreach (var item in _selectedTenantList)
-            {
-                var r = _tenantList.FirstOrDefault(x => x.TenantId == item.TenantId);
-                tenantNew.Add(new UserToTenant()
+                var confirm = await _dialogService.Confirm($"Do you want to create a new account: {arg.UserName}?", "Create user", new ConfirmOptions()
                 {
-                    Id = Guid.NewGuid(),
-                    UserId = _id,
-                    TenantId = item.TenantId
+                    OkButtonText = "Yes",
+                    CancelButtonText = "No",
+                    AutoFocusFirstElement = true,
                 });
-            }
 
-            if (string.IsNullOrEmpty(_id))//Add
-            {
-                var res = await _authenServices.CreateAccountAsync(arg);
-                var resU2T = await _userToTenantServices.AddRangeAsync(tenantNew);
-                if (res.Flag && resU2T.Succeeded)
+                if (confirm == null || confirm == false) return;
+
+                //If edit user then clear roles for adding new roles
+                if (!string.IsNullOrEmpty(_id))
                 {
+                    arg.Roles = null;
+                    arg.Roles = new List<CreateRoleRequestDTO>();
 
-                    _notificationService.Notify(new NotificationMessage()
-                    {
-                        Severity = NotificationSeverity.Success,
-                        Summary = "Success",
-                        Detail = res.Message,
-                        Duration = 5000
-                    });
-
-                    //_navigation.NavigateTo("/userlist");
+                    //get danh sach tenant duoc dang ky cho user
+                    var resU2T = await _userToTenantServices.GetByUserIdAsync(_id);
                 }
-                else
+
+                //lay dang sachs role moi
+                foreach (var role in _selectedRoles)
                 {
-                    _notificationService.Notify(new NotificationMessage()
+                    var r = _roles.FirstOrDefault(x => x.Id == role);
+                    arg.Roles.Add(new CreateRoleRequestDTO() { Id = r.Id, Name = r.Name });
+                }
+
+                arg.Status = _selectStatus.ToString();
+                arg.ConfirmPassword = arg.Password;
+
+                //lay danh sach tenant moi dc chon
+                foreach (var item in _selectedTenantList)
+                {
+                    var r = _tenantList.FirstOrDefault(x => x.TenantId == item.TenantId);
+                    tenantNew.Add(new UserToTenant()
                     {
-                        Severity = NotificationSeverity.Error,
-                        Summary = "Error",
-                        Detail = res.Message,
-                        Duration = 5000
+                        Id = Guid.NewGuid(),
+                        UserId = _id,
+                        TenantId = item.TenantId
                     });
                 }
-            }
-            else//update
-            {
-                var userInfoUpdate = new UpdateUserInfoRequestDTO();
-                userInfoUpdate.Id = _id;
-                userInfoUpdate.UserName = arg.UserName;
-                userInfoUpdate.Password = arg.Password;
-                userInfoUpdate.Email = arg.Email;
-                userInfoUpdate.FullName = arg.FullName;
-                userInfoUpdate.Status = arg.Status;
-                userInfoUpdate.Roles = arg.Roles;
 
-                var res = await _authenServices.UpdateUserInfoAsync(userInfoUpdate);
-
-
-
-                if (res.Flag)
+                if (string.IsNullOrEmpty(_id))//Add
                 {
-                    var resU2T = await _userToTenantServices.DeleteRangeAsync(tenantCurrent);
-                    resU2T = await _userToTenantServices.AddRangeAsync(tenantNew);
+                    var res = await _authenServices.CreateAccountAsync(arg);
+                    var resU2T = await _userToTenantServices.AddRangeAsync(tenantNew);
+                    if (res.Flag && resU2T.Succeeded)
+                    {
 
-                    if (resU2T.Succeeded)
                         _notificationService.Notify(new NotificationMessage()
                         {
                             Severity = NotificationSeverity.Success,
                             Summary = "Success",
-                            Detail = $"{res.Message}|{resU2T.Messages.FirstOrDefault()}",
+                            Detail = res.Message,
                             Duration = 5000
                         });
 
-                    //_navigation.NavigateTo("/userlist");
-                }
-                else
-                {
-                    _notificationService.Notify(new NotificationMessage()
+                        //_navigation.NavigateTo("/userlist");
+                    }
+                    else
                     {
-                        Severity = NotificationSeverity.Error,
-                        Summary = "Error",
-                        Detail = $"{res.Message}",
-                        Duration = 5000
-                    });
+                        _notificationService.Notify(new NotificationMessage()
+                        {
+                            Severity = NotificationSeverity.Error,
+                            Summary = "Error",
+                            Detail = res.Message,
+                            Duration = 5000
+                        });
+                    }
                 }
+                else//update
+                {
+                    var userInfoUpdate = new UpdateUserInfoRequestDTO();
+                    userInfoUpdate.Id = _id;
+                    userInfoUpdate.UserName = arg.UserName;
+                    userInfoUpdate.Password = arg.Password;
+                    userInfoUpdate.Email = arg.Email;
+                    userInfoUpdate.FullName = arg.FullName;
+                    userInfoUpdate.Status = arg.Status;
+                    userInfoUpdate.Roles = arg.Roles;
+
+                    var res = await _authenServices.UpdateUserInfoAsync(userInfoUpdate);
+
+
+
+                    if (res.Flag)
+                    {
+                        var resU2T = await _userToTenantServices.DeleteRangeAsync(tenantCurrent);
+                        resU2T = await _userToTenantServices.AddRangeAsync(tenantNew);
+
+                        if (resU2T.Succeeded)
+                            _notificationService.Notify(new NotificationMessage()
+                            {
+                                Severity = NotificationSeverity.Success,
+                                Summary = "Success",
+                                Detail = $"{res.Message}|{resU2T.Messages.FirstOrDefault()}",
+                                Duration = 5000
+                            });
+
+                        //_navigation.NavigateTo("/userlist");
+                    }
+                    else
+                    {
+                        _notificationService.Notify(new NotificationMessage()
+                        {
+                            Severity = NotificationSeverity.Error,
+                            Summary = "Error",
+                            Detail = $"{res.Message}",
+                            Duration = 5000
+                        });
+                    }
+                }
+
+                #region assigned tenant to user
+
+                #endregion
             }
-
-            #region assigned tenant to user
-
-            #endregion
+            catch (Exception ex)
+            {
+                _notificationService.Notify(new NotificationMessage
+                {
+                    Severity = NotificationSeverity.Error,
+                    Summary = "Error",
+                    Detail = ex.Message,
+                    Duration = 5000
+                });
+                return;
+            }
         }
 
 
@@ -309,8 +325,49 @@ namespace WebUIFinal.Pages.Components
 
         async Task PrintLable()
         {
-            var returnPage = $"/userlist";
-            ShowPreview($"Bin|{_id}|{returnPage}");
+            try
+            {
+                var dataPrint = await _authenServices.GetLabelByIdAsync(_id);
+
+                var res = await _dialogService.OpenAsync<PrintViewer>(string.Empty,
+                        new Dictionary<string, object>() { { "LabelPrintModel", dataPrint }, { "Title", $"Print label for use" } },
+                        new DialogOptions()
+                        {
+                            Width = "1000px",
+                            Height = "1000px",
+                            Resizable = true,
+                            Draggable = true,
+                            ShowClose = false,
+                            CloseDialogOnOverlayClick = true
+                        });
+            }
+            catch (Exception ex)
+            {
+                _notificationService.Notify(new NotificationMessage
+                {
+                    Severity = NotificationSeverity.Error,
+                    Summary = "Error",
+                    Detail = ex.Message,
+                    Duration = 5000
+                });
+                return;
+            }
+        }
+
+        async Task PrintLable1()
+        {
+            var dataPrint = await _authenServices.GetReportBase64(_id);
+            var res = await _dialogService.OpenAsync<ReportViewer>($"Print label for use",
+                  new Dictionary<string, object>() { { "_pdfBase64", dataPrint } },
+                  new DialogOptions()
+                  {
+                      Width = "1000px",
+                      Height = "1000px",
+                      Resizable = true,
+                      Draggable = true,
+                      ShowClose = false,
+                      CloseDialogOnOverlayClick = true
+                  });
         }
 
         async Task DisableUser()
@@ -350,11 +407,6 @@ namespace WebUIFinal.Pages.Components
         private async Task PrintQRCode()
         {
             await _jsRuntime.InvokeVoidAsync("printQRCode");
-        }
-
-        private void ShowPreview(string apiInfo)
-        {
-            _navigation.NavigateTo($"/printreview/{apiInfo}");
         }
     }
 }

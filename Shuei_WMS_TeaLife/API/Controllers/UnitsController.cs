@@ -17,7 +17,7 @@ namespace API.Controllers
     [Authorize]
     [Route("api/[controller]")]
     [ApiController]
-    public class UnitsController : BaseController<Guid, Unit>, IUnits
+    public class UnitsController : BaseController<int, Unit>, IUnits
     {
         readonly Repository _repository;
 

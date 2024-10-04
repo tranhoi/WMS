@@ -1,4 +1,5 @@
-﻿using Application.Extentions;
+﻿using Application.DTOs;
+using Application.Extentions;
 using Application.Services.Base;
 using Domain.Entity.Commons;
 using Domain.Entity.WMS;
@@ -19,5 +20,10 @@ namespace Application.Services
 
         [Post(ApiRoutes.Bins.AddOrUpdate)]
         Task<Result<List<Bin>>> AddOrUpdateAsync([Body] List<Bin> model);
+
+        [Get(ApiRoutes.Bins.GetLabelById)]
+        Task<List<LabelInfoDto>> GetLabelByIdAsync([Path] string id);
+        [Get(ApiRoutes.Bins.GetLabelByLocationId)]
+        Task<List<LabelInfoDto>> GetLabelByLocationIdAsync([Path] Guid locationId);
     }
 }

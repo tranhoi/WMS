@@ -1,12 +1,14 @@
-﻿using Magicodes.ExporterAndImporter.Core;
+﻿using Domain.Entity.WMS.Authentication;
+using Magicodes.ExporterAndImporter.Core;
 
 namespace Application.DTOs
 {
-    [Exporter(Name = "USER INFO")]
+    [Exporter(Name = "REPORT")]
     public class ReceiptInfo
     {
-        public string Base64QR { get; set; }
-        public string Title { get; set; }
-        public string MyProperty { get; set; }
+        public string QrValue { get; set; }
+        public string UserName { get; set; }
+        public string FullName { get; set; }
+        public string Email { get; set; }
     }
 }

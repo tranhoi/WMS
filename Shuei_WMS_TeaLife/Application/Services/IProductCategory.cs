@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 namespace Application.Services
 {
     [BasePath(ApiRoutes.ProductCategories.BasePath)]
-    public interface IProductCategory : IRepository<Guid, ProductCategory>
+    public interface IProductCategory : IRepository<int, ProductCategory>
     {
 
     }

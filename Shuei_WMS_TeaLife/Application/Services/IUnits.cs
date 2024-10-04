@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 namespace Application.Services
 {
     [BasePath(ApiRoutes.Unit.BasePath)]
-    public interface IUnits : IRepository<Guid, Unit>
+    public interface IUnits : IRepository<int, Unit>
     {
 
     }

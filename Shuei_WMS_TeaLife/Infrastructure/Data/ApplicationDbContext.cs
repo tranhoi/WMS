@@ -91,6 +91,9 @@ namespace Infrastructure.Data
         public DbSet<WarehouseReceiptOrderLine> WarehouseReceiptOrderLines { get; set; }
         public DbSet<WarehouseReceiptStaging> WarehouseReceiptStagings { get; set; }
         public DbSet<NumberSequences>  SequencesNumber { get; set; }
+        public DbSet<Batches> Batches { get; set; }
+
+
 
         #endregion
 
@@ -172,6 +175,9 @@ namespace Infrastructure.Data
             base.OnModelCreating(modelBuilder);
             modelBuilder.Entity<NumberSequences>()
             .ToTable("NumberSequences", "wms", x => x.ExcludeFromMigrations());
+            base.OnModelCreating(modelBuilder);
+            modelBuilder.Entity<Batches>()
+            .ToTable("Batches", "wms", x => x.ExcludeFromMigrations());
             base.OnModelCreating(modelBuilder);
 
             //override lai cac bang identity

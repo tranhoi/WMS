@@ -45,6 +45,8 @@
             public const string RoleGetById = "identity/Role/{id}";
             public const string GetReportBase64 = "identity/GetReportBase64/{id}";
             public const string GeneratePdf = "identity/GeneratePdf";
+            public const string GetLabelById = "identity/GetLabelById/{id}";
+            public const string GetLabelsAll = "identity/GetLabelsAll";
         }
         public static class Permissions
         {
@@ -92,6 +94,8 @@
             public const string BasePath = "api/Bins";
             public const string GetByLocationId = "GetByLocationId/{locationId}";
             public const string AddOrUpdate = "AddOrUpdate";
+            public const string GetLabelById = "GetLabelById/{id}";
+            public const string GetLabelByLocationId = "GetLabelByLocationId/{locationId}";
         }
         public static class ProductJanCodes
         {
@@ -205,6 +209,11 @@
         {
             public const string BasePath = "api/Reports";
             public const string GetReportBase64 = "GetReportBase64";
+        }
+
+        public static class Batches
+        {
+            public const string BasePath = "api/Batches";
         }
     }
 }

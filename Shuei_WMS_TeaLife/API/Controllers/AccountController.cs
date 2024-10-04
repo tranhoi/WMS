@@ -170,5 +170,18 @@ namespace API.Controllers
         {
             return Ok(await account.GeneratePdf());
         }
+
+        [HttpGet(ApiRoutes.Identity.GetLabelById)]
+        public async Task<ActionResult<string>> GetLabelByIdAsync(string id)
+        {
+            if (string.IsNullOrEmpty(id)) return BadRequest("Id cannot be null");
+            return Ok(await account.GetLabelByIdAsync(id));
+        }
+
+        [HttpGet(ApiRoutes.Identity.GetLabelsAll)]
+        public async Task<ActionResult<string>> GetLabelsAllAsync()
+        {
+            return Ok(await account.GetLabelsAllAsync());
+        }
     }
 }

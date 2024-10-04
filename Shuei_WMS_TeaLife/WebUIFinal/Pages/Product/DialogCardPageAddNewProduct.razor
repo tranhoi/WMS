@@ -264,12 +264,14 @@ else
                         <RadzenRow AlignItems="AlignItems.Center">
                             <RadzenColumn SizeXS="12" SizeSM="6">
                                 <RadzenFormField Text="Order Quantity" Variant="Variant.Outlined" Style="width: 100%;">
-                                    <RadzenTextBox Name="_txtOrderQuantity" Placeholder="Typing..." />
+                                    <RadzenNumeric TValue="int" @bind-Value="@shippingQuantity" Name="_txtOrderQuantity" Placeholder="Typing..." />
                                 </RadzenFormField>
+                                <RadzenRequiredValidator Component="_txtOrderQuantity" Popup="false" Style="position: absolute" />
                             </RadzenColumn>
                             <RadzenColumn SizeXS="12" SizeSM="6">
                                 <RadzenFormField Text="Shipping Quantity" Variant="Variant.Outlined" Style="width: 100%;">
-                                    <RadzenTextBox Name="_txtShippingQuantity" Placeholder="Typing..." />
+                                    <RadzenNumeric TValue="int" @bind-Value="@orderQuantity" Name="_txtShippingQuantity" Placeholder="Typing..." />
+                                    <RadzenRequiredValidator Component="_txtShippingQuantity" Popup="false" Style="position: absolute" />
                                 </RadzenFormField>
                             </RadzenColumn>
                         </RadzenRow>

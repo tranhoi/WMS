@@ -53,6 +53,7 @@ namespace Infrastructure.Repos
         public IWarehouseReceiptStaging  SWarehouseReceiptStagings { get; set; }
         public IWarehouseTran    SWarehouseTrans { get; set; }
         public INumberSequences  SNumberSequences { get; set; }
+        public IBatches SBatches{ get; set; }
 
         public Repository(IProducts sProduct = null, ILocations sLocations = null, IDevices sDevices = null
             , IProductJanCodes sProductJanCodes = null, IVendors sVendors = null, IBins sBins = null
@@ -66,7 +67,7 @@ namespace Infrastructure.Repos
             , IWarehousePutAway sWarehousePutAways = null, IWarehousePutAwayLine sWarehousePutAwayLines = null
             , IWarehousePutAwayStaging sWarehousePutAwayStagings = null, IWarehouseReceiptOrder sWarehouseReceiptOrders = null
             , IWarehouseReceiptOrderLine sWarehouseReceiptOrderLines = null, IWarehouseReceiptStaging sWarehouseReceiptStagings = null
-            , IWarehouseTran sWarehouseTrans = null, INumberSequences sNumberSequences = null)
+            , IWarehouseTran sWarehouseTrans = null, INumberSequences sNumberSequences = null, IBatches sBatches = null)
         {
             SProducts = sProduct;
             SLocations = sLocations;
@@ -99,6 +100,7 @@ namespace Infrastructure.Repos
             SWarehouseReceiptStagings = sWarehouseReceiptStagings;
             SWarehouseTrans = sWarehouseTrans;
             SNumberSequences = sNumberSequences;
+            SBatches = sBatches;
         }
     }
 }

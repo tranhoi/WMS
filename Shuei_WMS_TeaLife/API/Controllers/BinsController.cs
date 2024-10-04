@@ -1,4 +1,5 @@
 ﻿using API.Controllers.Base;
+using Application.DTOs;
 using Application.Extentions;
 using Application.Models;
 using Application.Services;
@@ -36,6 +37,18 @@ namespace API.Controllers
         public async Task<Result<List<Bin>>> GetByLocationId([Path] Guid locationId)
         {
             return await _repository.SBins.GetByLocationId(locationId);
+        }
+
+        [HttpGet(ApiRoutes.Bins.GetLabelById)]
+        public async Task<List<LabelInfoDto>> GetLabelByIdAsync([Path] string id)
+        {
+            return await _repository.SBins.GetLabelByIdAsync(id);
+        }
+
+        [HttpGet(ApiRoutes.Bins.GetLabelByLocationId)]
+        public async Task<List<LabelInfoDto>> GetLabelByLocationIdAsync([Path] Guid locationId)
+        {
+            return await _repository.SBins.GetLabelByLocationIdAsync(locationId);
         }
     }
 }

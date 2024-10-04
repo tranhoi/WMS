@@ -27,6 +27,9 @@ namespace WebUIFinal.Pages.Product
         bool allowRowSelectOnRowClick = true;
         bool _visibleBtnSubmit = true;
 
+        int shippingQuantity = 100;
+        int orderQuantity = 100;
+
         ProductModel model = new ProductModel();
         List<SupplierModel> suppliers = new();
         List<UnitModel> units = new();
@@ -51,6 +54,8 @@ namespace WebUIFinal.Pages.Product
                 await GetTenantsAsync();
                 await GetProductCategoryAsync();
                 await GetProductJanCodesAsync();
+
+                model.StockAvailableQuanitty = 100;
             }
             catch (UnauthorizedAccessException) { }
             catch (Exception e)

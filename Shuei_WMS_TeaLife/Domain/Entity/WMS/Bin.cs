@@ -15,6 +15,8 @@ namespace Domain.Entity.WMS
         public Guid Id { get; set; }
 
         public Guid LocationId { get; set; }
+        public string? LocationCD { get; set; }
+        public string? LocationName { get; set; }
 
         public string BinCode { get; set; }
 

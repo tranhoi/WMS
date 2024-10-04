@@ -31,6 +31,14 @@
             height: 2rem;
             padding: 5px;
         }
+
+        #printableArea {
+            position: absolute;
+            left: 0;
+            top: 0;
+            page-break-after: always; /* Tạo ngắt trang sau mỗi label */
+            margin: 0; /* Loại bỏ khoảng cách margin khi in */
+        }
     </style>
 </head>
 
@@ -38,9 +46,39 @@
     <p style="color: #000; font-size: 1.8rem; height: 32px; text-align: center;">
         @Model.Title
     </p>
-    <p style="color: #333; font-size: 1.2rem; margin-left: 5%; margin-top: 1%;">
-        <text>NO：@Model.Data.Code</text>
-        <text style="padding-left: 52%; text-align: right;">交易时间：@Model.Data.TradeTime.ToString("yyyy-MM-dd HH:mm:ss")</text>
-    </p>
+
+
+    <div id="printableArea" style="display: flex;flex-direction:row; flex-wrap: wrap; justify-content: left; margin: 0 auto;">
+        @foreach (var label in @Model.Data)
+        {
+        <div style="display: flex; width: 49%; height: 110px; align-items: center; border: 1px solid #000; padding: 1px; margin: 1px;">
+            <div>
+                @if (!string.IsNullOrEmpty(@label.QrValue))
+                {
+                <img src="@label.QrValue" alt="QR Code" style="width:100%" />
+                }
+            </div>
+
+            <div style="margin-left: 10px; display: flex; flex-direction: column; justify-content: start; align-items:start">
+                <div class="info-line" style="display: flex;">
+                    <strong style="width: 100px;">@label.Title1</strong>
+                    <span>@label.Content1</span>
+                </div>
+                <div class="info-line" style="display: flex;">
+                    <strong style="width: 100px;">@label.Title2</strong>
+                    <span>@label.Content2</span>
+                </div>
+                <div class="info-line" style="display: flex;">
+                    <strong style="width: 100px;">@label.Title3</strong>
+                    <span>@label.Content3</span>
+                </div>
+                <div class="info-line" style="display: flex;">
+                    <strong style="width: 100px;">@label.Title4</strong>
+                    <span>@label.Content4</span>
+                </div>
+            </div>
+        </div>
+        }
+    </div>
 </body>
 </html>

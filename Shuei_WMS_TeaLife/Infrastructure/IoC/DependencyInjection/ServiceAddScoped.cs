@@ -46,6 +46,7 @@ namespace Infrastructure.IoC.DependencyInjection
             services.AddScoped<IWarehouseReceiptStaging, RepositoryWarehouseReceiptStagingServices>();
             services.AddScoped<IWarehouseTran, RepositoryWarehouseTranServices>();
             services.AddScoped<INumberSequences, RepositorySequenceNumberServices>();
+            services.AddScoped<IBatches, RepositoryBatchesService>();
 
             services.AddScoped<Repository>();
         }

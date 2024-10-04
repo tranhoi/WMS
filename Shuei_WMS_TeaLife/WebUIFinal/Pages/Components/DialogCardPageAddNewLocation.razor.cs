@@ -1,4 +1,5 @@
-﻿using Application.DTOs.Request.Account;
+﻿using Application.DTOs;
+using Application.DTOs.Request.Account;
 using Application.DTOs.Response;
 using Application.DTOs.Response.Account;
 using Application.Enums;
@@ -12,6 +13,7 @@ using Radzen;
 using Radzen.Blazor;
 using System.Security.Cryptography;
 using WebUIFinal.Pages.Device;
+using WebUIFinal.TemplateHtmlPrintLabel;
 
 namespace WebUIFinal.Pages.Components
 {
@@ -145,7 +147,7 @@ namespace WebUIFinal.Pages.Components
                 string resMess = string.Empty;
                 if (Title.Contains("Create"))
                 {
-                    _model.Id = Guid.NewGuid();
+                    //_model.Id = Guid.NewGuid();
                     var response = await _locationServices.InsertAsync(_model);
                     resMess = response.Messages.FirstOrDefault();
                     if (!response.Succeeded)
@@ -202,6 +204,12 @@ namespace WebUIFinal.Pages.Components
 
                 if (_dataGrid.Count > 0)
                 {
+                    foreach (var item in _dataGrid)
+                    {
+                        item.LocationCD = _model.LocationCD;
+                        item.LocationName = _model.LocationName;
+                    }
+
                     var responseBin = await _binServices.AddOrUpdateAsync(_dataGrid);
                     resMess = responseBin.Messages.FirstOrDefault();
 
@@ -245,13 +253,23 @@ namespace WebUIFinal.Pages.Components
 
         async Task PrintLable()
         {
-            _notificationService.Notify(new NotificationMessage()
-            {
-                Severity = NotificationSeverity.Info,
-                Summary = "Info",
-                Detail = "Print label click",
-                Duration = 1000
-            });
+            var dataPrint = await _binServices.GetLabelByLocationIdAsync(_model.Id);
+            var res = await _dialogService.OpenAsync<PrintViewer>(string.Empty,
+                    new Dictionary<string, object>() { { "LabelPrintModel", dataPrint } ,{ "Title","Print label for BIN"} },
+                    new DialogOptions()
+                    {
+                        Width = "1000px",
+                        Height = "1000px",
+                        Resizable = true,
+                        Draggable = true,
+                        ShowClose = false,
+                        CloseDialogOnOverlayClick = true
+                    });
+
+            //if (res == "Success")
+            //{
+            //    RefreshDataAsync();
+            //}
         }
 
         async Task AddBin()

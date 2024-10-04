@@ -69,7 +69,7 @@ namespace Infrastructure.Repos
             }
         }
 
-        public async Task<Result<Unit>> GetByIdAsync([Path] Guid id)
+        public async Task<Result<Unit>> GetByIdAsync([Path] int id)
         {
             try
             {

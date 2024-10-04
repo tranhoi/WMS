@@ -7,6 +7,7 @@ using Application.DTOs.Response;
 using RestEase;
 using Application.Extentions;
 using Application.DTOs.Request;
+using Application.DTOs;
 
 namespace Application.Services.Authen
 {
@@ -39,5 +40,9 @@ namespace Application.Services.Authen
         Task<string> GetReportBase64([Path] string id);
         [Get(ApiRoutes.Identity.GeneratePdf)]
         Task<string> GeneratePdf();
+        [Get(ApiRoutes.Identity.GetLabelById)]
+        Task<List<LabelInfoDto>> GetLabelByIdAsync([Path] string id );
+        [Get(ApiRoutes.Identity.GetLabelsAll)]
+        Task<List<LabelInfoDto>> GetLabelsAllAsync();
     }
 }

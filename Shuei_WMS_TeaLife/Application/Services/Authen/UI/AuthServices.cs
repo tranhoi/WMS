@@ -1,4 +1,5 @@
-﻿using Application.DTOs.Request.Account;
+﻿using Application.DTOs;
+using Application.DTOs.Request.Account;
 using Application.DTOs.Response;
 using Application.DTOs.Response.Account;
 using Application.Extentions;
@@ -388,6 +389,46 @@ namespace Application.Services.Authen.UI
                     return null;
 
                 var response = await result.Content.ReadAsStringAsync();
+
+                return response;
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
+        }
+
+        public async Task<List<LabelInfoDto>> GetLabelByIdAsync(string id)
+        {
+            try
+            {
+                var result = await _httpClient.GetAsync($"{ApiRoutes.Identity.BasePath}/identity/GetLabelById/{id}");
+
+                if (!result.IsSuccessStatusCode)
+                    return null;
+
+                var content = await result.Content.ReadAsStringAsync();
+                var response = JsonConvert.DeserializeObject<List<LabelInfoDto>>(content);
+
+                return response;
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
+        }
+
+        public async Task<List<LabelInfoDto>> GetLabelsAllAsync()
+        {
+            try
+            {
+                var result = await _httpClient.GetAsync($"{ApiRoutes.Identity.BasePath}/{ApiRoutes.Identity.GetLabelsAll}");
+
+                if (!result.IsSuccessStatusCode)
+                    return null;
+
+                var content = await result.Content.ReadAsStringAsync();
+                var response = JsonConvert.DeserializeObject<List<LabelInfoDto>>(content);
 
                 return response;
             }

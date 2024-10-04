@@ -17,7 +17,7 @@ namespace API.Controllers
     [Authorize]
     [Route("api/[controller]")]
     [ApiController]
-    public class ProductCategoriesController : BaseController<Guid, ProductCategory>, IProductCategory
+    public class ProductCategoriesController : BaseController<int, ProductCategory>, IProductCategory
     {
         readonly Repository _repository;
 

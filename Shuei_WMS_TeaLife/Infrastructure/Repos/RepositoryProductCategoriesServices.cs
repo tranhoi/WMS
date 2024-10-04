@@ -84,7 +84,7 @@ namespace Infrastructure.Repos
             }
         }
 
-        public async Task<Result<ProductCategory>> GetByIdAsync([Path] Guid id)
+        public async Task<Result<ProductCategory>> GetByIdAsync([Path] int id)
         {
             try
             {

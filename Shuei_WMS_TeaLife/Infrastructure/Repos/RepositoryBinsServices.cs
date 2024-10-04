@@ -1,7 +1,9 @@
-﻿using Application.Enums;
+﻿using Application.DTOs;
+using Application.Enums;
 using Application.Extentions;
 using Application.Models;
 using Application.Services;
+using DocumentFormat.OpenXml.Office2010.Excel;
 using Domain.Entity.Commons;
 using Domain.Entity.WMS;
 using Infrastructure.Data;
@@ -176,6 +178,63 @@ namespace Infrastructure.Repos
             catch (Exception ex)
             {
                 return await Result<List<Bin>>.FailAsync($"{ex.Message}{Environment.NewLine}{ex.InnerException}");
+            }
+        }
+
+        public async Task<List<LabelInfoDto>> GetLabelByIdAsync([Path] string id)
+        {
+            try
+            {
+                var dataInfo = await dbContext.Bins.FindAsync(id);
+                if (dataInfo == null) return null;
+
+                List<LabelInfoDto> res = new List<LabelInfoDto>();
+
+                res.Add(new LabelInfoDto()
+                {
+                    Title="BIN",
+                    QrValue = GlobalVariable.GenerateQRCode($"{dataInfo.LocationCD}|{dataInfo.LocationName}|{dataInfo.BinCode}"),
+                    Title1 = "Location Name:",
+                    Content1 = dataInfo.LocationName,
+                    Title2 = "BIN Code:",
+                    Content2 = dataInfo.BinCode,
+                });
+
+                return res;
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
+        }
+
+        public async Task<List<LabelInfoDto>> GetLabelByLocationIdAsync([Path] Guid locationId)
+        {
+            try
+            {
+                var dataInfo = await dbContext.Bins.Where(m => m.LocationId == locationId).ToListAsync();
+                if (dataInfo == null) return null;
+
+                List<LabelInfoDto> res = new List<LabelInfoDto>();
+
+                foreach (var item in dataInfo)
+                {
+                    res.Add(new LabelInfoDto()
+                    {
+                        Title = "BIN",
+                        QrValue = GlobalVariable.GenerateQRCode($"{item.LocationCD}|{item.LocationName}|{item.BinCode}"),
+                        Title1 = "Location Name:",
+                        Content1 = item.LocationName,
+                        Title2 = "BIN Code:",
+                        Content2 = item.BinCode,
+                    });
+                }
+
+                return res;
+            }
+            catch (Exception ex)
+            {
+                return null;
             }
         }
     }
