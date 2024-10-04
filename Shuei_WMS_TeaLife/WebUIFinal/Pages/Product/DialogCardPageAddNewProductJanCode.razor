@@ -1,0 +1,40 @@
+﻿@using Application.Enums
+@using Domain.Entity.Commons
+@using Microsoft.AspNetCore.Authorization
+
+@attribute [Authorize]
+@if (productJanCode == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <RadzenTemplateForm Data="@productJanCode" Submit="@((ProductJanCode args) => { Submit(args); })">
+        <RadzenFieldset Text="Product Jan Code information">
+            <RadzenRow Gap="2rem">
+                <RadzenColumn SizeXS="12" SizeSM="12">
+                    <RadzenFormField Text="Jan Code" Variant="Variant.Outlined" Style="width: 100%;">
+                        <RadzenTextBox Name="_txtJanCode" @bind-Value="@productJanCode.JanCode" Placeholder="Typing..." />
+                        <RadzenRequiredValidator Component="_txtJanCode" Popup="false" Style="position: absolute" />
+                    </RadzenFormField>
+                </RadzenColumn>
+                <RadzenColumn SizeXS="12" SizeSM="12">
+                    <RadzenFormField Text="Description" Variant="Variant.Outlined" Style="width: 100%;">
+                        <RadzenTextArea @bind-Value=@productJanCode.JanDescription
+                                        Style="width: 100%" aria-label="Auto-resize" />
+                    </RadzenFormField>
+                </RadzenColumn>
+                <RadzenColumn SizeXS="12" SizeSM="12">
+                    <RadzenFormField Text="Status" Variant="Variant.Outlined" Style="width: 100%;">
+                        <RadzenDropDown @bind-Value="@selectedStatus" Data=@(Enum.GetValues(typeof(Status)).Cast<Enum>()) Name="_dropDownStatus"
+                                        Multiple=false AllowClear=true Placeholder="Select Product Jan Code Status" Chips=true />
+                        <RadzenRequiredValidator Component="_dropDownStatus" Popup="false" Style="position: absolute" />
+                    </RadzenFormField>
+                </RadzenColumn>
+            </RadzenRow>
+        </RadzenFieldset>
+        <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.Center" Gap="1rem" Class="rz-mt-8 rz-mb-4">
+            <RadzenButton ButtonType="ButtonType.Submit" Size="ButtonSize.Large" Icon="save" Text="Save" Visible="@VisibleBtnSubmit" />
+        </RadzenStack>
+    </RadzenTemplateForm>
+}

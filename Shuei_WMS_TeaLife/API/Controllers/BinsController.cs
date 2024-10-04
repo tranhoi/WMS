@@ -1,0 +1,41 @@
+﻿using API.Controllers.Base;
+using Application.Extentions;
+using Application.Models;
+using Application.Services;
+using Domain.Entity.Commons;
+using Domain.Entity.WMS;
+using Infrastructure.Data;
+using Infrastructure.Repos;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using RestEase;
+
+namespace API.Controllers
+{
+    [Authorize]
+    [Route("api/[controller]")]
+    [ApiController]
+    public class BinsController : BaseController<Guid, Bin>, IBins
+    {
+        readonly Repository _repository;
+
+        public BinsController(Repository repository = null) : base(repository.SBins)
+        {
+            _repository = repository;
+        }
+
+        [HttpPost(ApiRoutes.Bins.AddOrUpdate)]
+        public async Task<Result<List<Bin>>> AddOrUpdateAsync([Body] List<Bin> model)
+        {
+            return await _repository.SBins.AddOrUpdateAsync(model);
+        }
+
+        [HttpPost(ApiRoutes.Bins.GetByLocationId)]
+        public async Task<Result<List<Bin>>> GetByLocationId([Path] Guid locationId)
+        {
+            return await _repository.SBins.GetByLocationId(locationId);
+        }
+    }
+}

@@ -1,0 +1,46 @@
+﻿<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+    <style type="text/css">
+        body {
+            font-family: SimSun !important;
+        }
+
+        p {
+            margin: 0px;
+        }
+
+        footer {
+            color: #333;
+            font-size: 1.2rem;
+            margin-bottom: 1.5rem;
+            margin-right: 5%;
+            margin-top: 1.2rem;
+            text-align: right;
+        }
+
+        table,
+        td {
+            border: 1px solid #444;
+            border-collapse: collapse;
+            /* text-align: center; */
+            height: 2rem;
+            padding: 5px;
+        }
+    </style>
+</head>
+
+<body>
+    <p style="color: #000; font-size: 1.8rem; height: 32px; text-align: center;">
+        @Model.Title
+    </p>
+    <p style="color: #333; font-size: 1.2rem; margin-left: 5%; margin-top: 1%;">
+        <text>NO：@Model.Data.Code</text>
+        <text style="padding-left: 52%; text-align: right;">交易时间：@Model.Data.TradeTime.ToString("yyyy-MM-dd HH:mm:ss")</text>
+    </p>
+</body>
+</html>

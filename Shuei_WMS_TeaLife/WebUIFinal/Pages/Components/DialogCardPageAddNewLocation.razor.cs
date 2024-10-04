@@ -1,0 +1,414 @@
+﻿using Application.DTOs.Request.Account;
+using Application.DTOs.Response;
+using Application.DTOs.Response.Account;
+using Application.Enums;
+using Application.Extentions;
+using Domain.Entity.authp.Commons;
+using Domain.Entity.Commons;
+using Domain.Entity.WMS;
+using Microsoft.AspNetCore.Components;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using Radzen;
+using Radzen.Blazor;
+using System.Security.Cryptography;
+using WebUIFinal.Pages.Device;
+
+namespace WebUIFinal.Pages.Components
+{
+    public partial class DialogCardPageAddNewLocation
+    {
+        [Parameter] public string Title { get; set; } = string.Empty;
+
+        [Parameter] public Location _model { get; set; } = new Location();
+
+        EnumUserStatus _selectStatus;
+        bool _visibleBtnSubmit = true;
+        string _id = string.Empty;
+
+        List<Bin> _dataGrid = [];
+        IList<Bin> _selectedDataBinList = [];
+        RadzenDataGrid<Bin>? _profileGrid;
+        bool allowRowSelectOnRowClick = true;
+        IEnumerable<int> _pageSizeOptions = new int[] { 5, 10, 20, 50, 100 };
+        bool _showPagerSummary = true;
+        string _pagingSummaryFormat = "Displaying page {0} of {1} <b>(total {2} records)</b>";
+
+        List<Bin> _listRemoveBin = new List<Bin>();
+
+        protected override async Task OnInitializedAsync()
+        {
+            await base.OnInitializedAsync();
+
+            await RefreshDataAsync();
+
+            StateHasChanged();
+        }
+
+        async Task RefreshDataAsync()
+        {
+            try
+            {
+                _selectStatus = EnumUserStatus.Activated;
+
+                if (!Title.Contains("Create"))
+                {
+                    if (Title.Contains("View")) _visibleBtnSubmit = false;
+                    var arr = Title.Split('|');
+                    Title = arr[0];
+                    _id = arr[1];
+
+                    var res = await _locationServices.GetByIdAsync(Guid.Parse(_id));
+                    var resMessage = res.Messages.FirstOrDefault();
+                    if (!res.Succeeded)
+                    {
+                        _notificationService.Notify(new NotificationMessage
+                        {
+                            Severity = NotificationSeverity.Error,
+                            Summary = "Error",
+                            Detail = resMessage,
+                            Duration = 5000
+                        });
+                        return;
+                    }
+
+                    _model = res.Data;
+
+                    //get bin information
+                    var resBin = await _binServices.GetByLocationId(_model.Id);
+                    resMessage = res.Messages.FirstOrDefault();
+                    if (!res.Succeeded)
+                    {
+                        _notificationService.Notify(new NotificationMessage
+                        {
+                            Severity = NotificationSeverity.Error,
+                            Summary = "Error",
+                            Detail = resMessage,
+                            Duration = 5000
+                        });
+                        return;
+                    }
+
+                    _dataGrid = resBin.Data;
+
+                    _selectStatus = EnumUserStatus.Activated.ToString() == _model.Status ? EnumUserStatus.Activated : EnumUserStatus.Inactivated;
+                }
+                else
+                {
+                    _model.Id = Guid.NewGuid();
+                }
+
+                StateHasChanged();
+            }
+            catch (UnauthorizedAccessException) { }
+            catch (Exception ex)
+            {
+                _notificationService.Notify(new NotificationMessage
+                {
+                    Severity = NotificationSeverity.Error,
+                    Summary = "Error",
+                    Detail = ex.Message,
+                    Duration = 5000
+                });
+                return;
+            }
+        }
+
+        async void Submit(Location arg)
+        {
+            try
+            {
+                if (Title.Contains("Create"))
+                {
+                    var confirm = await _dialogService.Confirm($"Do you want to create a new location: {arg.LocationName}?", "Create location", new ConfirmOptions()
+                    {
+                        OkButtonText = "Yes",
+                        CancelButtonText = "No",
+                        AutoFocusFirstElement = true,
+                    });
+
+                    if (confirm == null || confirm == false) return;
+                }
+                else
+                {
+                    var confirm = await _dialogService.Confirm($"Do you want to update location: {arg.LocationName}?", "Update location", new ConfirmOptions()
+                    {
+                        OkButtonText = "Yes",
+                        CancelButtonText = "No",
+                        AutoFocusFirstElement = true,
+                    });
+
+                    if (confirm == null || confirm == false) return;
+                }
+
+                _model.Status = _selectStatus.ToString();
+
+                string resMess = string.Empty;
+                if (Title.Contains("Create"))
+                {
+                    _model.Id = Guid.NewGuid();
+                    var response = await _locationServices.InsertAsync(_model);
+                    resMess = response.Messages.FirstOrDefault();
+                    if (!response.Succeeded)
+                    {
+                        _notificationService.Notify(new NotificationMessage()
+                        {
+                            Severity = NotificationSeverity.Error,
+                            Summary = "Error",
+                            Detail = resMess,
+                            Duration = 5000
+                        });
+                        return;
+                    }
+                }
+                else
+                {
+                    var response = await _locationServices.UpdateAsync(_model);
+
+                    if (!response.Succeeded)
+                    {
+                        _notificationService.Notify(new NotificationMessage()
+                        {
+                            Severity = NotificationSeverity.Error,
+                            Summary = "Error",
+                            Detail = response.Messages.FirstOrDefault(),
+                            Duration = 5000
+                        });
+
+                        return;
+                    }
+
+                    resMess = response.Messages.FirstOrDefault();
+                }
+
+                //BIN
+                if (_listRemoveBin.Count > 0)
+                {
+                    var responseDeleteNin = await _binServices.DeleteRangeAsync(_listRemoveBin);
+                    resMess = responseDeleteNin.Messages.FirstOrDefault();
+
+                    if (!responseDeleteNin.Succeeded)
+                    {
+                        _notificationService.Notify(new NotificationMessage()
+                        {
+                            Severity = NotificationSeverity.Error,
+                            Summary = "Error",
+                            Detail = resMess,
+                            Duration = 5000
+                        });
+
+                        return;
+                    }
+                }
+
+                if (_dataGrid.Count > 0)
+                {
+                    var responseBin = await _binServices.AddOrUpdateAsync(_dataGrid);
+                    resMess = responseBin.Messages.FirstOrDefault();
+
+                    if (!responseBin.Succeeded)
+                    {
+                        _notificationService.Notify(new NotificationMessage()
+                        {
+                            Severity = NotificationSeverity.Error,
+                            Summary = "Error",
+                            Detail = resMess,
+                            Duration = 5000
+                        });
+
+                        return;
+                    }
+                }
+
+                _notificationService.Notify(new NotificationMessage()
+                {
+                    Severity = NotificationSeverity.Success,
+                    Summary = "Success",
+                    Detail = resMess,
+                    Duration = 5000
+                });
+
+                _dialogService.Close("Success");
+            }
+            catch (Exception ex)
+            {
+                _notificationService.Notify(new NotificationMessage()
+                {
+                    Severity = NotificationSeverity.Error,
+                    Summary = "Error",
+                    Detail = $"{ex.Message}{Environment.NewLine}{ex.InnerException}",
+                    Duration = 5000
+                });
+
+                return;
+            }
+        }
+
+        async Task PrintLable()
+        {
+            _notificationService.Notify(new NotificationMessage()
+            {
+                Severity = NotificationSeverity.Info,
+                Summary = "Info",
+                Detail = "Print label click",
+                Duration = 1000
+            });
+        }
+
+        async Task AddBin()
+        {
+            try
+            {
+                Bin binInfor = new Bin()
+                {
+                    LocationId = _model.Id
+                };
+
+                var res = await _dialogService.OpenAsync<DialogCardPageAddNewBin>($"Create new Bin",
+                        new Dictionary<string, object>() { { "_model", binInfor }, { "VisibleBtnSubmit", true } },
+                        new DialogOptions()
+                        {
+                            Width = "800",
+                            Height = "400",
+                            Resizable = true,
+                            Draggable = true,
+                            CloseDialogOnOverlayClick = true
+                        });
+
+
+                if (res != null)
+                {
+                    var selectResult = (Bin)res;
+
+                    var returnModel = _dataGrid.FirstOrDefault(x => x.BinCode == selectResult.BinCode);
+
+                    if (returnModel != null)
+                    {
+                        _notificationService.Notify(new NotificationMessage()
+                        {
+                            Severity = NotificationSeverity.Error,
+                            Summary = "Error",
+                            Detail = $"{selectResult.BinCode} has been exist.",
+                            Duration = 5000
+                        });
+                        return;
+                    }
+
+                    _dataGrid.Add(selectResult);
+
+                    await _profileGrid.RefreshDataAsync();
+                }
+            }
+            catch (Exception ex)
+            {
+                _notificationService.Notify(new NotificationMessage()
+                {
+                    Severity = NotificationSeverity.Error,
+                    Summary = "Error",
+                    Detail = $"{ex.Message}{Environment.NewLine}{ex.InnerException}",
+                    Duration = 5000
+                });
+
+                return;
+            }
+        }
+
+        async Task DeleteItemAsync(Bin model)
+        {
+            try
+            {
+                var confirm = await _dialogService.Confirm($"Are you sure you want to delete Bin: {model.BinCode}?", "Delete bin", new ConfirmOptions()
+                {
+                    OkButtonText = "Yes",
+                    CancelButtonText = "No",
+                    AutoFocusFirstElement = true,
+                });
+
+                if (confirm == null || confirm == false) return;
+
+                _dataGrid.Remove(model);
+                _listRemoveBin.Add(model);
+
+                await _profileGrid.RefreshDataAsync();
+            }
+            catch (Exception ex)
+            {
+                _notificationService.Notify(new NotificationMessage()
+                {
+                    Severity = NotificationSeverity.Error,
+                    Summary = "Error",
+                    Detail = $"{ex.Message}{Environment.NewLine}{ex.InnerException}",
+                    Duration = 5000
+                });
+
+                return;
+            }
+        }
+
+        async Task ViewItemAsync(Bin model)
+        {
+            try
+            {
+                var res = await _dialogService.OpenAsync<DialogCardPageAddNewBin>($"Create new Bin",
+                   new Dictionary<string, object>() { { "_model", model }, { "VisibleBtnSubmit", false } },
+                   new DialogOptions()
+                   {
+                       Width = "800",
+                       Height = "400",
+                       Resizable = true,
+                       Draggable = true,
+                       CloseDialogOnOverlayClick = true
+                   });
+
+                if (res == "Success")
+                {
+                    await RefreshDataAsync();
+                }
+            }
+            catch (Exception ex)
+            {
+                _notificationService.Notify(new NotificationMessage()
+                {
+                    Severity = NotificationSeverity.Error,
+                    Summary = "Error",
+                    Detail = $"{ex.Message}{Environment.NewLine}{ex.InnerException}",
+                    Duration = 5000
+                });
+
+                return;
+            }
+        }
+        async Task EditItemAsync(Bin model)
+        {
+            try
+            {
+                var res = await _dialogService.OpenAsync<DialogCardPageAddNewBin>($"Edit Bin ",
+                   new Dictionary<string, object>() { { "_model", model }, { "VisibleBtnSubmit", true } },
+                   new DialogOptions()
+                   {
+                       Width = "1000",
+                       Height = "400",
+                       Resizable = true,
+                       Draggable = true,
+                       CloseDialogOnOverlayClick = true
+                   });
+
+                if (res != null)
+                {
+                    await _profileGrid.RefreshDataAsync();
+                }
+            }
+            catch (Exception ex)
+            {
+                _notificationService.Notify(new NotificationMessage()
+                {
+                    Severity = NotificationSeverity.Error,
+                    Summary = "Error",
+                    Detail = $"{ex.Message}{Environment.NewLine}{ex.InnerException}",
+                    Duration = 5000
+                });
+
+                return;
+            }
+        }
+    }
+}

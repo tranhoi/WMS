@@ -1,0 +1,340 @@
+﻿@page "/addproduct/{Title}"
+@using Application.DTOs.Request.Products
+@using Application.Enums
+@using ProductModel = Domain.Entity.Commons.Product
+@using Microsoft.AspNetCore.Authorization
+@using ProductJanCode = Domain.Entity.Commons.ProductJanCode
+@using WebUIFinal.Core
+
+<style>
+    .input-image-container {
+        display: flex;
+        align-items: center;
+    }
+
+    .image-container {
+        position: relative;
+        display: inline-block;
+        margin-left: 10px;
+    }
+
+    .img-thumbnail {
+        border-radius: 4px;
+        height: 102px; 
+        width: 102px; 
+    }
+
+    .overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba(0, 0, 0, 0.5);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+
+    .image-container:hover .overlay {
+        opacity: 0.6;
+    }
+
+    .icon {
+        color: white;
+        font-size: 24px;
+    }
+
+    .fa-times:hover {
+        color: #eee;
+        cursor:pointer;
+    }
+</style>
+
+@attribute [Authorize]
+@if (model == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+     <RadzenRow>
+        <RadzenColumn Size="12" SizeSM="12">
+            <RadzenLink Text="Back to Product List" Path="/productlist" Icon="arrow_back_ios" Style="margin-bottom: 1rem;" />
+        </RadzenColumn>
+    </RadzenRow>
+    <RadzenTabs />
+    <RadzenRow>
+        <RadzenColumn Size="12" SizeSM="6">
+            <RadzenText TextStyle="TextStyle.Body1"><strong>@Title</strong></RadzenText>
+        </RadzenColumn>
+        @if (!Title.Contains("Create"))
+        {
+            <RadzenColumn Size="12" SizeSM="6">
+                <RadzenStack Orientation="Radzen.Orientation.Horizontal" JustifyContent="Radzen.JustifyContent.End" AlignItems="AlignItems.Center" Gap=" 5px">
+                    <RadzenButton Click=@(args => DeleteItemAsync(model)) Variant="Variant.Flat" Shade="Shade.Dark"
+                                  Text="Delete" Icon="cancel" ButtonStyle="ButtonStyle.Danger" />
+                </RadzenStack>
+            </RadzenColumn>
+        }
+    </RadzenRow>
+    <RadzenTemplateForm Data="@model" Submit="@((ProductModel args) => {Submit(args);})">
+        <RadzenRow Gap="2rem" class="rz-p-0 rz-p-lg-4">
+            <RadzenColumn Size="12" SizeMD="12">
+                <RadzenFieldset Text="Product Information" Disabled="@isDisabled">
+                    <RadzenStack Gap="5px">
+                        <RadzenRow AlignItems="AlignItems.Center" class="mt-3">
+                            <RadzenColumn SizeXS="12" SizeSM="6">
+                                <RadzenFormField Text="Product Code" Variant="Variant.Outlined" Style="width: 100%; display: flex; flex-direction: column; align-items: stretch;">
+                                    <RadzenTextBox Name="_txtProductCode" @bind-Value="@model.ProductCode" @onchange="@(args => model.ProductCode = args.Value.ToString())" Placeholder="Typing..." />
+                                </RadzenFormField>
+                                <RadzenRequiredValidator Component="_txtProductCode" Popup="false" Style="position: absolute" />
+                            </RadzenColumn>
+                            <RadzenColumn SizeXS="12" SizeSM="6">
+                                <RadzenFormField RadzenFormField Text="Supplier Code" Variant="Variant.Outlined" Style="width: 100%; display: flex; flex-direction: column; align-items: stretch;">
+                                    <RadzenDropDown TValue="int" Name="_dropDownSupplier" @bind-Value="@model.SupplierId" Data="@suppliers"
+                                                    Multiple=false AllowClear=true Placeholder="Select Supplier Code" Chips=true Disabled="@isDisabled" 
+                                                    TextProperty="SupplierName" ValueProperty="Id"/>
+                                </RadzenFormField>
+                                <RadzenRequiredValidator Component="_dropDownSupplier" Popup="false" Style="position: absolute" />
+                            </RadzenColumn>
+                        </RadzenRow>
+                        <RadzenRow AlignItems="AlignItems.Center">
+                            <RadzenColumn SizeXS="12" SizeSM="6">
+                                <RadzenFormField Text="Product Short code" Variant="Variant.Outlined" Style="width: 100%; display: flex; flex-direction: column; align-items: stretch;">
+                                    <RadzenTextBox Name="_txtProductShortCode" @bind-Value="@model.ProductShortCode" Placeholder="Typing..." />
+                                </RadzenFormField>
+                                <RadzenRequiredValidator Component="_txtProductShortCode" Popup="false" Style="position: absolute" />
+                            </RadzenColumn>
+                            <RadzenColumn SizeXS="12" SizeSM="6">
+                                <RadzenFormField Text="Maximum shipping days" Variant="Variant.Outlined" Style="width: 100%;">
+                                    <RadzenNumeric TValue="int" Name="_txtShippingLimitDays" @bind-Value="@model.ShippingLimitDays" Placeholder="Typing..." />
+                                </RadzenFormField>
+                            </RadzenColumn>
+                        </RadzenRow>
+                        <RadzenRow AlignItems="AlignItems.Center">
+                            <RadzenColumn SizeXS="12" SizeSM="6">
+                                <RadzenFormField Text="Product Name" Variant="Variant.Outlined" Style="width: 100%; display: flex; flex-direction: column; align-items: stretch;">
+                                    <RadzenTextBox Name="_txtProductName" @bind-Value="@model.ProductName" Placeholder="Typing..." />
+                                </RadzenFormField>
+                                <RadzenRequiredValidator Component="_txtProductName" Popup="false" Style="position: absolute" />
+                            </RadzenColumn>
+                            <RadzenColumn SizeXS="12" SizeSM="6">
+                                <RadzenFormField Text="Manufacturer Management Code" Variant="Variant.Outlined" Style="width: 100%; display: flex; flex-direction: column; align-items: stretch;">
+                                    <RadzenTextBox Name="_txtMakerManagementCode" @bind-Value="@model.MakerManagementCode" Placeholder="Typing..." />
+                                </RadzenFormField>
+                                <RadzenRequiredValidator Component="_txtMakerManagementCode" Popup="false" Style="position: absolute" />
+                            </RadzenColumn>
+                        </RadzenRow>
+                        <RadzenRow AlignItems="AlignItems.Center">
+                            <RadzenColumn SizeXS="12" SizeSM="6">
+                                <RadzenFormField Text="Category" Variant="Variant.Outlined" Style="width: 100%; display: flex; flex-direction: column; align-items: stretch;">
+                                    <RadzenDropDown @bind-Value="@model.CategoryId" Data=@productCategories Name="_dropDownCategory"
+                                                    Multiple=false AllowClear=true Placeholder="Select category" Chips=true Disabled="@isDisabled"
+                                                    TextProperty="CategoryName" ValueProperty="Id" />
+                                </RadzenFormField>
+                                <RadzenRequiredValidator Component="_dropDownCategory" Popup="false" Style="position: absolute" />
+                            </RadzenColumn>
+                            <RadzenColumn SizeXS="12" SizeSM="6">
+                                <RadzenFormField Text="Weight" Variant="Variant.Outlined" Style="width: 100%; display: flex; flex-direction: column; align-items: stretch;">
+                                    <RadzenNumeric TValue="double?" Name="_txtWeight" @bind-Value="@model.Weight" Placeholder="Typing..." />
+                                </RadzenFormField>
+                                <RadzenRequiredValidator Component="_txtWeight" Popup="false" Style="position: absolute" />
+                            </RadzenColumn>
+                        </RadzenRow>
+                        <RadzenRow AlignItems="AlignItems.Center">
+                            <RadzenColumn SizeXS="12" SizeSM="6">
+                                <RadzenFormField Text="Unit" Variant="Variant.Outlined" Style="width: 100%; display: flex; flex-direction: column; align-items: stretch;">
+                                    <RadzenDropDown TValue="int" @bind-Value=@model.UnitId Data="@units" TextProperty="UnitName" ValueProperty="Id" Name="_dropDownUnit"
+                                                    Multiple=false AllowClear=true Placeholder="Select Unit" Chips=true Disabled="@isDisabled" />
+                                </RadzenFormField>
+                                <RadzenRequiredValidator Component="_dropDownUnit" Popup="false" Style="position: absolute" />
+                            </RadzenColumn>
+                            <RadzenColumn SizeXS="12" SizeSM="6">
+                                <RadzenFormField Text="Depth" Variant="Variant.Outlined" Style="width: 100%; display: flex; flex-direction: column; align-items: stretch;">
+                                    <RadzenNumeric TValue="double?" Name="_txtDepth" @bind-Value="@model.Depth" Placeholder="Typing..." />
+                                </RadzenFormField>
+                                <RadzenRequiredValidator Component="_txtDepth" Popup="false" Style="position: absolute" />
+                            </RadzenColumn>
+                        </RadzenRow>
+                        <RadzenRow AlignItems="AlignItems.Center">
+                            <RadzenColumn SizeXS="12" SizeSM="6">
+                                <RadzenFormField Text="Currency" Variant="Variant.Outlined" Style="width: 100%; display: flex; flex-direction: column; align-items: stretch;">
+                                    <RadzenTextBox Name="_txtCurrency" @bind-Value="@model.Currency" Placeholder="Typing..." />
+                                </RadzenFormField>
+                                <RadzenRequiredValidator Component="_txtCurrency" Popup="false" Style="position: absolute" />
+                            </RadzenColumn>
+                            <RadzenColumn SizeXS="12" SizeSM="6">
+                                <RadzenFormField Text="Height" Variant="Variant.Outlined" Style="width: 100%; display: flex; flex-direction: column; align-items: stretch;">
+                                    <RadzenNumeric TValue="double?" Name="_txtHeight" @bind-Value="@model.Height" Placeholder="Typing..." />
+                                </RadzenFormField>
+                                <RadzenRequiredValidator Component="_txtHeight" Popup="false" Style="position: absolute" />
+                            </RadzenColumn>
+                        </RadzenRow>
+                        <RadzenRow AlignItems="AlignItems.Center">
+                            <RadzenColumn SizeXS="12" SizeSM="6">
+                                <RadzenFormField Text="Standard Price" Variant="Variant.Outlined" Style="width: 100%; display: flex; flex-direction: column; align-items: stretch;">
+                                    <RadzenNumeric TValue="double?" Name="_txtStandardPrice" @bind-Value="@model.StandardPrice" Placeholder="Typing..." />
+                                </RadzenFormField>
+                                <RadzenRequiredValidator Component="_txtStandardPrice" Popup="false" Style="position: absolute" />
+                            </RadzenColumn>
+                            <RadzenColumn SizeXS="12" SizeSM="6">
+                                <RadzenFormField Text="Product Type" Variant="Variant.Outlined" Style="width: 100%; display: flex; flex-direction: column; align-items: stretch;">
+                                    <RadzenDropDown @bind-Value="@selectedProductType" Data=@GetDisplayProductType() Name="_dropDownProductType"
+                                                    Multiple=false AllowClear=true Placeholder="Select product type" Chips=true Disabled="@isDisabled"
+                                                    TextProperty="DisplayValue" ValueProperty="Value" />
+                                </RadzenFormField>
+                                <RadzenRequiredValidator Component="_dropDownProductType" Popup="false" Style="position: absolute" />
+                            </RadzenColumn>
+                        </RadzenRow>
+                        <RadzenRow AlignItems="AlignItems.Center">
+                            <RadzenColumn SizeXS="12" SizeSM="6">
+                                <RadzenFormField Text="Product URL" Variant="Variant.Outlined" Style="width: 100%; display: flex; flex-direction: column; align-items: stretch;">
+                                    <RadzenTextBox Name="_txtProductUrl" @bind-Value="@model.ProductUrl" Placeholder="Typing..." />
+                                </RadzenFormField>
+                                <RadzenRequiredValidator Component="_txtProductUrl" Popup="false" Style="position: absolute" />
+                            </RadzenColumn>
+                            <RadzenColumn SizeXS="12" SizeSM="6">
+                                <RadzenFormField Text="Product Status" Variant="Variant.Outlined" Style="width: 100%; display: flex; flex-direction: column; align-items: stretch;">
+                                    <RadzenDropDown @bind-Value="@selectedStatus" Data=@(Enum.GetValues(typeof(EnumProductStatus)).Cast<Enum>()) Name="_dropDownProductStatus"
+                                                    Multiple=false AllowClear=true Placeholder="Select product status" Chips=true Disabled="@isDisabled" />
+                                </RadzenFormField>
+                                <RadzenRequiredValidator Component="_dropDownProductStatus" Popup="false" Style="position: absolute" />
+                            </RadzenColumn>
+                        </RadzenRow>
+                        <RadzenRow AlignItems="AlignItems.Center">
+                            <RadzenColumn SizeXS="12" SizeSM="6">
+                                <RadzenCard Variant="Variant.Outlined" style="margin-top: 5px;">
+                                    <div class="input-image-container">
+                                        <InputFile OnChange="HandleFileSelected" class="form-control" style="flex: 0 0 50%;" />
+                                        @if (!string.IsNullOrEmpty(model.ProductImageName) || !string.IsNullOrEmpty(imageBase64String))
+                                        {
+                                            <div class="image-container">
+                                                <img height="102" width="102" src="@($"data:image;base64,{imageBase64String}")" class="img-thumbnail" />
+                                                <div class="overlay">
+                                                    <a class="icon" @onclick="HandleRemoveFile">
+                                                        <i class="fa fa-times"></i>
+                                                    </a>
+                                                </div>
+                                            </div>     
+                                        }
+                                    </div>
+                                </RadzenCard>
+                            </RadzenColumn>
+                            <RadzenColumn SizeXS="12" SizeSM="6" style="margin-top: 5px;">
+                                <RadzenLabel Text="Warehouse Processing Flag" Component="CheckBox1" class="rz-ms-2" />
+                                <RadzenCheckBox @bind-Value="@model.WarehouseProcessingFlag" Name="WarehouseProcessingFlag" Disabled="@isDisabled" />
+                            </RadzenColumn>
+                        </RadzenRow>
+                    </RadzenStack>
+                </RadzenFieldset>
+            </RadzenColumn>
+        </RadzenRow>
+        <RadzenRow Gap="2rem" class="rz-p-0 rz-p-lg-4">
+            <RadzenColumn Size="12" SizeMD="12">
+                <RadzenFieldset Text="Tenant information" Disabled="@isDisabled">
+                    <RadzenStack Gap="5px">
+                        <RadzenRow AlignItems="AlignItems.Center">
+                            <RadzenColumn SizeXS="12" SizeSM="6">
+                                <RadzenFormField Text="Tenant" Variant="Variant.Outlined" Style="width: 100%; display: flex; flex-direction: column; align-items: stretch;">
+                                    <RadzenDropDown @bind-Value="@model.TenantId" TValue="int?" Data="@tenants" TextProperty="TenantFullName" ValueProperty="TenantId" Name="_dropDownTenant"
+                                                    Multiple=false AllowClear=true Placeholder="Select Tenant" Chips=true Disabled="@isDisabled" />
+                                </RadzenFormField>
+                                <RadzenRequiredValidator Component="_dropDownTenant" Popup="false" Style="position: absolute" />
+                            </RadzenColumn>
+                        </RadzenRow>
+                    </RadzenStack>
+                </RadzenFieldset>
+            </RadzenColumn>
+        </RadzenRow>
+        <RadzenRow Gap="2rem" class="rz-p-0 rz-p-lg-4">
+            <RadzenColumn Size="12" SizeMD="12">
+                <RadzenFieldset Text="Stock information" Disabled>
+                    <RadzenStack Gap="5px">
+                        <RadzenRow AlignItems="AlignItems.Center">
+                            <RadzenColumn SizeXS="12" SizeSM="6">
+                                <RadzenFormField Text="Stock Quantity" Variant="Variant.Outlined" Style="width: 100%;">
+                                    <RadzenNumeric TValue="int" @bind-Value="@model.StockAvailableQuanitty" Name="_txtStockQuantity" Placeholder="Typing..." />
+                                </RadzenFormField>
+                                <RadzenRequiredValidator Component="_txtStockQuantity" Popup="false" Style="position: absolute" />
+                            </RadzenColumn>
+                        </RadzenRow>
+                        <RadzenRow AlignItems="AlignItems.Center">
+                            <RadzenColumn SizeXS="12" SizeSM="6">
+                                <RadzenFormField Text="Order Quantity" Variant="Variant.Outlined" Style="width: 100%;">
+                                    <RadzenTextBox Name="_txtOrderQuantity" Placeholder="Typing..." />
+                                </RadzenFormField>
+                            </RadzenColumn>
+                            <RadzenColumn SizeXS="12" SizeSM="6">
+                                <RadzenFormField Text="Shipping Quantity" Variant="Variant.Outlined" Style="width: 100%;">
+                                    <RadzenTextBox Name="_txtShippingQuantity" Placeholder="Typing..." />
+                                </RadzenFormField>
+                            </RadzenColumn>
+                        </RadzenRow>
+                    </RadzenStack>
+                </RadzenFieldset>
+            </RadzenColumn>
+        </RadzenRow>
+        <RadzenRow Gap="2rem" class="rz-p-0 rz-p-lg-4">
+            <RadzenColumn Size="12" SizeMD="12">
+                <RadzenFieldset Text="Product Jan Code">
+                    <RadzenStack Orientation=Orientation.Vertical JustifyContent="JustifyContent.Center" AlignItems="AlignItems.Stretch" Gap="5px">
+                        <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.End" AlignItems="AlignItems.Center" Gap=" 5px">
+                            <RadzenButton Click=@(args => AddProductJanCode()) Variant="Variant.Flat" Shade="Shade.Dark"
+                                          Text="Add Product Jan Code" Icon="add_circle" ButtonStyle="ButtonStyle.Success" Disabled="@isDisabled" />
+                        </RadzenStack>
+                        <RadzenDataGrid @ref="_productJanCodeProfileGrid" Data="@productJanCodes" TItem="ProductJanCode" AllowFiltering="true" class="custom-grid"
+                                        FilterPopupRenderMode="PopupRenderMode.OnDemand" AllowPaging="true" PageSize="5" AllowSorting="true"
+                                        AllowColumnPicking="false" AllowColumnResize="true" AllowGrouping="false"
+                                        GridLines="Radzen.DataGridGridLines.Both" AllowAlternatingRows="false"
+                                        ShowPagingSummary=@_showPagerSummary PagingSummaryFormat="@Constants.PagingSummaryFormat" PageSizeOptions="@Constants.PageSizeOptions"
+                                        AllowRowSelectOnRowClick="@allowRowSelectOnRowClick" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
+                                        SelectionMode="DataGridSelectionMode.Multiple" Disabled="@isDisabled">
+                            <Columns>
+                                <RadzenDataGridColumn TItem="ProductJanCode" Filterable="false" TextAlign="TextAlign.Center" Visible="@_visibleBtnSubmit"
+                                                      Frozen="true" FrozenPosition="FrozenColumnPosition.Left" Width="170px">
+                                    <HeaderTemplate>
+                                        <RadzenText Text="Actions" />
+                                    </HeaderTemplate>
+                                    <Template Context="data">
+                                        <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.Center" AlignItems="AlignItems.Center" Gap="2px" Wrap="FlexWrap.Wrap">
+                                            <RadzenButton ButtonStyle="ButtonStyle.Light" Icon="visibility" Variant="Variant.Flat" Shade="Shade.Lighter"
+                                                          Size="ButtonSize.Medium" class="my-1 ms-1" Click="@(args => ViewJanCodeItemAsync(data))"
+                                                          @onclick:stopPropagation="true" />
+                                            <RadzenButton ButtonStyle="ButtonStyle.Light" Icon="edit" Variant="Variant.Flat" Shade="Shade.Lighter"
+                                                          Size="ButtonSize.Medium" class="my-1 ms-1" Click="@(args => EditJanCodeItemAsync(data))"
+                                                          @onclick:stopPropagation="true" />
+                                            <RadzenButton ButtonStyle="ButtonStyle.Danger" Icon="delete" Variant="Variant.Flat" Shade="Shade.Lighter"
+                                                          Size="ButtonSize.Medium" class="my-1 ms-1"
+                                                          Click="@(args => DeleteJanCodeItemAsync(data))"
+                                                          @onclick:stopPropagation="true" />
+                                        </RadzenStack>
+                                    </Template>
+                                </RadzenDataGridColumn>
+                                <RadzenDataGridColumn TItem="ProductJanCode" Width="200px" Property="JanCode" Title="Jan Code" />
+                                <RadzenDataGridColumn TItem="ProductJanCode" Width="200px" Property="JanDescription" Title="Description" />
+                                <RadzenDataGridColumn TItem="ProductJanCode" Width="200px" Property="Status" Title="Status" />
+                            </Columns>
+                        </RadzenDataGrid>
+
+                    </RadzenStack>
+                </RadzenFieldset>
+            </RadzenColumn>
+        </RadzenRow>
+
+        <RadzenStack Orientation="Radzen.Orientation.Horizontal" JustifyContent="Radzen.JustifyContent.Center" Gap="1rem" Class="rz-mt-8 rz-mb-4">
+            @if (!isDisabled)
+            {
+                <RadzenButton Click=@(_ => _navigation.NavigateTo("/productlist")) Style="background-color:cadetblue" Size="ButtonSize.Large" Icon="cancel" Text="Cancel" />
+                <RadzenButton ButtonType="Radzen.ButtonType.Submit" Size="ButtonSize.Large" Icon="save" Text="Save" />
+            }
+            else
+            {
+                <RadzenButton Click=@(_ => _navigation.NavigateTo("/productlist")) Style="background-color:cadetblue" Size="ButtonSize.Large" Icon="cancel" Text="Cancel" />
+                <RadzenButton Click=@(_ => _navigation.NavigateTo($"/addproduct/Edit Product|{model.Id}", true)) ButtonType="Radzen.ButtonType.Button" Size="ButtonSize.Large" Icon="edit" Text="Edit" />
+            }
+        </RadzenStack>
+    </RadzenTemplateForm>
+}

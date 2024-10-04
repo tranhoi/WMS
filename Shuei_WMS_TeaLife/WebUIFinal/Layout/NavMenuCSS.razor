@@ -1,0 +1,49 @@
+﻿@inject NavigationManager NavigationManager
+
+@code {
+    private bool isCollapsed;
+
+    protected override void OnInitialized()
+    {
+        var activePaths = new[] { "/userlist", "/rolelist", "/permissionlist", "/productlist", "/vendorlist", "/locationlist", "/htlist" };
+        isCollapsed = activePaths.Any(path => NavigationManager.Uri.Contains(path));
+    }
+
+    private void ToggleCollapse() => isCollapsed = !isCollapsed;
+}
+
+<div>
+    <ul class="list-unstyled ps-0">
+        <li class="mb-1">
+            <a class="btn btn-toggle align-items-center management-button @(isCollapsed ? "expanded" : "collapsed")" @onclick="ToggleCollapse" style="color: white; border-radius: 0 !important;">
+                <i class="fa fa-sitemap"></i>
+                Overall Management
+                <span class="fa fa-chevron-down" style="float: right;"></span>
+            </a>
+            <div class="collapse @(isCollapsed ? "show" : "")" style="margin-top: 10px;">
+                <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
+                    @foreach (var item in new[]
+                    {
+                    new { Text = "User List", Url = "/userlist" },
+                    new { Text = "Roles List", Url = "/rolelist" },
+                    new { Text = "Permissions List", Url = "/permissionlist" },
+                    new { Text = "Product", Url = "/productlist" },
+                    new { Text = "Supplier", Url = "/supplierlist" },
+                    new { Text = "Location", Url = "/locationlist" },
+                    new { Text = "Devices", Url = "/devicelist" },
+                    new { Text = "Number Sequence", Url = "/numbersequencelist" }
+                    })
+                    {
+                        <li>
+                            <NavLink class="nav-link" href="@item.Url" Match="NavLinkMatch.All" style="padding: 0!important;">
+                                <div class="btn btn-toggle" style="border-radius: 0 !important;">
+                                    <span class="link-dark" style="color: white;">@item.Text</span>
+                                </div>
+                            </NavLink>
+                        </li>
+                    }
+                </ul>
+            </div>
+        </li>
+    </ul>
+</div>

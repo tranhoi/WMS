@@ -1,0 +1,62 @@
+﻿@page "/reportviewer/{Id}"
+@implements IDisposable
+@if (string.IsNullOrWhiteSpace(_pdfBase64))
+{
+    <h3 class="w-100 text-center">Please wait...</h3>
+}
+else
+{
+    <div class="card" style="width: 100%; height: 100%">
+        @*<img src="..." class="card-img-top" alt="...">*@
+        <div class="card-body">
+            <object>
+                <embed id="pdfID" type="text/html" width="100%" height="100%" src="data:application/pdf;base64, @_pdfBase64" />
+            </object>
+        </div>
+        @*<div id="viewer" style="width:1000px; height: 800px" data-bind="dxReportViewer: $data"></div>*@
+    </div>
+    <div>
+        @if (!string.IsNullOrEmpty(_pdfBase64))
+        {
+            <img src="@_pdfBase64" alt="QR Code" id="qrCodeImage" />
+            
+        }
+    </div>
+    <div>
+        <p>@_pdfBase64</p>
+    </div>
+}
+
+
+@code {
+    string _pdfBase64;
+
+    [Parameter]
+    public string Id { get; set; }
+
+    protected override async void OnInitialized()
+    {
+        var response = await _authenServices.GetReportBase64(Id);
+
+        if (response!=null)
+        {
+            _pdfBase64 = response;
+            StateHasChanged();
+        }
+        // if (response.StatusCode == System.Net.HttpStatusCode.OK)
+        // {
+        //     _pdfBase64 = await response.Content.ReadAsStringAsync();
+        //     StateHasChanged();
+        // }
+        base.OnInitialized();
+    }
+    protected override void OnAfterRender(bool firstRender)
+    {
+        // JSRuntime.InvokeAsync<object>("JsFunctions.InitWebDocumentViewer");
+    }
+
+    public void Dispose()
+    {
+        
+    }
+}

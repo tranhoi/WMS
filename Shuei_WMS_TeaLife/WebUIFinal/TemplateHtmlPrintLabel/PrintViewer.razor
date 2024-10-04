@@ -1,0 +1,52 @@
+﻿@page "/printreview/{ApiInfo}"
+@layout PrintLayout
+@* @using Blazorise.QRCode *@
+
+@if (_labelInfo.Count <= 0 || _labelInfo == null)
+{
+    <h3 class="w-100 text-center">Please wait...</h3>
+}
+else
+{
+    <div style="margin: 20px; display:flex;flex-direction:column; justify-content:start;align-items:center;margin:5px;">
+        <a href="@_hrefReturn">@_hrefReturn</a>
+        <button class="btn btn-primary" @onclick="PrintLabel">Print Label</button>
+    </div>
+
+    <div id="printableArea" style="display: flex; flex-wrap: wrap; justify-content: left; margin: 0 auto;">
+        @foreach (var label in _labelInfo)
+        {
+            <div style="display: flex; width: 49%; height: 110px; align-items: center; border: 1px solid #000; padding: 1px; margin: 1px;">
+                <div>
+                    @* <QRCode Value="@GenerateQRCodeValue(label)" /> *@
+                    @if (!string.IsNullOrEmpty(label.QrValue))
+                    {
+                        <img src="@label.QrValue" alt="QR Code" id="qrCodeImage" />
+                    }
+                </div>
+
+                <div style="margin-left: 10px; display: flex; flex-direction: column; justify-content: start; align-items:start">
+                    @foreach (var itemLine in label.Lines)
+                    {
+                        <div class="info-line" style="display: flex; visibility:@itemLine.IsVisible?visible:hidden">
+                            <strong style="width: 100px;">@itemLine.Title:</strong>
+                            <span>@itemLine.Content</span>
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+    </div>
+}
+
+<style>
+    canvas {
+        width: 100px;
+    }
+</style>
+
+<script>
+    function printLabel() {
+        window.print();
+    }
+</script>

@@ -1,0 +1,135 @@
+﻿@page "/adduser/{Title}"
+@using Application.DTOs.Request.Account
+@using Application.DTOs.Response.Account
+@using Application.Enums
+@using Domain.Entity.authp.Commons
+
+@if (_roles.Count <= 0 || _model == null || _tenantList.Count <= 0)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <RadzenRow>
+        <RadzenColumn Size="12" SizeSM="12">
+            <RadzenLink Text="Back to User List" Path="/userlist" Icon="arrow_back_ios" Style="margin-bottom: 1rem;" />
+        </RadzenColumn>
+    </RadzenRow>
+    <RadzenTabs />
+    <RadzenRow>
+        <RadzenColumn Size="12" SizeSM="6">
+            <RadzenText TextStyle="TextStyle.Body1"><strong>@Title</strong></RadzenText>
+        </RadzenColumn>
+        <RadzenColumn Size="12" SizeSM="6">
+            <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.End" AlignItems="AlignItems.Center" Gap=" 5px">
+                @if (!string.IsNullOrEmpty(qrCodeBase64))
+                {
+                    <img src="@qrCodeBase64" alt="QR Code" id="qrCodeImage" />
+                    <br />
+
+                    <button @onclick="PrintQRCode">Print QR Code</button>
+                }
+                <RadzenButton Click=@(args => PrintLable()) Variant="Variant.Flat" Shade="Shade.Dark"
+                              Text="Print label" Icon="print" ButtonStyle="ButtonStyle.Success" />
+            </RadzenStack>
+        </RadzenColumn>
+    </RadzenRow>
+    <RadzenTemplateForm Data="@_model" Submit="@((CreateAccountRequestDTO args) => { Submit(args); })">
+        <RadzenRow Gap="2rem" class="rz-p-0 rz-p-lg-4">
+            <RadzenColumn Size="12" SizeMD="12">
+                <RadzenFieldset Text="User information">
+                    <RadzenStack Gap="5px">
+                        <RadzenRow AlignItems="AlignItems.Center" class="mt-4">
+                            <RadzenColumn SizeXS="12" SizeSM="6">
+                                <RadzenFormField Text="Code" Variant="Variant.Outlined" Style="display:flex;flex-direction:column;align-items:stretch;width:100%">
+                                    <RadzenTextBox Name="_txtUserName" @bind-Value="@_model.UserName" Placeholder="Typing..." />
+                                </RadzenFormField>
+                                <RadzenRequiredValidator Component="_txtUserName" Popup="false" Style="position: absolute" />
+                            </RadzenColumn>
+                            <RadzenColumn SizeXS="12" SizeSM="6">
+                                <RadzenFormField Text="Password" Variant="Variant.Outlined" Style="display:flex;flex-direction:column;align-items:stretch;width:100%">
+                                    <ChildContent>
+                                        <RadzenTextBox Name="" @bind-Value="@_model.Password" Visible="@(!password)" />
+                                        <RadzenPassword @bind-Value="@_model.Password" Visible="@password" />
+                                    </ChildContent>
+                                    <End>
+                                        <RadzenButton Icon="@(password ? "visibility" : "visibility_off")" Click="TogglePassword"
+                                                      Variant="Variant.Text" Size="ButtonSize.Small" />
+                                    </End>
+                                </RadzenFormField>
+                            </RadzenColumn>
+                            <RadzenColumn SizeXS="12" SizeSM="6">
+                                <RadzenFormField Text="Email address" Variant="Variant.Outlined" Style="display:flex;flex-direction:column;align-items:stretch;width:100%">
+                                    <RadzenTextBox Name="_txtEmail" @bind-Value="@_model.Email" Placeholder="Typing..." />
+                                </RadzenFormField>
+                                <RadzenRequiredValidator Component="_txtEmail" Text="Email is required" Popup=false Style="position: absolute" />
+                                <RadzenEmailValidator Component="_txtEmail" Text="Provide a valid email address" Popup=false Style="position: absolute" />
+                            </RadzenColumn>
+                            <RadzenColumn SizeXS="12" SizeSM="6">
+                                <RadzenFormField Text="Full name" Variant="Variant.Outlined" Style="display:flex;flex-direction:column;align-items:stretch;width:100%">
+                                    <RadzenTextBox Name="_txtFullName" @bind-Value="@_model.FullName" Placeholder="Typing..." />
+                                </RadzenFormField>
+                                <RadzenRequiredValidator Component="_txtEmail" Popup="false" Style="position: absolute" />
+                            </RadzenColumn>
+                            <RadzenColumn SizeXS="12" SizeSM="6">
+                                <RadzenFormField Text="Roles" Variant="Variant.Outlined" Style="display:flex;flex-direction:column;align-items:stretch;width:100%">
+                                    <RadzenDropDown @bind-Value=@_selectedRoles Data=@_roles Name="_dropDownRoles"
+                                                    TextProperty="@nameof(GetRoleResponseDTO.Name)" ValueProperty="@nameof(GetRoleResponseDTO.Id)"
+                                                    Multiple=true AllowClear=true Placeholder="Select roles" Chips=true />
+                                </RadzenFormField>
+                                <RadzenRequiredValidator Component="_dropDownRoles" Text="Select roles" Popup="false" Style="position: absolute" />
+                            </RadzenColumn>
+                            <RadzenColumn SizeXS="12" SizeSM="6">
+                                <RadzenFormField Text="Status" Variant="Variant.Outlined" Style="display:flex;flex-direction:column;align-items:stretch;width:100%">
+                                    <RadzenDropDown @bind-Value=@_selectStatus Data=@(Enum.GetValues(typeof(EnumUserStatus)).Cast<Enum>()) Name="_dropDownStatus"
+                                                    Multiple=false AllowClear=true Placeholder="Select status" Chips=true />
+                                </RadzenFormField>
+                                <RadzenRequiredValidator Component="_dropDownStatus" Text="Select status" Popup="false" Style="position: absolute" />
+                            </RadzenColumn>
+                        </RadzenRow>
+                    </RadzenStack>
+                </RadzenFieldset>
+            </RadzenColumn>
+        </RadzenRow>
+        <RadzenRow Gap="2rem" class="rz-p-0 rz-p-lg-4">
+            <RadzenColumn Size="12" SizeMD="12">
+                @if (_tenantList.Count > 0)
+                {
+                    <RadzenFieldset Text="Select Tenant">
+                        <RadzenDataGrid @ref="_profileGrid" Data="@_tenantList" TItem="TenantAuth" AllowFiltering="true" class="custom-grid"
+                                        FilterPopupRenderMode="PopupRenderMode.OnDemand" AllowPaging="true" PageSize="5" AllowSorting="true"
+                                        AllowColumnPicking="false" AllowColumnResize="true" AllowGrouping="false"
+                                        GridLines="Radzen.DataGridGridLines.Both" AllowAlternatingRows="false"
+                                        ShowPagingSummary=@_showPagerSummary PagingSummaryFormat="@_pagingSummaryFormat" PageSizeOptions="@_pageSizeOptions"
+                                        AllowRowSelectOnRowClick="@allowRowSelectOnRowClick" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
+                                        SelectionMode="DataGridSelectionMode.Multiple" @bind-Value=@_selectedTenantList>
+                            <Columns>
+                                <RadzenDataGridColumn Width="60px" Sortable="false" Filterable="false">
+                                    <HeaderTemplate>
+                                        <RadzenCheckBox TabIndex="-1" TriState="false" TValue="bool?" InputAttributes="@(new Dictionary<string,object>(){ { "aria-label", "Select all items" }})"
+                                                        Value="@(_selectedTenantList == null || _selectedTenantList?.Any() != true ? false : !_tenantList.All(i => _selectedTenantList.Contains(i)) ? null : _tenantList.Any(i => _selectedTenantList.Contains(i)))"
+                                                        Change="@(args => _selectedTenantList = args == true ? _tenantList.ToList() : null)" />
+                                    </HeaderTemplate>
+                                    <Template Context="data">
+                                        <RadzenCheckBox TabIndex="-1" TriState="false" Value="@(_selectedTenantList != null && _selectedTenantList.Contains(data))" InputAttributes="@(new Dictionary<string,object>(){ { "aria-label", "Select item" }})"
+                                                        TValue="bool" Change=@(args => { if(!allowRowSelectOnRowClick) { _profileGrid.SelectRow(data); }}) />
+                                    </Template>
+                                </RadzenDataGridColumn>
+                                <RadzenDataGridColumn TItem="TenantAuth" Width="200px" Property="TenantId" Title="Tenant Id" />
+                                <RadzenDataGridColumn TItem="TenantAuth" Width="200px" Property="ParentDataKey" Title="Parent Data Key" />
+                                <RadzenDataGridColumn TItem="TenantAuth" Width="200px" Property="TenantFullName" Title="Tenant Full Name" />
+                                <RadzenDataGridColumn TItem="TenantAuth" Width="200px" Property="IsHierarchical" Title="Is Hierarchical" />
+                                <RadzenDataGridColumn TItem="TenantAuth" Width="200px" Property="ParentTenantId" Title="Parent Tenant Id" />
+                                <RadzenDataGridColumn TItem="TenantAuth" Width="200px" Property="DatabaseInfoName" Title="Database Info Name" />
+                                <RadzenDataGridColumn TItem="TenantAuth" Width="200px" Property="HasOwnDb" Title="Has Own Db" />
+                            </Columns>
+                        </RadzenDataGrid>
+                    </RadzenFieldset>
+                }
+            </RadzenColumn>
+        </RadzenRow>
+        <RadzenStack Orientation="Radzen.Orientation.Horizontal" JustifyContent="Radzen.JustifyContent.Center" Gap="1rem" Class="rz-mt-8 rz-mb-4">
+            <RadzenButton ButtonType="Radzen.ButtonType.Submit" Size="ButtonSize.Large" Icon="save" Text="Save" Visible="@_visibleBtnSubmit" />
+        </RadzenStack>
+    </RadzenTemplateForm>
+}

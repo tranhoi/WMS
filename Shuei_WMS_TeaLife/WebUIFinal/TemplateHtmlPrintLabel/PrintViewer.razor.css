@@ -1,0 +1,32 @@
+﻿@media print {
+    /* Ẩn tất cả các thành phần khác */
+    body * {
+        visibility: hidden;
+    }
+ 
+    /* Hiện thị chỉ phần tử trong khu vực cần in */
+    #printableArea, #printableArea * {
+        visibility: visible;
+    }
+ 
+    /* Ẩn các tiêu đề, chân trang, và các thành phần khác không cần thiết */
+    header, footer, nav, .non-printable {
+        display: none !important;
+    }
+ 
+    #printableArea {
+        position: absolute;
+        left: 0;
+        top: 0;
+        page-break-after: always; /* Tạo ngắt trang sau mỗi label */
+        margin: 0; /* Loại bỏ khoảng cách margin khi in */
+    }
+}
+ 
+.info-line {
+    margin: 1.5px 0;
+    font-size: 12px;
+}
+#qrCodeImage{
+   width:100px;
+}

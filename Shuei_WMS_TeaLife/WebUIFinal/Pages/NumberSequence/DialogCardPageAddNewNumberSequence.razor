@@ -1,0 +1,81 @@
+﻿@page "/addnumbersequence/{Title}"
+
+@using Application.Enums;
+@using NumberSequenceEntity = Domain.Entity.WMS.NumberSequences;
+
+@if (_model == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <RadzenRow>
+        <RadzenColumn Size="12" SizeSM="6">
+            <RadzenText TextStyle="TextStyle.Body1"><strong>@Title</strong></RadzenText>
+        </RadzenColumn>
+        @if (!Title.Contains("Create"))
+        {
+            <RadzenColumn Size="12" SizeSM="6">
+                <RadzenStack Orientation="Radzen.Orientation.Horizontal" JustifyContent="Radzen.JustifyContent.End" AlignItems="AlignItems.Center" Gap=" 5px">
+                    <RadzenButton Click=@(args => DeleteItemAsync(_model)) Variant="Variant.Flat" Shade="Shade.Dark"
+                                  Text="Delete" Icon="cancel" ButtonStyle="ButtonStyle.Danger" />
+                </RadzenStack>
+            </RadzenColumn>
+        }
+    </RadzenRow>
+    <RadzenTemplateForm Data="@_model" Submit="@((NumberSequenceEntity args) => { Submit(args); })">
+        <RadzenRow Gap="2rem" class="rz-p-0 rz-p-lg-4">
+            <RadzenColumn Size="12" SizeMD="12">
+                <RadzenFieldset Text="Number sequence information" Disabled="@isDisabled">
+                    <RadzenStack Gap="5px">
+                        <RadzenRow AlignItems="AlignItems.Center" class="mt-4">
+                            <RadzenColumn SizeXS="12" SizeSM="6">
+                                <RadzenFormField Text="JournalType" Variant="Variant.Outlined" Style="display:flex; flex-direction:column; align-items:stretch; width:100%">
+                                    <RadzenDropDown @bind-Value="_model.JournalType"
+                                                    Data="@warehouseTransTypes"
+                                                    TextProperty="Text"
+                                                    ValueProperty="Value"
+                                                    Name="_dropDownJournalType"
+                                                    Placeholder="Select Active User" AllowClear="true" Multiple=false Chips=true>
+                                    </RadzenDropDown>
+
+                                </RadzenFormField>
+                                <RadzenRequiredValidator Component="_dropDownJournalType" Popup="false" Style="position: absolute" />
+                            </RadzenColumn>
+                            <RadzenColumn SizeXS="12" SizeSM="6">
+                                <RadzenFormField Text="Prefix" Variant="Variant.Outlined" Style="display:flex;flex-direction:column;align-items:stretch;width:100%">
+                                    <RadzenTextBox Name="_txtPrefix" @bind-Value="@_model.Prefix" Placeholder="Typing..." />
+                                </RadzenFormField>
+                                <RadzenRequiredValidator Component="_txtPrefix" Popup="false" Style="position: absolute" />
+                            </RadzenColumn>
+                            <RadzenColumn SizeXS="12" SizeSM="6">
+                                <RadzenFormField Text="Sequence Length" Variant="Variant.Outlined" Style="display:flex;flex-direction:column;align-items:stretch;width:100%">
+                                    <RadzenNumeric Name="_txtSequenceLength" @bind-Value="@_model.SequenceLength" Placeholder="Typing..." />
+                                </RadzenFormField>
+                                <RadzenRequiredValidator Component="_txtSequenceLength" Popup="false" Style="position: absolute" />
+                            </RadzenColumn>
+                            <RadzenColumn SizeXS="12" SizeSM="6">
+                                <RadzenFormField Text="Current Sequence No." Variant="Variant.Outlined" Style="display:flex;flex-direction:column;align-items:stretch;width:100%">
+                                    <RadzenNumeric Name="_txtCurrentSequenceNo" @bind-Value="@_model.CurrentSequenceNo" Placeholder="Typing..." />
+                                </RadzenFormField>
+                                <RadzenRequiredValidator Component="_txtCurrentSequenceNo" Popup="false" Style="position: absolute" />
+                            </RadzenColumn>
+                        </RadzenRow>
+                    </RadzenStack>
+                </RadzenFieldset>
+            </RadzenColumn>
+        </RadzenRow>
+        <RadzenStack Orientation="Radzen.Orientation.Horizontal" JustifyContent="Radzen.JustifyContent.Center" Gap="1rem" Class="rz-mt-8 rz-mb-4">
+            @if (!isDisabled)
+            {
+                <RadzenButton Click=@(_ => _navigation.NavigateTo("/numbersequencelist")) Style="background-color:cadetblue" Size="ButtonSize.Large" Icon="cancel" Text="Cancel" />
+                <RadzenButton ButtonType="Radzen.ButtonType.Submit" Size="ButtonSize.Large" Icon="save" Text="Save" />
+            }
+            else
+            {
+                <RadzenButton Click=@(_ => _navigation.NavigateTo("/numbersequencelist")) Style="background-color:cadetblue" Size="ButtonSize.Large" Icon="cancel" Text="Cancel" />
+                <RadzenButton Click=@(_ => _navigation.NavigateTo($"/addnumbersequence/Edit Number Sequence|{_model.Id}", true)) ButtonType="Radzen.ButtonType.Button" Size="ButtonSize.Large" Icon="edit" Text="Edit" />
+            }
+        </RadzenStack>
+    </RadzenTemplateForm>
+}
