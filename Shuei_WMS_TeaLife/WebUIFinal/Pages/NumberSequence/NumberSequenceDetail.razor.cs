@@ -13,7 +13,6 @@ namespace WebUIFinal.Pages.NumberSequence
 
         private bool isDisabled = false;
         private NumberSequenceEntity _model = new NumberSequenceEntity();
-        private Status selectStatus;
 
         // Enum values for warehouse transaction types
         private List<dynamic> warehouseTransTypes = new List<dynamic>();
@@ -63,11 +62,6 @@ namespace WebUIFinal.Pages.NumberSequence
                 _model.Prefix = arg.Data.Prefix;
                 _model.SequenceLength = arg.Data.SequenceLength;
                 _model.CurrentSequenceNo = arg.Data.CurrentSequenceNo;
-
-                if (!string.IsNullOrEmpty(arg.Data.Status))
-                {
-                    selectStatus = CommonHelpers.ParseEnum<Status>(arg.Data.Status);
-                }
             }
             #endregion
 
@@ -84,8 +78,6 @@ namespace WebUIFinal.Pages.NumberSequence
             });
 
             if (confirm == null || confirm == false) return;
-
-            arg.Status = selectStatus.ToString();
 
             if (Title.Contains("Create")) // Add new number sequence
             {

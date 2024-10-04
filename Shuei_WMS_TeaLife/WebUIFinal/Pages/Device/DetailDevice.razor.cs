@@ -16,20 +16,12 @@ namespace WebUIFinal.Pages.Device
         private DeviceEntity _model = new DeviceEntity();
         private Status selectStatus;
 
-        Status _selectStatus;
         List<string> _role = new List<string>() { "User", "Operator" };
         List<GetUserWithRoleResponseDTO>? _users = new List<GetUserWithRoleResponseDTO>();
 
         protected override async Task OnInitializedAsync()
         {
             await base.OnInitializedAsync();
-
-            if (_model.Id == Guid.Empty)
-            {
-                _selectStatus = Status.Activated;
-            }
-            else
-                _selectStatus = Status.Activated.ToString() == _model.Status ? Status.Activated : Status.Inactivated;
 
             if (Title.Contains("Detail")) isDisabled = true;
 
@@ -68,8 +60,9 @@ namespace WebUIFinal.Pages.Device
             _model.ActiveUser = arg.Data.ActiveUser;
             _model.Description = arg.Data.Description;
             _model.OS = arg.Data.OS;
+            _model.CPU = arg.Data.CPU;
             _model.Memory = arg.Data.Memory;
-            _model.Status = _selectStatus.ToString();
+            _model.Status = selectStatus.ToString();
 
                 if (!string.IsNullOrEmpty(arg.Data.Status))
                 {
@@ -77,7 +70,6 @@ namespace WebUIFinal.Pages.Device
                 }
             }
             #endregion
-
             StateHasChanged();
             GetUsersWithRole();
         }
