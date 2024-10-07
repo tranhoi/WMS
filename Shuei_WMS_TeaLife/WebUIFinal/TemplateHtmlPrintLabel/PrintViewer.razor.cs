@@ -19,26 +19,20 @@ namespace WebUIFinal.TemplateHtmlPrintLabel
         {
             await base.OnInitializedAsync();
 
-            if (LabelPrintModel != null && LabelPrintModel.Count == 1)
+            if (LabelPrintModel != null)
             {
-                var s = LabelPrintModel.FirstOrDefault();
-
-                LabelPrintModel.Add(new Application.DTOs.LabelInfoDto()
-                {
-                    QrValue = s.QrValue,
-                    Title1 = s.Title1,
-                    Content1 = s.Content1,
-                    Title2 = s.Title2,
-                    Content2 = s.Content2,
-                });
-
                 StateHasChanged();
             }
         }
-
-        private async Task PrintLabel()
+        protected override async Task OnAfterRenderAsync(bool firstRender)
         {
-            await _jsRuntime.InvokeVoidAsync("printLabel");
+            if (firstRender)
+            {
+                // Đợi một giây để đảm bảo nội dung đã được render
+                await Task.Delay(2000);
+                // Gọi hàm in
+                _ = _jsRuntime.InvokeVoidAsync("printLabel");
+            }
         }
     }
 }

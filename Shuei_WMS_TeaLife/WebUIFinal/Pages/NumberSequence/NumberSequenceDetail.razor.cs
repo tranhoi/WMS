@@ -70,7 +70,7 @@ namespace WebUIFinal.Pages.NumberSequence
 
         async Task Submit(NumberSequenceEntity arg)
         {
-            var confirm = await _dialogService.Confirm($"Do you want to Save: {arg.JournalType}?", "Save", new ConfirmOptions()
+            var confirm = await _dialogService.Confirm($"Do you want to Save: {arg.JournalType}?", "number sequence", new ConfirmOptions()
             {
                 OkButtonText = "Yes",
                 CancelButtonText = "No",
@@ -79,20 +79,22 @@ namespace WebUIFinal.Pages.NumberSequence
 
             if (confirm == null || confirm == false) return;
 
-            if (Title.Contains("Create")) // Add new number sequence
+            // arg.Status = selectStatus.ToString();
+
+            if (Title.Contains("Create"))//Add
             {
-                var res = await _numberSequenceServices.InsertAsync(arg);
+                var res = await _numberSequenceServices.InsertAsync(_model);
                 if (res.Succeeded)
                 {
                     _notificationService.Notify(new NotificationMessage()
                     {
                         Severity = NotificationSeverity.Success,
                         Summary = "Success",
-                        Detail = "Successfully created",
+                        Detail = "Sucessfully created number sequence",
                         Duration = 5000
                     });
 
-                    _navigation.NavigateTo("/numbersequence", true);
+                    _navigation.NavigateTo("/numbersequencelist", true);
                 }
                 else
                 {
@@ -100,26 +102,26 @@ namespace WebUIFinal.Pages.NumberSequence
                     {
                         Severity = NotificationSeverity.Error,
                         Summary = "Error",
-                        Detail = "Failed to create",
+                        Detail = "Failed to create number sequence",
                         Duration = 5000
                     });
                 }
             }
 
-            if (Title.Contains("Edit")) // Update existing number sequence
+            if (Title.Contains("Edit"))//update
             {
-                var res = await _numberSequenceServices.UpdateAsync(arg);
+                var res = await _numberSequenceServices.UpdateAsync(_model);
                 if (res.Succeeded)
                 {
                     _notificationService.Notify(new NotificationMessage()
                     {
                         Severity = NotificationSeverity.Success,
                         Summary = "Success",
-                        Detail = "Successfully edited",
+                        Detail = "Sucessfully edited number sequence",
                         Duration = 5000
                     });
 
-                    _navigation.NavigateTo("/numbersequence", true);
+                    _navigation.NavigateTo("/numbersequencelist", true);
                 }
                 else
                 {
@@ -127,7 +129,7 @@ namespace WebUIFinal.Pages.NumberSequence
                     {
                         Severity = NotificationSeverity.Error,
                         Summary = "Error",
-                        Detail = "Failed to edit",
+                        Detail = "Failed to edit number sequence",
                         Duration = 5000
                     });
                 }
@@ -138,7 +140,7 @@ namespace WebUIFinal.Pages.NumberSequence
         {
             try
             {
-                var confirm = await _dialogService.Confirm($"Are you sure you want to delete this: {numberSequence.Prefix}?", "Delete", new ConfirmOptions()
+                var confirm = await _dialogService.Confirm($"Are you sure you want to delete number sequence: {numberSequence.JournalType}?", "Delete number sequence", new ConfirmOptions()
                 {
                     OkButtonText = "Yes",
                     CancelButtonText = "No",
@@ -155,11 +157,11 @@ namespace WebUIFinal.Pages.NumberSequence
                     {
                         Severity = NotificationSeverity.Success,
                         Summary = "Success",
-                        Detail = $"Delete {numberSequence.Prefix} successfully.",
+                        Detail = $"Delete number sequence {numberSequence.JournalType} successfully.",
                         Duration = 5000
                     });
 
-                    _navigation.NavigateTo("/numbersequence", true);
+                    _navigation.NavigateTo("/numbersequencelist", true);
                     StateHasChanged();
                 }
                 else
@@ -168,7 +170,7 @@ namespace WebUIFinal.Pages.NumberSequence
                     {
                         Severity = NotificationSeverity.Error,
                         Summary = "Error",
-                        Detail = $"Failed to delete {numberSequence.Prefix}.",
+                        Detail = $"Failed to delete number sequence {numberSequence.JournalType}.",
                         Duration = 5000
                     });
                 }
@@ -179,9 +181,11 @@ namespace WebUIFinal.Pages.NumberSequence
                 {
                     Severity = NotificationSeverity.Error,
                     Summary = "Error",
-                    Detail = $"Failed to delete {numberSequence.Prefix}.",
+                    Detail = $"Failed to delete number sequence {numberSequence.JournalType}.",
                     Duration = 5000
                 });
+
+                return;
             }
         }
     }

@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace Domain.Entity.WMS.Inbound;
 
 [Table("WarehousePutAwayLines")]
-public class WarehousePutAwayLine
+public class WarehousePutAwayLine : GenericEntity
 {
     [Key] public Guid Id { get; set; }
 
@@ -19,18 +19,6 @@ public class WarehousePutAwayLine
     public double? TransQty { get; set; }
 
     public string Bin { get; set; }
-
-    public string Status { get; set; }
-
-    public bool? IsDelete { get; set; }
-
-    public string CreateOperatorId { get; set; }
-
-    public DateTime? CreateAt { get; set; }
-
-    public string UpdateOperatorId { get; set; }
-
-    public DateTime? UpdateAt { get; set; }
 
     public string LotNo { get; set; }
 }

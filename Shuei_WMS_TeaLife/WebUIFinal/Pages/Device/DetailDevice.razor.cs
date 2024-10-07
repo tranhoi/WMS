@@ -53,16 +53,16 @@ namespace WebUIFinal.Pages.Device
                     return;
                 }
 
-            _model.Id = arg.Data.Id;
-            _model.Name = arg.Data.Name;
-            _model.Type = arg.Data.Type;
-            _model.Model = arg.Data.Model;
-            _model.ActiveUser = arg.Data.ActiveUser;
-            _model.Description = arg.Data.Description;
-            _model.OS = arg.Data.OS;
-            _model.CPU = arg.Data.CPU;
-            _model.Memory = arg.Data.Memory;
-            _model.Status = selectStatus.ToString();
+                _model.Id = arg.Data.Id;
+                _model.Name = arg.Data.Name;
+                _model.Type = arg.Data.Type;
+                _model.Model = arg.Data.Model;
+                _model.ActiveUser = arg.Data.ActiveUser;
+                _model.Description = arg.Data.Description;
+                _model.OS = arg.Data.OS;
+                _model.CPU = arg.Data.CPU;
+                _model.Memory = arg.Data.Memory;
+                _model.Status = selectStatus.ToString();
 
                 if (!string.IsNullOrEmpty(arg.Data.Status))
                 {

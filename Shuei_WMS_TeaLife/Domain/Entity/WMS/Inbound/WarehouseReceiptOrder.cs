@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace Domain.Entity.WMS.Inbound;
 
 [Table("WarehouseReceiptOrders")]
-public class WarehouseReceiptOrder
+public class WarehouseReceiptOrder : GenericEntity
 {
     [Key] public Guid Id { get; set; }
 
@@ -20,15 +20,16 @@ public class WarehouseReceiptOrder
 
     public int? TenantId { get; set; }
 
-    public string CreateOperatorId { get; set; }
+    public string? ScheduledArrivalNumber { get; set; }
 
-    public DateTime? CreateAt { get; set; }
+    public string? DocumentNo { get; set; }
+    public string? SupplierCode { get; set; }
 
-    public string UpdateOperatorId { get; set; }
+    public string? PersonInCharge { get; set; }
 
-    public DateTime? UpdateAt { get; set; }
+    public string? ConfirmedBy { get; set; }
 
-    public bool? IsDeleted { get; set; }
+    public DateOnly? ConfirmedDate { get; set; }
 
-    public string Status { get; set; }
+
 }

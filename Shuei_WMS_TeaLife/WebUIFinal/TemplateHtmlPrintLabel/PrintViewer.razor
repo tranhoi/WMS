@@ -1,5 +1,4 @@
 ﻿@layout PrintLayout
-@* @using Blazorise.QRCode *@
 
 @if (LabelPrintModel.Count <= 0 || LabelPrintModel == null)
 {
@@ -7,70 +6,37 @@
 }
 else
 {
-    <div style="margin: 20px; display:flex;flex-direction:column; justify-content:start;align-items:start;margin:5px;">
-        <p><strong>@Title</strong></p>
-        <button class="btn btn-primary" @onclick="PrintLabel">Print Label</button>
-    </div>
-
-    <div id="printableArea" style="display: flex; flex-wrap: wrap; justify-content: left; margin: 0 auto;">
+    <div id="printableArea" class="grid-container">
         @foreach (var label in LabelPrintModel)
         {
-            <div style="display: flex; width: 49%; height: 110px; align-items: center; border: 1px solid #000; padding: 1px; margin: 1px;">
-                <div>
-                    @if (!string.IsNullOrEmpty(label.QrValue))
-                    {
-                        <img src="@label.QrValue" alt="QR Code" id="qrCodeImage" />
-                    }
-                </div>
-
-                <div style="margin-left: 10px; display: flex; flex-direction: column; justify-content: start; align-items:start">
-                    <div class="info-line" style="display: flex;">
-                        <strong style="width: 100px;">@label.Title1</strong>
-                        <span>@label.Content1</span>
+            <div class="label-container">
+                <div class="flex-container">
+                    <div>
+                        <img class="qr-code" src="@label.QrValue" alt="QR Code" id="qrCodeImage" />
                     </div>
-                    <div class="info-line" style="display: flex;">
-                        <strong style="width: 100px;">@label.Title2</strong>
-                        <span>@label.Content2</span>
-                    </div>
-                    <div class="info-line" style="display: flex;">
-                        <strong style="width: 100px;">@label.Title3</strong>
-                        <span>@label.Content3</span>
-                    </div>
-                    <div class="info-line" style="display: flex;">
-                        <strong style="width: 100px;">@label.Title4</strong>
-                        <span>@label.Content4</span>
+                    <div>
+                        <div class="info-line">
+                            <strong>@label.Title1</strong>
+                            <span>@label.Content1</span>
+                        </div>
+                        <div class="info-line">
+                            <strong>@label.Title2</strong>
+                            <span>@label.Content2</span>
+                        </div>
+                        <div class="info-line">
+                            <strong>@label.Title3</strong>
+                            <span>@label.Content3</span>
+                        </div>
+                        <div class="info-line">
+                            <strong>@label.Title4</strong>
+                            <span>@label.Content4</span>
+                        </div>
                     </div>
                 </div>
             </div>
         }
     </div>
-
-    @* <div id="printableArea" class="container text-center" style="display: flex; flex-wrap: wrap; justify-content: left; margin: 0 auto;">
-        <div class="row justify-content-center align-items-center " style="flex-direction: row">
-            @foreach (var item in LabelPrintModel)
-            {
-                <div class="col-5 border border-dark" style="margin:3px">
-                    <div class="row justify-content-center align-items-center" style="margin-left: 10px; display: flex; flex-direction: row">
-                        <div class="col-3">
-                            <img src="@item.QrValue" alt="QR Code" id="qrCodeImage" />
-                        </div>
-                        <div class="col-8" style="margin-left:5px">
-                            <strong style="width: 100px;">@item.Title1</strong>
-                            <span>@item.Content1</span>
-                        </div>
-                    </div>
-                </div>
-            }
-        </div>
-    </div> *@
 }
-
-<style>
-    canvas {
-        width: 100px;
-    }
-</style>
-
 <script>
     function printLabel() {
         window.print();
