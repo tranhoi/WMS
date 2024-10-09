@@ -65,7 +65,7 @@ namespace WebUIFinal.Pages.Components
 
             if (!string.IsNullOrEmpty(_model.Id))
             {
-                var confirm = await _dialogService.Confirm($"Do you want to update role: {arg.Name}?", "Create role", new ConfirmOptions()
+                var confirm = await _dialogService.Confirm(_localizer["Confirmation.Update"] + _localizer["Role"] +  $": { arg.Name} ", _localizer["Update"] + " " + _localizer["Role"], new ConfirmOptions()
                 {
                     OkButtonText = "Yes",
                     CancelButtonText = "No",
@@ -80,7 +80,7 @@ namespace WebUIFinal.Pages.Components
             }
             else
             {
-                var confirm = await _dialogService.Confirm($"Do you want to create a new role: {arg.Name}?", "Create role", new ConfirmOptions()
+                var confirm = await _dialogService.Confirm(_localizer["Confirmation.Create"] + _localizer["Role"] + $": {arg.Name}?", _localizer["Create"] + " " + _localizer["Role"], new ConfirmOptions()
                 {
                     OkButtonText = "Yes",
                     CancelButtonText = "No",

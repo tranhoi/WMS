@@ -32,7 +32,7 @@ else
                 <RadzenButton Click=@(args => PrintLable()) Variant="Variant.Flat" Shade="Shade.Dark"
                               Text="Print label" Icon="print" ButtonStyle="ButtonStyle.Success" />
                 <RadzenButton Click=@(args => PrintLable1()) Variant="Variant.Flat" Shade="Shade.Dark"
-                              Text="Print label 1" Icon="print" ButtonStyle="ButtonStyle.Success" Visible="false"/>
+                              Text="Print label 1" Icon="print" ButtonStyle="ButtonStyle.Success" Visible="false" />
             </RadzenStack>
         </RadzenColumn>
     </RadzenRow>
@@ -43,12 +43,12 @@ else
                     <RadzenStack Gap="5px">
                         <RadzenRow AlignItems="AlignItems.Center" class="mt-4">
                             <RadzenColumn SizeXS="12" SizeSM="6">
-                                <RadzenFormField Text="Code" Variant="Variant.Outlined" Style="display:flex;flex-direction:column;align-items:stretch;width:100%">
+                                <RadzenFormField Text="Id" Variant="Variant.Outlined" Style="display:flex;flex-direction:column;align-items:stretch;width:100%">
                                     <RadzenTextBox Name="_txtUserName" @bind-Value="@_model.UserName" Placeholder="Typing..." />
                                 </RadzenFormField>
                                 <RadzenRequiredValidator Component="_txtUserName" Popup="false" Style="position: absolute" />
                             </RadzenColumn>
-                            <RadzenColumn SizeXS="12" SizeSM="6">
+                            <RadzenColumn SizeXS="12" SizeSM="6" Visible=@Title.Contains("Create")>
                                 <RadzenFormField Text="Password" Variant="Variant.Outlined" Style="display:flex;flex-direction:column;align-items:stretch;width:100%">
                                     <ChildContent>
                                         <RadzenTextBox Name="" @bind-Value="@_model.Password" Visible="@(!password)" />

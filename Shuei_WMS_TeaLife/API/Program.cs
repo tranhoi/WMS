@@ -7,13 +7,14 @@ using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
-var config= builder.Configuration;
+var config = builder.Configuration;
 config.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
 
+//var p = int.TryParse(config["ApiPort"], out int value) ? value : 9500;
 //set cho 
 builder.WebHost.ConfigureKestrel(options =>
 {
-    options.Listen(System.Net.IPAddress.Any, 9500);
+    options.Listen(System.Net.IPAddress.Any, Convert.ToInt32(config["ApiPort"]));
 });//set port
 
 // Add services to the container.

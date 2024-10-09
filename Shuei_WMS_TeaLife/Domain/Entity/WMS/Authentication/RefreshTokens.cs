@@ -13,6 +13,6 @@ namespace Domain.Entity.WMS.Authentication
         public string Token { get; set; }
         [Key] public string RefreshToken { get; set; }
         public DateTime ExpirationTime { get; set; }
-        public bool Activated { get; set; } = true;
+        public bool? Activated { get; set; } = true;
     }
 }

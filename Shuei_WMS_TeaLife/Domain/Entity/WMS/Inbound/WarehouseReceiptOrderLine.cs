@@ -10,9 +10,10 @@ public class WarehouseReceiptOrderLine : GenericEntity
 
     public string ReceiptNo { get; set; }
 
+    [Required]
     public string ProductCode { get; set; }
 
-    public string Unit { get; set; }
+    public string? UnitName { get; set; }
 
     public double? OrderQty { get; set; }
 
@@ -25,4 +26,6 @@ public class WarehouseReceiptOrderLine : GenericEntity
     public DateOnly? ExpirationDate { get; set; }
 
     public bool? Putaway { get; set; }
+
+    public Guid? UnitId { get; set; }
 }

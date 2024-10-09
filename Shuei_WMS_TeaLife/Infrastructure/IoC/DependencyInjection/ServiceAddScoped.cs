@@ -1,10 +1,12 @@
 ﻿using Application.Services;
 using Application.Services.Authen;
 using Application.Services.Inbound;
+using Application.Services.Outbound;
 using Application.Services.Suppliers;
 using Application.Services.Vendors;
 using Blazored.LocalStorage;
 using Infrastructure.Repos;
+using Infrastructure.Repos.Outbound;
 using Microsoft.Extensions.DependencyInjection;
 namespace Infrastructure.IoC.DependencyInjection
 {
@@ -47,6 +49,15 @@ namespace Infrastructure.IoC.DependencyInjection
             services.AddScoped<IWarehouseTran, RepositoryWarehouseTranServices>();
             services.AddScoped<INumberSequences, RepositorySequenceNumberServices>();
             services.AddScoped<IBatches, RepositoryBatchesService>();
+            services.AddScoped<IWarehousePickingList,RepositoryWarehousePickingListServices>();
+            services.AddScoped<IWarehousePickingLine, RepositoryWarehousePickingLineServices>();
+            services.AddScoped<IWarehousePickingStaging, RepositoryWarehousePickingStagingServices>();
+            services.AddScoped<IWarehousePackingList, RepositoryWarehousePackingListServices>();
+            services.AddScoped<IWarehousePackingLine, RepositoryWarehousePackingLineServices>();
+            services.AddScoped<IWarehouseShipment, RepositoryWarehouseShipment>();
+            services.AddScoped<IWarehouseShipmentLine, RepositoryWarehouseShipmentLine>();
+            services.AddScoped<IShippingBox, RepositoryShippingBox>();
+            services.AddScoped<IShippingCarrier, RepositoryShippingCarrier>();
 
             services.AddScoped<Repository>();
         }

@@ -11,12 +11,11 @@ namespace Domain.Entity.WMS
     [Table("Batches")]
     public class Batches : GenericEntity
     {
-        [Key]  public Guid Id { get; set; }
+        [Key] public Guid Id { get; set; }
         public string ProductCode { get; set; }
         public int TenantId { get; set; }
         public string LotNo { get; set; }
         public DateOnly? ManufacturingDate { get; set; }
-
         public DateOnly? ExpirationDate { get; set; }
     }
 }

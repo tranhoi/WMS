@@ -26,7 +26,7 @@ namespace WebUIFinal.Pages.Account
         {
             try
             {
-                var confirm = await _dialogService.Confirm($"Are you sure you want to delete role: {model.Name}?", "Delete role", new ConfirmOptions()
+                var confirm = await _dialogService.Confirm(_localizer["Confirmation.Delete"] + _localizer["Role"] + $": {model.Name}?", _localizer["Delete"] + " " + _localizer["Role"], new ConfirmOptions()
                 {
                     OkButtonText = "Yes",
                     CancelButtonText = "No",

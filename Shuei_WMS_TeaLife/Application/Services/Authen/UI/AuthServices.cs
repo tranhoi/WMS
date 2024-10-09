@@ -3,6 +3,7 @@ using Application.DTOs.Request.Account;
 using Application.DTOs.Response;
 using Application.DTOs.Response.Account;
 using Application.Extentions;
+using Azure.Core;
 using Blazored.LocalStorage;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
@@ -47,7 +48,7 @@ namespace Application.Services.Authen.UI
                 return new GeneralResponse()
                 {
                     Flag = false,
-                    Message = result.StatusCode.ToString()
+                    Message = await result.Content.ReadAsStringAsync()
                 };
 
             var content = await result.Content.ReadAsStringAsync();
@@ -64,7 +65,7 @@ namespace Application.Services.Authen.UI
                 return new GeneralResponse()
                 {
                     Flag = false,
-                    Message = result.StatusCode.ToString()
+                    Message = await result.Content.ReadAsStringAsync()
                 };
 
             var content = await result.Content.ReadAsStringAsync();
@@ -81,7 +82,7 @@ namespace Application.Services.Authen.UI
                 return new GeneralResponse()
                 {
                     Flag = false,
-                    Message = result.StatusCode.ToString()
+                    Message = await result.Content.ReadAsStringAsync()
                 };
 
             var content = await result.Content.ReadAsStringAsync();
@@ -98,7 +99,7 @@ namespace Application.Services.Authen.UI
                 return new GeneralResponse()
                 {
                     Flag = false,
-                    Message = result.StatusCode.ToString()
+                    Message = await result.Content.ReadAsStringAsync()
                 };
 
             var content = await result.Content.ReadAsStringAsync();
@@ -115,7 +116,7 @@ namespace Application.Services.Authen.UI
                 return new GeneralResponse()
                 {
                     Flag = false,
-                    Message = result.StatusCode.ToString()
+                    Message = await result.Content.ReadAsStringAsync()
                 };
 
             var content = await result.Content.ReadAsStringAsync();
@@ -132,7 +133,7 @@ namespace Application.Services.Authen.UI
                 return new GeneralResponse()
                 {
                     Flag = false,
-                    Message = result.StatusCode.ToString()
+                    Message = await result.Content.ReadAsStringAsync()
                 };
 
             var content = await result.Content.ReadAsStringAsync();
@@ -149,7 +150,7 @@ namespace Application.Services.Authen.UI
                 return new GeneralResponse()
                 {
                     Flag = false,
-                    Message = result.StatusCode.ToString()
+                    Message = await result.Content.ReadAsStringAsync()
                 };
 
             var content = await result.Content.ReadAsStringAsync();
@@ -191,7 +192,7 @@ namespace Application.Services.Authen.UI
                 return new LoginResponse()
                 {
                     Flag = false,
-                    Message = result.StatusCode.ToString()
+                    Message = await result.Content.ReadAsStringAsync()
                 };
 
             var content = await result.Content.ReadAsStringAsync();
@@ -231,7 +232,7 @@ namespace Application.Services.Authen.UI
                 return new LoginResponse()
                 {
                     Flag = false,
-                    Message = result.StatusCode.ToString()
+                    Message = await result.Content.ReadAsStringAsync()
                 };
 
             var content = await result.Content.ReadAsStringAsync();
@@ -254,7 +255,7 @@ namespace Application.Services.Authen.UI
                 return new GeneralResponse()
                 {
                     Flag = false,
-                    Message = result.StatusCode.ToString()
+                    Message = await result.Content.ReadAsStringAsync()
                 };
 
             var content = await result.Content.ReadAsStringAsync();
@@ -271,7 +272,7 @@ namespace Application.Services.Authen.UI
                 return new GeneralResponse()
                 {
                     Flag = false,
-                    Message = result.StatusCode.ToString()
+                    Message = await result.Content.ReadAsStringAsync()
                 };
 
             var content = await result.Content.ReadAsStringAsync();
@@ -282,19 +283,40 @@ namespace Application.Services.Authen.UI
 
         public async Task<GeneralResponse> UpdateUserInfoAsync(UpdateUserInfoRequestDTO model)
         {
-            var result = await _httpClient.PostAsJsonAsync($"{ApiRoutes.Identity.BasePath}/{ApiRoutes.Identity.UpdateUserInfo}", model);
+            try
+            {
+                var result = await _httpClient.PostAsJsonAsync($"{ApiRoutes.Identity.BasePath}/{ApiRoutes.Identity.UpdateUserInfo}", model);
 
-            if (!result.IsSuccessStatusCode)
+                if (!result.IsSuccessStatusCode)
+                    return new GeneralResponse()
+                    {
+                        Flag = false,
+                        Message = await result.Content.ReadAsStringAsync()
+                    };
+
+                var responseData = await result.Content.ReadFromJsonAsync<GeneralResponse>();
+
+                //var content = await result.Content.ReadAsStringAsync();
+                //var responseData = JsonConvert.DeserializeObject<GeneralResponse>(content);
+
+                return responseData;
+            }
+            catch (HttpRequestException httpEx)
+            {
                 return new GeneralResponse()
                 {
                     Flag = false,
-                    Message = result.StatusCode.ToString()
+                    Message = $"{httpEx.Message}{Environment.NewLine}{httpEx.InnerException}"
                 };
-
-            var content = await result.Content.ReadAsStringAsync();
-            var response = JsonConvert.DeserializeObject<GeneralResponse>(content);
-
-            return response;
+            }
+            catch (Exception ex)
+            {
+                return new GeneralResponse()
+                {
+                    Flag = false,
+                    Message = $"{ex.Message}{Environment.NewLine}{ex.InnerException}"
+                };
+            }
         }
 
         public async Task<GetUserWithRoleResponseDTO> UserGetById(string id)
@@ -318,7 +340,7 @@ namespace Application.Services.Authen.UI
                 return new GeneralResponse()
                 {
                     Flag = false,
-                    Message = result.StatusCode.ToString()
+                    Message = await result.Content.ReadAsStringAsync()
                 };
 
             var content = await result.Content.ReadAsStringAsync();
@@ -437,6 +459,45 @@ namespace Application.Services.Authen.UI
                 return null;
             }
         }
+
+        public async Task<LoginResponse> LoginAccountHTAsync(LoginRequestDTO model)
+        {
+            try
+            {
+                var result = await _httpClient.PostAsJsonAsync($"{ApiRoutes.Identity.BasePath}/{ApiRoutes.Identity.Login}", model);
+
+                if (!result.IsSuccessStatusCode)
+                    return new LoginResponse()
+                    {
+                        Flag = false,
+                        Message = await result.Content.ReadAsStringAsync()
+                    };
+
+                var content = await result.Content.ReadAsStringAsync();
+                var loginResponse = JsonConvert.DeserializeObject<LoginResponse>(content);
+
+                //Set local storage
+                await _authStateProvider.CacheAuthTokensAsync(loginResponse.Token, loginResponse.RefreshToken, string.Empty);
+                ((ApiAuthenticationStateProvider)_authStateProvider).MarkUserAsAuthenticated();
+                //Gán token này mặc đinh vào header của tất cả các request của httpClient có tên là Bearer
+                _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", loginResponse.Token);
+
+                return loginResponse;
+            }
+            catch (Exception ex)
+            {
+                return new LoginResponse()
+                {
+                    Flag = false,
+                    Message = $"{ex.Message}{Environment.NewLine}{ex.InnerException}"
+                };
+            }
+        }
         #endregion
+    }
+
+    public class HttpResponse
+    {
+        public string Error { get; set; }
     }
 }

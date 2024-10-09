@@ -31,5 +31,11 @@ namespace API.Controllers
 
         [HttpGet(ApiRoutes.Product.GetProductListAsync)]
         public async Task<Result<IEnumerable<ProductDto>>> GetProductListAsync() => await _repository.SProducts.GetProductListAsync();
+
+        [HttpGet(ApiRoutes.Product.GetByProductCodeAsync)]
+        public async Task<Result<ProductDto>> GetByProductCodeAsync(string code) => await _repository.SProducts.GetByProductCodeAsync(code);
+
+        //[HttpGet(ApiRoutes.Product.GetByProductCodeAsync)]
+        //public async Task<Result<ProductDto>> GetByProductCodeAsync([Path] string code) => await _repository.SProducts.GetByProductCodeAsync(code);
     }
 }

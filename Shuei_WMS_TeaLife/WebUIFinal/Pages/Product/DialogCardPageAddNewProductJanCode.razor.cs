@@ -49,11 +49,11 @@ namespace WebUIFinal.Pages.Product
 
         async void Submit(ProductJanCode arg)
         {
-            arg.Status = selectedStatus.ConvertToString();
+            arg.Status = selectedStatus.EnumConvertToString();
 
             if (productJanCode.Id == 0)
             {
-                var confirm = await _dialogService.Confirm($"Do you want to create a new Product Jan Code: {arg.JanCode}?", "Create Product Jan Code", new ConfirmOptions()
+                var confirm = await _dialogService.Confirm(_localizer["Confirmation.Create"] + _localizer["Product.JanCode"] +  $"{arg.JanCode}?", _localizer["Create"] + _localizer["Product.JanCode"], new ConfirmOptions()
                 {
                     OkButtonText = "Yes",
                     CancelButtonText = "No",
@@ -64,7 +64,7 @@ namespace WebUIFinal.Pages.Product
             }
             else
             {
-                var confirm = await _dialogService.Confirm($"Do you want to update Jan Code: {arg.JanCode}?", "Update Product Jan Code", new ConfirmOptions()
+                var confirm = await _dialogService.Confirm(_localizer["Confirmation.Update"] + _localizer["Product.JanCode"] + $"{arg.JanCode}?", _localizer["Update"] + _localizer["Product.JanCode"], new ConfirmOptions()
                 {
                     OkButtonText = "Yes",
                     CancelButtonText = "No",

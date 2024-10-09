@@ -6,6 +6,8 @@ using Domain.Entity.WMS.Authentication;
 using Radzen;
 using WebUIFinal;
 using Radzen.Blazor;
+using WebUIFinal.TemplateHtmlPrintLabel;
+using WebUIFinal.Pages.Components;
 
 namespace WebUIFinal.Layout
 {
@@ -15,6 +17,7 @@ namespace WebUIFinal.Layout
 
         private ClaimsPrincipal? user;
         bool _sidebarExpanded = false;
+        string _linkChangePass = string.Empty;
         protected override async Task OnInitializedAsync()
         {
             var authState = await _authStateProvider.GetAuthenticationStateAsync();
@@ -30,6 +33,7 @@ namespace WebUIFinal.Layout
                 GlobalVariable.UserAuthorizationInfo.UserName = authState.User.Identity.Name;
                 GlobalVariable.UserAuthorizationInfo.FullName = authState.User.FindFirst("FullName").Value;
                 GlobalVariable.UserAuthorizationInfo.EmailName = authState.User.FindFirst(ClaimTypes.Email).Value;
+                GlobalVariable.UserAuthorizationInfo.UserId = authState.User.FindFirst("UserId").Value;
 
                 var permission = authState.User.FindFirst("RoleToPermission").Value;
                 var permissionList = JsonConvert.DeserializeObject<List<RoleToPermission>>(permission);
@@ -72,13 +76,40 @@ namespace WebUIFinal.Layout
 
         void OnParentClicked(RadzenProfileMenuItem args)
         {
-            if (args.Text == "Logout")
+            var t = _localizer["Profile.Logout"];
+            if (args.Text == _localizer["Profile.Logout"])
                 _authenServices.LogoutAsync();
         }
 
         private void OnClick(string text)
         {
             _notificationService.Notify(new NotificationMessage { Severity = NotificationSeverity.Info, Summary = "Button Clicked", Detail = text });
+        }
+
+        async void ChangePassClick()
+        {
+            var res = await _dialogService.OpenAsync<ChangePass>("Change Password",
+                    new Dictionary<string, object>() { { "Id", GlobalVariable.UserAuthorizationInfo.UserId }},
+                    new DialogOptions()
+                    {
+                        Width = "600px",
+                        Height = "400px",
+                        Resizable = true,
+                        Draggable = true,
+                        ShowClose = false,
+                        CloseDialogOnOverlayClick = true
+                    });
+
+            if (res == "Success")
+            {
+                _notificationService.Notify(new NotificationMessage
+                {
+                    Severity = NotificationSeverity.Error,
+                    Summary = "Change password",
+                    Detail = "Successfull",
+                    Duration = 5000
+                });
+            }
         }
 
         public void Dispose()

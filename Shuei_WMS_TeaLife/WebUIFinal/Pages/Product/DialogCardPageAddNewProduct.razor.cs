@@ -172,7 +172,7 @@ namespace WebUIFinal.Pages.Product
         {
             if (Title.Contains("Create"))
             {
-                var confirm = await _dialogService.Confirm($"Do you want to create a new product: {arg.ProductName}?", "Create product", new ConfirmOptions()
+                var confirm = await _dialogService.Confirm(_localizer["Confirmation.Create"] + _localizer["Product"] + $": {arg.ProductName}?", "Create product", new ConfirmOptions()
                 {
                     OkButtonText = "Yes",
                     CancelButtonText = "No",
@@ -219,7 +219,7 @@ namespace WebUIFinal.Pages.Product
 
             if (Title.Contains("Edit"))
             {
-                var confirm = await _dialogService.Confirm($"Do you want to update product: {arg.ProductName}?", "Create product", new ConfirmOptions()
+                var confirm = await _dialogService.Confirm(_localizer["Confirmation.Update"] + _localizer["Product"] + $": {arg.ProductName}?", _localizer["Update"] + _localizer["Product"], new ConfirmOptions()
                 {
                     OkButtonText = "Yes",
                     CancelButtonText = "No",
@@ -270,7 +270,7 @@ namespace WebUIFinal.Pages.Product
         {
             try
             {
-                var confirm = await _dialogService.Confirm($"Are you sure you want to delete product: {model.ProductName}?", "Delete product", new ConfirmOptions()
+                var confirm = await _dialogService.Confirm(_localizer["Confirmation.Delete"] + _localizer["Product"] + $": {model.ProductName}?", _localizer["Delete"] + _localizer["Product"], new ConfirmOptions()
                 {
                     OkButtonText = "Yes",
                     CancelButtonText = "No",
@@ -389,7 +389,7 @@ namespace WebUIFinal.Pages.Product
                 ProductId = model.Id
             };
 
-            var res = await _dialogService.OpenAsync<DialogCardPageAddNewProductJanCode>($"Create new Product Jan Code",
+            var res = await _dialogService.OpenAsync<DialogCardPageAddNewProductJanCode>(_localizer["Product.JanCodeCreate"],
                     new Dictionary<string, object>() { { "productJanCode", janInfor }, { "VisibleBtnSubmit", true } },
                     new DialogOptions()
                     {
@@ -428,7 +428,7 @@ namespace WebUIFinal.Pages.Product
 
         async Task ViewJanCodeItemAsync(ProductJanCode dto)
         {
-            var res = await _dialogService.OpenAsync<DialogCardPageAddNewProductJanCode>($"Create new Product Jan Code",
+            var res = await _dialogService.OpenAsync<DialogCardPageAddNewProductJanCode>(_localizer["Product.JanCodeCreate"],
                     new Dictionary<string, object>() { { "productJanCode", dto }, { "VisibleBtnSubmit", false } },
                     new DialogOptions()
                     {
@@ -446,7 +446,7 @@ namespace WebUIFinal.Pages.Product
         }
         async Task EditJanCodeItemAsync(ProductJanCode model)
         {
-            var res = await _dialogService.OpenAsync<DialogCardPageAddNewProductJanCode>($"Edit Product Jan Code ",
+            var res = await _dialogService.OpenAsync<DialogCardPageAddNewProductJanCode>(_localizer["Product.JanCodeEdit"],
                     new Dictionary<string, object>() { { "productJanCode", model }, { "VisibleBtnSubmit", true } },
                     new DialogOptions()
                     {
@@ -465,7 +465,7 @@ namespace WebUIFinal.Pages.Product
         {
             try
             {
-                var confirm = await _dialogService.Confirm($"Are you sure you want to delete Product Jan Code: {dto.JanCode}?", "Delete jan code", new ConfirmOptions()
+                var confirm = await _dialogService.Confirm(_localizer["Confirmation.Delete"] + _localizer["Product.JanCode"] + $": {dto.JanCode}?", _localizer["Delete"] + _localizer["Product.JanCode"], new ConfirmOptions()
                 {
                     OkButtonText = "Yes",
                     CancelButtonText = "No",

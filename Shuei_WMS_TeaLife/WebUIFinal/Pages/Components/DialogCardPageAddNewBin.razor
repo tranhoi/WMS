@@ -2,6 +2,8 @@
 @using Domain.Entity.WMS
 @using Microsoft.AspNetCore.Authorization
 
+@inject IStringLocalizer<CommonResources> _localizer
+
 @attribute [Authorize]
 @if (_model == null)
 {

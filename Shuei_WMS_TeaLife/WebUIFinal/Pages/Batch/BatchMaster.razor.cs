@@ -1,41 +1,29 @@
-﻿using Application.DTOs.Response.Account;
-using Domain.Entity.Commons;
-using Radzen;
+﻿using Radzen;
 using Radzen.Blazor;
-using SupplierEntity = Domain.Entity.Commons.Supplier;
+using BatchModel = Domain.Entity.WMS.Batches;
 
-namespace WebUIFinal.Pages.SupplierPage
+namespace WebUIFinal.Pages.Batch
 {
-    public partial class SupplierList
+    public partial class BatchMaster
     {
-        List<SupplierEntity> _dataGrid = null;
-        RadzenDataGrid<SupplierEntity> _profileGrid;
+        List<BatchModel>? _dataGrid = null;
+
         IEnumerable<int> _pageSizeOptions = new int[] { 5, 10, 20, 30, 100, 200 };
         bool _showPagerSummary = true;
         string _pagingSummaryFormat = "Displaying page {0} of {1} <b>(total {2} records)</b>";
-
 
         protected override async Task OnInitializedAsync()
         {
             await base.OnInitializedAsync();
 
-            await RefreshDataAsync();
+            RefreshDataAsync();
         }
 
-        async Task AddNewItemAsync() => _navigation.NavigateTo($"/addsupplier/Create New Supplier");
-
-        async Task EditItemAsync(int id) => _navigation.NavigateTo($"/addsupplier/Edit Supplier|{id}");
-        async Task ViewItemAsync(int id)
-        {
-
-            _navigation.NavigateTo($"/addsupplier/View Supplier|{id}");
-        }
-
-        async Task DeleteItemAsync(SupplierEntity model)
+        async Task DeleteItemAsync(BatchModel model)
         {
             try
             {
-                var confirm = await _dialogService.Confirm($"Are you sure you want to delete supplier: {model.SupplierName}?", "Delete supplier", new ConfirmOptions()
+                var confirm = await _dialogService.Confirm($"Are you sure you want to delete this: {model.Id}?", "Delete", new ConfirmOptions()
                 {
                     OkButtonText = "Yes",
                     CancelButtonText = "No",
@@ -44,7 +32,7 @@ namespace WebUIFinal.Pages.SupplierPage
 
                 if (confirm == null || confirm == false) return;
 
-                var res = await _suppliersServices.DeleteAsync(model);
+                var res = await _batchServices.DeleteAsync(model);
 
                 if (res.Succeeded)
                 {
@@ -52,11 +40,11 @@ namespace WebUIFinal.Pages.SupplierPage
                     {
                         Severity = NotificationSeverity.Success,
                         Summary = "Success",
-                        Detail = res.Messages.FirstOrDefault(),
+                        Detail = $"Delete{model.Id} successfully.",
                         Duration = 5000
                     });
 
-                    StateHasChanged();
+                    RefreshDataAsync();
                 }
                 else
                 {
@@ -64,12 +52,10 @@ namespace WebUIFinal.Pages.SupplierPage
                     {
                         Severity = NotificationSeverity.Error,
                         Summary = "Error",
-                        Detail = res.Messages.FirstOrDefault(),
+                        Detail = res.Messages.ToString(),
                         Duration = 5000
                     });
                 }
-
-                await RefreshDataAsync();
             }
             catch (Exception ex)
             {
@@ -85,30 +71,44 @@ namespace WebUIFinal.Pages.SupplierPage
             }
         }
 
-        async Task RefreshDataAsync()
+        async Task ViewItemAsync(BatchModel model)
+        {
+            _navigation.NavigateTo($"/detailbatch/Detail Batch|{model.Id}");
+        }
+
+        async Task EditItemAsync(BatchModel model)
+        {
+            _navigation.NavigateTo($"/detailbatch/Edit Batch|{model.Id}");
+        }
+
+        async Task AddNewItemAsync()
+        {
+            _navigation.NavigateTo("/detailbatch/Create Batch");
+        }
+
+        async void RefreshDataAsync()
         {
             try
             {
-                var res = await _suppliersServices.GetAllAsync();
-                _dataGrid = null;
-                _dataGrid = new List<SupplierEntity>();
+                var res = await _batchServices.GetAllAsync();
 
                 if (!res.Succeeded)
+                {
                     _notificationService.Notify(new NotificationMessage()
                     {
                         Severity = NotificationSeverity.Error,
                         Summary = "Error",
-                        Detail = "Get supplier fail",
-                        Duration = 5000
+                        Detail = res.Messages.ToString(),
                     });
+                    return;
+                }
 
-                _dataGrid = res.Data;
-
-                //await _profileGrid.RefreshDataAsync();
+                _dataGrid = null;
+                _dataGrid = new List<BatchModel>();
+                _dataGrid = res.Data.ToList();
 
                 StateHasChanged();
             }
-            catch (UnauthorizedAccessException) { }
             catch (Exception ex)
             {
                 _notificationService.Notify(new NotificationMessage

@@ -4,6 +4,8 @@
 @using Domain.Entity.WMS.Authentication
 @using Microsoft.AspNetCore.Authorization
 
+@inject IStringLocalizer<CommonResources> _localizer
+
 @attribute [Authorize(Roles = ConstantExtention.Roles.WarehouseAdmin)]
 @if (_dataGrid == null)
 {
@@ -14,12 +16,12 @@ else
     <RadzenRow Gap="2rem" Class="rz-p-0 rz-p-lg-4">
         <RadzenColumn SizeXS="12" SizeMD="12">
             <RadzenStack>
-                <RadzenFieldset Text="Permissions list">
+                <RadzenFieldset Text="@_localizer["Permission.List"]">
                     <RadzenStack Orientation=Radzen.Orientation.Vertical JustifyContent="Radzen.JustifyContent.Center" AlignItems="AlignItems.Stretch" Gap="5px">
                         <RadzenStack Orientation="Radzen.Orientation.Horizontal" JustifyContent="Radzen.JustifyContent.End"
                                      AlignItems="AlignItems.Center" Gap="1rem" Wrap="Radzen.FlexWrap.Wrap" class="rz-mt-2">
                             <RadzenButton Click=@(args => AddNewItemAsync()) Variant="Variant.Flat" Shade="Shade.Dark"
-                                          Text="Add New" Icon="add_circle" ButtonStyle="ButtonStyle.Success" />
+                                          Text="@_localizer["Create"]" Icon="add_circle" ButtonStyle="ButtonStyle.Success" />
                         </RadzenStack>
                         <RadzenDataGrid @ref="_profileGrid" AllowFiltering="true" FilterPopupRenderMode="PopupRenderMode.OnDemand" AllowPaging="true" PageSize="5" AllowSorting="true"
                                         Data="@_dataGrid" TItem="PermissionsListResponseDTO" AllowColumnPicking="true" AllowColumnResize="true" AllowGrouping="true"
@@ -48,8 +50,8 @@ else
                                         </RadzenStack>
                                     </Template>
                                 </RadzenDataGridColumn>
-                                <RadzenDataGridColumn TItem="PermissionsListResponseDTO" Width="200px" Property="Name" Title="Name" TextAlign="TextAlign.Center" />
-                                <RadzenDataGridColumn TItem="PermissionsListResponseDTO" Width="200px" Title="Assigned To Roles"
+                                <RadzenDataGridColumn TItem="PermissionsListResponseDTO" Width="200px" Property="Name" Title="@_localizer["Name"]" TextAlign="TextAlign.Center" />
+                                <RadzenDataGridColumn TItem="PermissionsListResponseDTO" Width="200px" Title="@_localizer["Permission.AssginedToRole"]"
                                                       Filterable="false" Sortable="false" TextAlign="TextAlign.Center">
                                     <Template Context="data">
                                         <RadzenStack Orientation="Radzen.Orientation.Horizontal" JustifyContent="Radzen.JustifyContent.Start" Gap="4px">
@@ -63,8 +65,8 @@ else
                                         </RadzenStack>
                                     </Template>
                                 </RadzenDataGridColumn>
-                                <RadzenDataGridColumn TItem="PermissionsListResponseDTO" Width="200px" Property="Description" Title="Description" TextAlign="TextAlign.Center" />
-                                <RadzenDataGridColumn TItem="PermissionsListResponseDTO" Width="200px" Property="CreateAt" Title="Create Date" TextAlign="TextAlign.Center" />
+                                <RadzenDataGridColumn TItem="PermissionsListResponseDTO" Width="200px" Property="Description" Title="@_localizer["Description"]" TextAlign="TextAlign.Center" />
+                                <RadzenDataGridColumn TItem="PermissionsListResponseDTO" Width="200px" Property="CreateAt" Title="@_localizer["CreatedDate"]" TextAlign="TextAlign.Center" />
                             </Columns>
                         </RadzenDataGrid>
                     </RadzenStack>

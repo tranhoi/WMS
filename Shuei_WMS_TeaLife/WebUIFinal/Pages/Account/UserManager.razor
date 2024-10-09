@@ -4,6 +4,8 @@
 @using Application.Extentions
 @using Microsoft.AspNetCore.Authorization
 
+@inject IStringLocalizer<CommonResources> _localizer
+
 @attribute [Authorize(Roles = ConstantExtention.Roles.WarehouseAdmin)]
 @if (_users == null || _users.Count <= 0)
 {

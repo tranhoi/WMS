@@ -33,6 +33,14 @@ namespace API.Controllers
 
             return Ok(await account.LoginAccountAsync(model));
         }
+        [AllowAnonymous]
+        [HttpPost(ApiRoutes.Identity.LoginHt)]
+        public async Task<ActionResult<GeneralResponse>> LoginAccountHtAsync(LoginRequestDTO model)
+        {
+            if (model == null) return BadRequest("Model cannot be null");
+
+            return Ok(await account.LoginAccountHTAsync(model));
+        }
 
         [HttpPost(ApiRoutes.Identity.RefreshToken)]
         public async Task<ActionResult<GeneralResponse>> RefreshTokenAsync(RefreshTokenRequestDTO model)

@@ -2156,7 +2156,7 @@ namespace Infrastructure.Migrations
                     b.Property<string>("RoleNameNavigationRoleName")
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("UserId1")
+                    b.Property<string>("UserId")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
@@ -2164,7 +2164,7 @@ namespace Infrastructure.Migrations
 
                     b.HasIndex("RoleNameNavigationRoleName");
 
-                    b.HasIndex("UserId1");
+                    b.HasIndex("UserId");
 
                     b.ToTable("UserToRole", "authp", t =>
                         {
@@ -2408,7 +2408,7 @@ namespace Infrastructure.Migrations
 
                     b.HasOne("Domain.Entity.authp.Commons.AuthUser", "User")
                         .WithMany("UserToRoles")
-                        .HasForeignKey("UserId1")
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 

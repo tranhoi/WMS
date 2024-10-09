@@ -31,6 +31,9 @@ using Microsoft.AspNetCore.Http;
 using Application.DTOs;
 using QRCoder.Core;
 using DocumentFormat.OpenXml.Office2010.Excel;
+using Application.Models;
+using Microsoft.Data.SqlClient;
+using Dapper;
 
 namespace Infrastructure.Repos
 {
@@ -98,6 +101,7 @@ namespace Infrastructure.Repos
         {
             if (!result.Succeeded)
             {
+                var title = result.Errors;
                 var error = result.Errors.Select(_ => _.Description);
                 return string.Join(Environment.NewLine, error);
             }
@@ -119,6 +123,7 @@ namespace Infrastructure.Repos
                     new Claim(ClaimTypes.Name,user.UserName),
                     new Claim(ClaimTypes.Email,user.Email),
                     new Claim("FullName",user.FullName),
+                    new Claim("UserId",user.Id),
                 };
             //roles
             var roles = await userManager.GetRolesAsync(user);
@@ -152,7 +157,7 @@ namespace Infrastructure.Repos
                 if (res is not null)
                 {
                     res.Activated = false;
-                    dbContext.RefreshTokens.Update(res);
+                    //dbContext.RefreshTokens.Update(res);
                 }
 
                 await dbContext.RefreshTokens.AddAsync(new RefreshTokens() { UserId = userId, Token = token, RefreshToken = refreshToken, ExpirationTime = expiration, Activated = true });
@@ -251,6 +256,7 @@ namespace Infrastructure.Repos
                 };
 
                 var result = await userManager.CreateAsync(user, model.Password);
+
                 string error = CheckReponse(result);
                 if (!string.IsNullOrEmpty(error))
                     return new GeneralResponse()
@@ -374,6 +380,7 @@ namespace Infrastructure.Repos
                         FullName = user.FullName,
                         UserName = user.UserName,
                         Email = user.Email,
+                        //PasswordHash=user.PasswordHash,
                         Roles = roles,
                         //RoleId = getRoleInfo.Id,
                         //RoleName = getRoleInfo.Name,
@@ -393,27 +400,33 @@ namespace Infrastructure.Repos
             {
                 //var result = await signInManager.PasswordSignInAsync(model.Username, model.Password, false, false);
                 //if(!result.Succeeded) return new LoginResponse() { flag = false ,message="Username and password are invalid."};
+                var startTime = DateTime.Now;
 
                 var user = await FindUserByEmailAsync(model.EmailAddress);
                 if (user == null) return new LoginResponse()
                 {
                     Flag = false,
-                    Message = "User not found",
+                    Message = "Email not found",
                 };
+                await dbContext.LogTimes.AddAsync(new Domain.Entity.WMS.LogTime()
+                {
+                    LogName = $"userManager.FindByNameAsync({model.EmailAddress})",
+                    EslapseTime = (DateTime.Now - startTime).TotalMilliseconds,
+                    CreatedDate = DateTime.Now
+                });
+
+                //await dbContext.SaveChangesAsync();
 
                 SignInResult result = null;
-                try
+
+                result = await signInManager.CheckPasswordSignInAsync(user, model.Password, false);
+                dbContext.LogTimes.Add(new Domain.Entity.WMS.LogTime()
                 {
-                    result = await signInManager.CheckPasswordSignInAsync(user, model.Password, false);
-                }
-                catch
-                {
-                    return new LoginResponse()
-                    {
-                        Flag = false,
-                        Message = "Invalid credentials"
-                    };
-                }
+                    LogName = $"await signInManager.CheckPasswordSignInAsync(user, model.Password, false)",
+                    EslapseTime = (DateTime.Now - startTime).TotalMilliseconds,
+                    CreatedDate = DateTime.Now
+                });
+                //await dbContext.SaveChangesAsync();
 
                 if (!result.Succeeded) return new LoginResponse()
                 {
@@ -424,6 +437,13 @@ namespace Infrastructure.Repos
                 var jwtToken = await GenerateToken(user);
                 string token = new JwtSecurityTokenHandler().WriteToken(jwtToken);
                 string refreshToken = GenerateRefreshToken();
+                dbContext.LogTimes.Add(new Domain.Entity.WMS.LogTime()
+                {
+                    LogName = $"await GenerateToken(user)|",
+                    EslapseTime = (DateTime.Now - startTime).TotalMilliseconds,
+                    CreatedDate = DateTime.Now
+                });
+               await dbContext.SaveChangesAsync();
 
                 if (string.IsNullOrEmpty(token) || string.IsNullOrEmpty(refreshToken))
                     return new LoginResponse()
@@ -431,24 +451,32 @@ namespace Infrastructure.Repos
                         Flag = false,
                         Message = "Error occured while in account, please contact administrator."
                     };
-                else
+
+                //save token after login successfull 
+                var expiryRefreshToken = config["Jwt:AddTimeType"] != "Second" ?
+                               DateTime.Now.AddDays(double.TryParse(config["Jwt:JwtExpiryTimeRefreshToken"], out double value) ? value : 60) :
+                               DateTime.Now.AddSeconds(double.TryParse(config["Jwt:JwtExpiryTimeRefreshToken"], out value) ? value : 60);
+
+                var saveResult = await SaveRefreshTokenAsync(user.Id, token, refreshToken, expiryRefreshToken);
+
+                dbContext.LogTimes.Add(new Domain.Entity.WMS.LogTime()
                 {
-                    //save token after login successfull 
-                    var expiryRefreshToken = config["Jwt:AddTimeType"] != "Second" ?
-                                   DateTime.Now.AddDays(double.TryParse(config["Jwt:JwtExpiryTimeRefreshToken"], out double value) ? value : 60) :
-                                   DateTime.Now.AddSeconds(double.TryParse(config["Jwt:JwtExpiryTimeRefreshToken"], out value) ? value : 60);
-                    var saveResult = await SaveRefreshTokenAsync(user.Id, token, refreshToken, expiryRefreshToken);
-                    if (saveResult.Flag)
-                        return new LoginResponse()
-                        {
-                            Flag = true,
-                            Message = $"{user.FullName} successfully logged in.",
-                            Token = token,
-                            RefreshToken = refreshToken,
-                            Expiration = jwtToken.ValidTo.ToString()
-                        };
-                    else return new LoginResponse();
-                }
+                    LogName = $"await SaveRefreshTokenAsync(user.Id, token, refreshToken, expiryRefreshToken)",
+                    EslapseTime = (DateTime.Now - startTime).TotalMilliseconds,
+                    CreatedDate = DateTime.Now
+                });
+                await dbContext.SaveChangesAsync();
+
+                if (saveResult.Flag)
+                    return new LoginResponse()
+                    {
+                        Flag = true,
+                        Message = $"{user.FullName} successfully logged in.",
+                        Token = token,
+                        RefreshToken = refreshToken,
+                        Expiration = jwtToken.ValidTo.ToString()
+                    };
+                else return new LoginResponse();
             }
             catch (Exception ex)
             {
@@ -470,8 +498,8 @@ namespace Infrastructure.Repos
                 if (token.ExpirationTime < DateTime.Now)
                 {
                     token.Activated = false;
-                    dbContext.RefreshTokens.Update(token);
-                    await dbContext.SaveChangesAsync();
+                    //dbContext.RefreshTokens.Update(token);
+                    //await dbContext.SaveChangesAsync();
 
                     return new LoginResponse()
                     {
@@ -519,7 +547,7 @@ namespace Infrastructure.Repos
         {
             try
             {
-                var user = await FindUserByEmailAsync(model.UserName);
+                var user = await FindUserByIdAsync(model.Id);
                 if (user == null)
                     return new GeneralResponse()
                     {
@@ -760,16 +788,16 @@ namespace Infrastructure.Repos
                         Message = error
                     };
 
-                //update password
-                await userManager.RemovePasswordAsync(user);
-                result = await userManager.AddPasswordAsync(user, model.Password);
-                error = CheckReponse(result);
-                if (!string.IsNullOrEmpty(error))
-                    return new GeneralResponse()
-                    {
-                        Flag = false,
-                        Message = error
-                    };
+                ////update password
+                //await userManager.RemovePasswordAsync(user);
+                //result = await userManager.AddPasswordAsync(user, model.Password);
+                //error = CheckReponse(result);
+                //if (!string.IsNullOrEmpty(error))
+                //    return new GeneralResponse()
+                //    {
+                //        Flag = false,
+                //        Message = error
+                //    };
 
                 //remove all role
                 var currentRoles = await userManager.GetRolesAsync(user);
@@ -999,7 +1027,7 @@ namespace Infrastructure.Repos
         private async Task<string> ExportReceiptLocal(ApplicationUser model)
         {
             //var tplPath = Path.Combine(Directory.GetCurrentDirectory(), "LableTemplate","receipt.html");
-            var tplPath = Path.Combine(Directory.GetCurrentDirectory(), "LableTemplate","LabelPrint.html");
+            var tplPath = Path.Combine(Directory.GetCurrentDirectory(), "LableTemplate", "LabelPrint.html");
             var tpl = File.ReadAllText(tplPath);
             // Initialize the PDF exporter
             var exporter = new PdfExporter();
@@ -1165,13 +1193,17 @@ namespace Infrastructure.Repos
 
                 List<LabelInfoDto> res = new List<LabelInfoDto>();
 
+                var qrCode = EncodeMD5.EncryptString($"{user.Email}|{user.PasswordHash}", "WmsHt123@456");
+
                 res.Add(new LabelInfoDto()
                 {
-                    QrValue=GlobalVariable.GenerateQRCode($"{user.Email}|{user.Id}"),
-                    Title1="Email:",
-                    Content1=user.Email,
-                    Title2="User Name:",
-                    Content2=user.UserName
+                    QrValue = GlobalVariable.GenerateQRCode(qrCode),
+                    //Title1="Email:",
+                    //Content1=user.Email,
+                    //Title2="User Name:",
+                    //Content2=user.UserName
+                    Title1 = "Email:",
+                    Title2 = user.Email,
                 });
 
                 return res;
@@ -1185,6 +1217,78 @@ namespace Infrastructure.Repos
         public async Task<List<LabelInfoDto>> GetLabelsAllAsync()
         {
             throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// password ở đây nó là PasswordHash.
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        public async Task<LoginResponse> LoginAccountHTAsync([Body] LoginRequestDTO model)
+        {
+            try
+            {
+                //var result = await signInManager.PasswordSignInAsync(model.Username, model.Password, false, false);
+                //if(!result.Succeeded) return new LoginResponse() { flag = false ,message="Username and password are invalid."};
+
+                var user = await FindUserByEmailAsync(model.EmailAddress);
+                if (user == null) return new LoginResponse()
+                {
+                    Flag = false,
+                    Message = "Email not found",
+                };
+
+                var allPermission = new List<PermissionsListModel>();
+                int rowCount = 0;
+                var c = dbContext.Database.GetConnectionString();
+                using (var connection = new SqlConnection(c))
+                {
+                    rowCount = (int)await connection.ExecuteScalarAsync($"SELECT COUNT(*) FROM wms.[AspNetUsers] WHERE PasswordHash = '{model.Password}'");
+                }
+
+                if (rowCount <= 0) return new LoginResponse()
+                {
+                    Flag = false,
+                    Message = "Invalid credentials"
+                };
+
+                var jwtToken = await GenerateToken(user);
+                string token = new JwtSecurityTokenHandler().WriteToken(jwtToken);
+                string refreshToken = GenerateRefreshToken();
+
+                if (string.IsNullOrEmpty(token) || string.IsNullOrEmpty(refreshToken))
+                    return new LoginResponse()
+                    {
+                        Flag = false,
+                        Message = "Error occured while in account, please contact administrator."
+                    };
+                else
+                {
+                    //save token after login successfull 
+                    var expiryRefreshToken = config["Jwt:AddTimeType"] != "Second" ?
+                                   DateTime.Now.AddDays(double.TryParse(config["Jwt:JwtExpiryTimeRefreshToken"], out double value) ? value : 60) :
+                                   DateTime.Now.AddSeconds(double.TryParse(config["Jwt:JwtExpiryTimeRefreshToken"], out value) ? value : 60);
+                    var saveResult = await SaveRefreshTokenAsync(user.Id, token, refreshToken, expiryRefreshToken);
+                    if (saveResult.Flag)
+                        return new LoginResponse()
+                        {
+                            Flag = true,
+                            Message = $"{user.FullName} successfully logged in.",
+                            Token = token,
+                            RefreshToken = refreshToken,
+                            Expiration = jwtToken.ValidTo.ToString()
+                        };
+                    else return new LoginResponse();
+                }
+            }
+            catch (Exception ex)
+            {
+                return new LoginResponse()
+                {
+                    Flag = false,
+                    Message = $"{ex.Message}{Environment.NewLine}{ex.InnerException}",
+                };
+            }
         }
     }
 }

@@ -16,5 +16,8 @@ namespace Application.Services
 
         [Get(ApiRoutes.Product.GetProductListAsync)]
         Task<Result<IEnumerable<ProductDto>>> GetProductListAsync();
+
+        [Get(ApiRoutes.Product.GetByProductCodeAsync)]
+        Task<Result<ProductDto>> GetByProductCodeAsync(string code);
     }
 }

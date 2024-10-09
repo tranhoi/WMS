@@ -100,12 +100,12 @@ else
         <RadzenStack Orientation="Radzen.Orientation.Horizontal" JustifyContent="Radzen.JustifyContent.Center" Gap="1rem" Class="rz-mt-8 rz-mb-4">
             @if (!isDisabled)
             {
-                <RadzenButton Click=@(_ => _navigation.NavigateTo("/device")) Style="background-color:cadetblue" Size="ButtonSize.Large" Icon="cancel" Text="Cancel" />
+                <RadzenButton Click=@(_ => _navigation.NavigateTo("/devicelist")) Style="background-color:cadetblue" Size="ButtonSize.Large" Icon="cancel" Text="Cancel" />
                 <RadzenButton ButtonType="Radzen.ButtonType.Submit" Size="ButtonSize.Large" Icon="save" Text="Save" />
             }
             else
             {
-                <RadzenButton Click=@(_ => _navigation.NavigateTo("/device")) Style="background-color:cadetblue" Size="ButtonSize.Large" Icon="cancel" Text="Cancel" />
+                <RadzenButton Click=@(_ => _navigation.NavigateTo("/devicelist")) Style="background-color:cadetblue" Size="ButtonSize.Large" Icon="cancel" Text="Cancel" />
                 <RadzenButton Click=@(_ => _navigation.NavigateTo($"/detaildevice/Edit Device|{_model.Id}", true)) ButtonType="Radzen.ButtonType.Button" Size="ButtonSize.Large" Icon="edit" Text="Edit" />
             }
         </RadzenStack>

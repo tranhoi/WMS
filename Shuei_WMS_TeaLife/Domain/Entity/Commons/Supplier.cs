@@ -13,53 +13,7 @@ public class Supplier : GenericEntity
 
     public string? SupplierName { get; set; }
 
-    public string? CompanyId { get; set; }
+    public int? TenantId { get; set; }
 
-    public string? DataKey { get; set; }
-
-    public string? CreateOperatorId { get; set; }
-
-    public DateTime? CreateAt { get; set; }
-
-    public string? UpdateOperatorId { get; set; }
-
-    public DateTime? UpdateAt { get; set; }
-
-    public bool? IsDeleted { get; set; }
-
-    public int? SupplierId { get; set; }
-
-    public string? SupplierCode { get; set; }
-
-    public string? HeadOfficeAddress { get; set; }
-
-    public string? HeadOfficePhone { get; set; }
-
-    public string? HeadOfficeFax { get; set; }
-
-    public string? BillingAddress { get; set; }
-
-    public string? BillingContactName { get; set; }
-
-    public string? BillingPhone { get; set; }
-
-    public string? BillingFax { get; set; }
-
-    public string? BillingMail { get; set; }
-
-    public string? BankName { get; set; }
-
-    public string? BankBranch { get; set; }
-
-    public string? BankAccountType { get; set; }
-
-    public string? BankAccountNumber { get; set; }
-
-    public string? BankAccountHolder { get; set; }
-
-    public string? Remarks { get; set; }
-
-    public string? JamCharge { get; set; }
-
-    public DateOnly? BillingDate { get; set; }
+    public string? SupplierId { get; set; }
 }

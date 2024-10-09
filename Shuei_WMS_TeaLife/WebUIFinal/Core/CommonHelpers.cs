@@ -4,13 +4,19 @@
     {
         public static T ParseEnum<T>(string value) 
         {
-            return (T) Enum.Parse(typeof(T), value, true);
+            if (string.IsNullOrEmpty(value))
+            {
+                return default;
+            }
+            else
+            {
+                return (T)Enum.Parse(typeof(T), value, true);
+            }
         }
 
-        public static String ConvertToString(this Enum eff)
+        public static String EnumConvertToString(this Enum eff)
         {
             return Enum.GetName(eff.GetType(), eff);
         }
-
     }
 }

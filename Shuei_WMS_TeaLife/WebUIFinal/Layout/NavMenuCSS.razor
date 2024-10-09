@@ -1,39 +1,179 @@
 ﻿@inject NavigationManager NavigationManager
+@inject IStringLocalizer<CommonResources> _localizer
 
 @code {
-    private bool isCollapsed;
+    [Parameter] public bool SidebarToggle { get; set; } = false;
+    private bool isCollapsedStockReceipt;
+    private bool isCollapsedIssue;
+    private bool isCollapsedInventoryManagement;
+    private bool isCollapsedInventory;
+    private bool isCollapsedMasterManagement;
+    private bool isCollapsedSystemManagement;
 
     protected override void OnInitialized()
     {
         var activePaths = new[] { "/userlist", "/rolelist", "/permissionlist", "/productlist", "/vendorlist", "/locationlist", "/htlist" };
-        isCollapsed = activePaths.Any(path => NavigationManager.Uri.Contains(path));
+        isCollapsedMasterManagement = activePaths.Any(path => NavigationManager.Uri.Contains(path));
     }
 
-    private void ToggleCollapse() => isCollapsed = !isCollapsed;
+    private void ToggleCollapseMasterManagement() => isCollapsedMasterManagement = !isCollapsedMasterManagement;
+    private void ToggleCollapseStockReceipt() => isCollapsedStockReceipt = !isCollapsedStockReceipt;
+    private void ToggleCollapseIssue() => isCollapsedIssue = !isCollapsedIssue;
+    private void ToggleCollapseInventoryManagement() => isCollapsedInventoryManagement = !isCollapsedInventoryManagement;
+    private void ToggleCollapseInventory() => isCollapsedInventory = !isCollapsedInventory;
+    private void ToggleCollapseSystemManagement() => isCollapsedSystemManagement = !isCollapsedSystemManagement;
 }
 
 <div>
     <ul class="list-unstyled ps-0">
         <li class="mb-1">
-            <a class="btn btn-toggle align-items-center management-button @(isCollapsed ? "expanded" : "collapsed")" @onclick="ToggleCollapse" style="color: white; border-radius: 0 !important;">
-                <i class="fa fa-sitemap"></i>
-                Overall Management
+            <a class="btn btn-toggle align-items-center management-button @(isCollapsedStockReceipt ? "expanded" : "collapsed")" @onclick="ToggleCollapseStockReceipt" style="color: white; border-radius: 0 !important;">
+                <i class="fa fa-arrow-circle-right"></i>
+                @_localizer["Nav.StockReceipt"]
                 <span class="fa fa-chevron-down" style="float: right;"></span>
             </a>
-            <div class="collapse @(isCollapsed ? "show" : "")" style="margin-top: 10px;">
+            <div class="collapse @(isCollapsedStockReceipt ? "show" : "")" style="margin-top: 10px;margin-left: 20px;">
                 <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
                     @foreach (var item in new[]
                     {
-                    new { Text = "User List", Url = "/userlist" },
-                    new { Text = "Roles List", Url = "/rolelist" },
-                    new { Text = "Permissions List", Url = "/permissionlist" },
-                    new { Text = "Product", Url = "/productlist" },
-                    new { Text = "Supplier", Url = "/supplierlist" },
-                    new { Text = "Location", Url = "/locationlist" },
-                    new { Text = "Devices", Url = "/device" },
-                    new { Text = "Units", Url = "/unitlist" },
-                    new { Text = "Product Category", Url = "/procategorylist" },
-                    new { Text = "Number Sequence", Url = "/numbersequence" },
+                    new { Text = $"{_localizer["Nav.StockReceipt.StockingInstructions"]}", Url = "/warehouse-receiptlist" },
+                    new { Text = $"{_localizer["Nav.StockReceipt.PutAway"]}", Url = "/PutAway" },
+                    })
+                    {
+                        <li>
+                            <NavLink class="nav-link" href="@item.Url" Match="NavLinkMatch.All" style="padding: 0!important;">
+                                <div class="btn btn-toggle" style="border-radius: 0 !important;">
+                                    <span class="link-dark" style="color: white;">@item.Text</span>
+                                </div>
+                            </NavLink>
+                        </li>
+                    }
+                </ul>
+            </div>
+        </li>
+        <li class="mb-1">
+            <a class="btn btn-toggle align-items-center management-button @(isCollapsedIssue ? "expanded" : "collapsed")" @onclick="ToggleCollapseIssue" style="color: white; border-radius: 0 !important;">
+                <i class="fa fa-truck"></i>
+                @_localizer["Nav.Issue"]
+                <span class="fa fa-chevron-down" style="float: right;"></span>
+            </a>
+            <div class="collapse @(isCollapsedIssue ? "show" : "")" style="margin-top: 10px;margin-left: 20px;">
+                <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
+                    @foreach (var item in new[]
+                    {
+                    new { Text = $"{_localizer["Nav.Issue.ShippingInstructions"]}", Url = "/ShippingInstructions" },
+                    new { Text = $"{_localizer["Nav.Issue.Pick"]}", Url = "/Picking" },
+                    new { Text = $"{_localizer["Nav.Issue.Packing"]}", Url = "/Packing" },
+                    new { Text = $"{_localizer["Nav.Issue.Returns"]}", Url = "/Returns" },
+                    })
+                    {
+                        <li>
+                            <NavLink class="nav-link" href="@item.Url" Match="NavLinkMatch.All" style="padding: 0!important;">
+                                <div class="btn btn-toggle" style="border-radius: 0 !important;">
+                                    <span class="link-dark" style="color: white;">@item.Text</span>
+                                </div>
+                            </NavLink>
+                        </li>
+                    }
+                </ul>
+            </div>
+        </li>
+        <li class="mb-1">
+            <a class="btn btn-toggle align-items-center management-button @(isCollapsedInventoryManagement ? "expanded" : "collapsed")" @onclick="ToggleCollapseInventoryManagement" style="color: white; border-radius: 0 !important;">
+                <i class="fa fa-sitemap"></i>
+                @_localizer["Nav.InventoryManagement"]
+                <span class="fa fa-chevron-down" style="float: right;"></span>
+            </a>
+            <div class="collapse @(isCollapsedInventoryManagement ? "show" : "")" style="margin-top: 10px;margin-left: 20px;">
+                <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
+                    @foreach (var item in new[]
+                    {
+                    new { Text = $"{_localizer["Nav.InventoryManagement.WHTransfer"]}", Url = "/WHTransfer" },
+                    new { Text = $"{_localizer["Nav.InventoryManagement.WHMovement"]}", Url = "/WHMovement" },
+                    new { Text = $"{_localizer["Nav.InventoryManagement.StockInformation"]}", Url = "/StockInformation" },
+                    new { Text = $"{_localizer["Nav.InventoryManagement.InventoryHistory"]}", Url = "/InventoryHistory" },
+                    })
+                    {
+                        <li>
+                            <NavLink class="nav-link" href="@item.Url" Match="NavLinkMatch.All" style="padding: 0!important;">
+                                <div class="btn btn-toggle" style="border-radius: 0 !important;">
+                                    <span class="link-dark" style="color: white;">@item.Text</span>
+                                </div>
+                            </NavLink>
+                        </li>
+                    }
+                </ul>
+            </div>
+        </li>
+        <li class="mb-1">
+            <a class="btn btn-toggle align-items-center management-button @(isCollapsedInventory ? "expanded" : "collapsed")" @onclick="ToggleCollapseInventory" style="color: white; border-radius: 0 !important;">
+                <i class="fa fa-table"></i>
+                @_localizer["Nav.Inventory"]
+                <span class="fa fa-chevron-down" style="float: right;"></span>
+            </a>
+            <div class="collapse @(isCollapsedInventory ? "show" : "")" style="margin-top: 10px;margin-left: 20px;">
+                <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
+                    @foreach (var item in new[]
+                    {
+                    new { Text = $"{_localizer["Nav.Inventory.Instructions"]}", Url = "/Instructions" },
+                    new { Text = $"{_localizer["Nav.Inventory.Recording"]}", Url = "/Recording" },
+                    })
+                    {
+                        <li>
+                            <NavLink class="nav-link" href="@item.Url" Match="NavLinkMatch.All" style="padding: 0!important;">
+                                <div class="btn btn-toggle" style="border-radius: 0 !important;">
+                                    <span class="link-dark" style="color: white;">@item.Text</span>
+                                </div>
+                            </NavLink>
+                        </li>
+                    }
+                </ul>
+            </div>
+        </li>
+        <li class="mb-1">
+            <a class="btn btn-toggle align-items-center management-button @(isCollapsedMasterManagement ? "expanded" : "collapsed")" @onclick="ToggleCollapseMasterManagement" style="color: white; border-radius: 0 !important;">
+                <i class="fa fa-server"></i>
+                @_localizer["Nav.MasterManagement"]
+                <span class="fa fa-chevron-down" style="float: right;"></span>
+            </a>
+            <div class="collapse @(isCollapsedMasterManagement ? "show" : "")" style="margin-top: 10px;margin-left: 20px;">
+                <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
+                    @foreach (var item in new[]
+                    {
+                    new { Text = $"{_localizer["Nav.MasterManagement.UserList"]}", Url = "/userlist" },
+                    new { Text =$"{_localizer["Nav.MasterManagement.RolesList"]}", Url = "/rolelist" },
+                    new { Text = $"{_localizer["Nav.MasterManagement.PermissionList"]}", Url = "/permissionlist" },
+                    new { Text = $"{_localizer["Nav.MasterManagement.Products"]}", Url = "/productlist" },
+                    new { Text = $"{_localizer["Nav.MasterManagement.Suppliers"]}", Url = "/supplierlist" },
+                    new { Text = $"{_localizer["Nav.MasterManagement.Locations"]}", Url = "/locationlist" },
+                    new { Text = $"{_localizer["Nav.MasterManagement.Devices"]}", Url = "/devicelist" },
+                    new { Text = $"{_localizer["Nav.MasterManagement.Units"]}", Url = "/unitlist" },
+                    new { Text = $"{_localizer["Nav.MasterManagement.ProductCategory"]}", Url = "/procategorylist" },
+                    })
+                    {
+                        <li>
+                            <NavLink class="nav-link" href="@item.Url" Match="NavLinkMatch.All" style="padding: 0!important;">
+                                <div class="btn btn-toggle" style="border-radius: 0 !important;">
+                                    <span class="link-dark" style="color: white;">@item.Text</span>
+                                </div>
+                            </NavLink>
+                        </li>
+                    }
+                </ul>
+            </div>
+        </li>
+        <li class="mb-1">
+            <a class="btn btn-toggle align-items-center management-button @(isCollapsedSystemManagement ? "expanded" : "collapsed")" @onclick="ToggleCollapseSystemManagement" style="color: white; border-radius: 0 !important;">
+                <i class="fa fa-cog"></i>
+                @_localizer["Nav.SystemManagement"]
+                <span class="fa fa-chevron-down" style="float: right;"></span>
+            </a>
+            <div class="collapse @(isCollapsedSystemManagement ? "show" : "")" style="margin-top: 10px;margin-left: 20px;">
+                <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
+                    @foreach (var item in new[]
+                    {
+                    new { Text = $"{_localizer["Nav.SystemManagement.NumberSequence"]}", Url = "/numbersequence" },
+                    new { Text = $"{_localizer["Nav.SystemManagement.Batches"]}", Url = "/batches" },
                     })
                     {
                         <li>

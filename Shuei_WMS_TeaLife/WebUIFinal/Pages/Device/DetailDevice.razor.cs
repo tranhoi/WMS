@@ -2,6 +2,7 @@
 using Application.Enums;
 using Microsoft.AspNetCore.Components;
 using Radzen;
+using System.Security.Cryptography;
 using WebUIFinal.Core;
 using DeviceEntity = Domain.Entity.WMS.Device;
 
@@ -21,57 +22,42 @@ namespace WebUIFinal.Pages.Device
 
         protected override async Task OnInitializedAsync()
         {
+            await RefreshDataAsync();
+            await GetUsersWithRole();
             await base.OnInitializedAsync();
-
-            if (Title.Contains("Detail")) isDisabled = true;
-
-            if (Title.Contains("|"))
+        }
+        async Task RefreshDataAsync()
+        {
+            try
             {
-                var sub = Title.Split('|');
-                Title = sub[0];
-
-                if (Guid.TryParse(sub[1], out Guid guid))
+                if (Title.Contains("|"))
                 {
-                    Id = guid;
-                }
-            }
+                    if (Title.Contains("Detail")) isDisabled = true;
+                    var arr = Title.Split('|');
+                    Title = arr[0];
+                    Id = Guid.Parse(arr[1]);
 
-            #region Get info
-            if (Id.HasValue && Id != Guid.Empty)
-            {
-                var arg = await _deviceServices.GetByIdAsync(Id.Value);
-                if (arg == null)
-                {
-                    _notificationService.Notify(new NotificationMessage()
+                    var res = await _deviceServices.GetByIdAsync(Id.Value);
+
+                    if (res.Succeeded)
                     {
-                        Severity = NotificationSeverity.Error,
-                        Summary = "Error",
-                        Detail = "Result null",
-                        Duration = 1000
-                    });
-
-                    return;
+                        _model = res.Data;
+                    }
                 }
-
-                _model.Id = arg.Data.Id;
-                _model.Name = arg.Data.Name;
-                _model.Type = arg.Data.Type;
-                _model.Model = arg.Data.Model;
-                _model.ActiveUser = arg.Data.ActiveUser;
-                _model.Description = arg.Data.Description;
-                _model.OS = arg.Data.OS;
-                _model.CPU = arg.Data.CPU;
-                _model.Memory = arg.Data.Memory;
-                _model.Status = selectStatus.ToString();
-
-                if (!string.IsNullOrEmpty(arg.Data.Status))
-                {
-                    selectStatus = CommonHelpers.ParseEnum<Status>(arg.Data.Status);
-                }
+                StateHasChanged();
             }
-            #endregion
-            StateHasChanged();
-            GetUsersWithRole();
+            catch (UnauthorizedAccessException) { }
+            catch (Exception ex)
+            {
+                _notificationService.Notify(new NotificationMessage
+                {
+                    Severity = NotificationSeverity.Error,
+                    Summary = "Error",
+                    Detail = ex.Message,
+                    Duration = 5000
+                });
+                return;
+            }
         }
         async Task GetUsersWithRole()
         {
@@ -101,7 +87,7 @@ namespace WebUIFinal.Pages.Device
         }
         async Task Submit(DeviceEntity arg)
         {
-            var confirm = await _dialogService.Confirm($"Do you want to Save: {arg.Name}?", "Save", new ConfirmOptions()
+            var confirm = await _dialogService.Confirm($"Do you want to save: {arg.Name}?", "Save", new ConfirmOptions()
             {
                 OkButtonText = "Yes",
                 CancelButtonText = "No",
@@ -125,7 +111,7 @@ namespace WebUIFinal.Pages.Device
                         Duration = 5000
                     });
 
-                    _navigation.NavigateTo("/device", true);
+                    _navigation.NavigateTo("/devicelist", true);
                 }
                 else
                 {
@@ -152,7 +138,7 @@ namespace WebUIFinal.Pages.Device
                         Duration = 5000
                     });
 
-                    _navigation.NavigateTo("/device", true);
+                    _navigation.NavigateTo("/devicelist", true);
                 }
                 else
                 {
@@ -191,7 +177,7 @@ namespace WebUIFinal.Pages.Device
                         Duration = 5000
                     });
 
-                    _navigation.NavigateTo("/device", true);
+                    _navigation.NavigateTo("/devicelist", true);
                     StateHasChanged();
                 }
                 else

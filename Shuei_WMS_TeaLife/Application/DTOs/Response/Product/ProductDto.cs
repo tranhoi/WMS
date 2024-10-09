@@ -7,7 +7,7 @@ namespace Application.DTOs.Response.Product
         [Key] public int Id { get; set; }
 
         public string? ProductName { get; set; }
-
+        public int? StockAvailableQuantity { get; set; }
         public string? ProductCode { get; set; }
         public string? SupplierName { get; set; }
         public int? ProductStatus { get; set; }

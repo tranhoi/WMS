@@ -23,7 +23,7 @@ namespace WebUIFinal.Pages.Product
         {
             try
             {
-                var confirm = await _dialogService.Confirm($"Are you sure you want to delete product: {model.ProductName}?", "Delete product", new ConfirmOptions()
+                var confirm = await _dialogService.Confirm(_localizer["Confirmation.Delete"] + _localizer["Product"] + $": {model.ProductName}?", _localizer["Delete"]+ " " +_localizer["Product.Name"], new ConfirmOptions()
                 {
                     OkButtonText = "Yes",
                     CancelButtonText = "No",

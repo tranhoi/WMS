@@ -25,7 +25,8 @@
         public static class Identity
         {
             public const string BasePath = "api/account";
-            public const string Login = "identity/login";
+            public const string Login = "identity/loginasync";
+            public const string LoginHt = "identity/loginht";
             public const string CreateAccount = "identity/create";
             public const string RefreshToken = "identity/refresh-token";
             public const string CreateRole = "identity/role/create";
@@ -74,6 +75,7 @@
             public const string GetFillter = "GetFillter";
             public const string UploadProductImage = "UploadProductImage";
             public const string GetProductListAsync = "get-product-list";
+            public const string GetByProductCodeAsync = "get-by-product-code";
         }
         public static class ProductCategories
         {
@@ -188,6 +190,10 @@
         {
             public const string BasePath = "api/WarehouseReceiptOrder";
             public const string GetByMasterCodeAsync = "GetByMasterCodeAsync/{receiptNo}";
+            public const string InsertWarehouseReceiptOrder = "insert-warehouse-receipt";
+            public const string UpdateWarehouseReceiptOrder = "update-warehouse-receipt";
+            public const string GetReceiptOrderAsync = "get-receipt-order";
+            public const string GetReceiptOrderListAsync = "get-receipt-order-list";
         }
         public static class WarehouseReceiptOrderLine
         {
@@ -214,6 +220,50 @@
         public static class Batches
         {
             public const string BasePath = "api/Batches";
+        }
+
+        public static class WarehouseShipment
+        {
+            public const string BasePath = "api/WarehouseShipment";
+            public const string GetByMasterCodeAsync = "GetByMasterCodeAsync/{shipmentNo}";
+        }
+        public static class WarehouseShipmentLine
+        {
+            public const string BasePath = "api/WarehouseShipmentLine";
+            public const string GetByMasterCodeAsync = "GetByMasterCodeAsync/{shipmentNo}";
+        }
+        public static class WarehousePickingList
+        {
+            public const string BasePath = "api/WarehousePickingList";
+            public const string GetByMasterCodeAsync = "GetByMasterCodeAsync/{pickNo}";
+        }
+        public static class WarehousePickingLinne
+        {
+            public const string BasePath = "api/WarehousePickingLinne";
+            public const string GetByMasterCodeAsync = "GetByMasterCodeAsync/{pickNo}";
+        }
+        public static class WarehousePickingStaging
+        {
+            public const string BasePath = "api/WarehousePickingStaging";
+            public const string GetByMasterCodeAsync = "GetByMasterCodeAsync/{pickNo}";
+        }
+        public static class WarehousePackingList
+        {
+            public const string BasePath = "api/WarehousePackingList";
+            public const string GetByMasterCodeAsync = "GetByMasterCodeAsync/{shipmentNo}";
+        }
+        public static class WarehousePackingLine
+        {
+            public const string BasePath = "api/WarehousePackingLine";
+            public const string GetByMasterCodeAsync = "GetByMasterCodeAsync/{shipmentNo}";
+        }
+        public static class ShippingBox
+        {
+            public const string BasePath = "api/ShippingBox";
+        }
+        public static class ShippingCarier
+        {
+            public const string BasePath = "api/ShippingCarier";
         }
     }
 }

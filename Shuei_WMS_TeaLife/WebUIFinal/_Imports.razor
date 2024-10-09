@@ -3,6 +3,7 @@
 @using Application.Services
 @using Application.Services.Authen
 @using Application.Services.Authen.UI
+@using Application.Services.Inbound
 @using Application.Services.Suppliers
 @using Microsoft.AspNetCore.Components.Authorization
 @using Microsoft.AspNetCore.Components.Forms
@@ -13,9 +14,12 @@
 @using Microsoft.JSInterop
 @using WebUIFinal
 @using WebUIFinal.Layout
-
 @using Radzen
 @using Radzen.Blazor
+@using Microsoft.Extensions.Localization
+
+@* @inject IStringLocalizer<CommonResources> _localizer *@
+
 
 @inject IJSRuntime _jsRuntime
 
@@ -45,3 +49,6 @@
 @inject INumberSequences _numberSequenceServices
 @inject IProductCategory _productCategoryServices
 @inject IProductJanCodes _productJanCodeService
+@inject IBatches _batchServices
+@inject IWarehouseReceiptOrder _warehouseReceiptOrderService
+@inject IWarehouseReceiptOrderLine _warehouseReceiptOrderLineService

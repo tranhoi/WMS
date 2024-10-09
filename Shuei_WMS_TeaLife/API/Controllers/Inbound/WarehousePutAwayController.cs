@@ -14,11 +14,11 @@ namespace API.Controllers.Inbound
     [Authorize]
     [Route("api/[controller]")]
     [ApiController]
-    public class WarehousePutAwayController : BaseController<Guid, WarehousePutAway>,IWarehousePutAway
+    public class WarehousePutAwayController : BaseController<Guid, WarehousePutAway>, IWarehousePutAway
     {
         readonly Repository _repository;
 
-        public WarehousePutAwayController(Repository repository = null!):base(repository.SWarehousePutAways)
+        public WarehousePutAwayController(Repository repository = null!) : base(repository.SWarehousePutAways)
         {
             _repository = repository;
         }

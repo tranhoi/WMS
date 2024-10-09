@@ -238,15 +238,12 @@ namespace WebUIFinal.Pages.Components
                     var userInfoUpdate = new UpdateUserInfoRequestDTO();
                     userInfoUpdate.Id = _id;
                     userInfoUpdate.UserName = arg.UserName;
-                    userInfoUpdate.Password = arg.Password;
                     userInfoUpdate.Email = arg.Email;
                     userInfoUpdate.FullName = arg.FullName;
                     userInfoUpdate.Status = arg.Status;
                     userInfoUpdate.Roles = arg.Roles;
 
                     var res = await _authenServices.UpdateUserInfoAsync(userInfoUpdate);
-
-
 
                     if (res.Flag)
                     {

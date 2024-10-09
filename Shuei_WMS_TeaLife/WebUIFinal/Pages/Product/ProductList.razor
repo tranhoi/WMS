@@ -5,6 +5,8 @@
 @using WebUIFinal.Core
 @using ProductModel = Domain.Entity.Commons.Product
 
+@inject IStringLocalizer<CommonResources> _localizer
+
 @attribute [Authorize]
 @if (_products == null)
 {
@@ -15,28 +17,28 @@ else
     <RadzenTemplateForm Data="@_searchModel" Submit="@((ProductSearchModel args) => { OnSearch(args); })">
         <RadzenRow Gap="2rem" class="rz-p-0 rz-p-lg-4">
             <RadzenColumn Size="12" SizeMD="12">
-                <RadzenFieldset Text="Search Product Records">
+                <RadzenFieldset Text="@_localizer["Product.SearchProduct"]">
                     <RadzenStack Gap="5px">
                         <RadzenRow AlignItems="AlignItems.Center">
                             <RadzenColumn SizeXS="12" SizeSM="3">
-                                <RadzenFormField Text="Product Code" Variant="Variant.Outlined" Style="width:100%">
+                                <RadzenFormField Text="@_localizer["Product.Code"]" Variant="Variant.Outlined" Style="width:100%">
                                     <RadzenTextBox Name="productCode" @bind-Value="@_searchModel.ProductCode" Placeholder="Enter product code" />
                                 </RadzenFormField>
                             </RadzenColumn>
                             <RadzenColumn SizeXS="12" SizeSM="3">
-                                <RadzenFormField Text="Product Name" Variant="Variant.Outlined" Style="width:100%">
+                                <RadzenFormField Text="@_localizer["Product.Name"]" Variant="Variant.Outlined" Style="width:100%">
                                     <RadzenTextBox Name="productName" @bind-Value="@_searchModel.ProductName" Placeholder="Enter product name" />
                                 </RadzenFormField>
                             </RadzenColumn>
                             <RadzenColumn SizeXS="12" SizeSM="3">
-                                <RadzenFormField Text="Status" Variant="Variant.Outlined" Style="width: 100%;">
+                                <RadzenFormField Text="@_localizer["Status"]" Variant="Variant.Outlined" Style="width: 100%;">
                                     <RadzenDropDown @bind-Value="@_searchModel.ProductStatus" Data=@(Enum.GetValues(typeof(EnumProductStatus)).Cast<Enum>()) Name="_dropDownStatus"
                                                     Multiple=false AllowClear=true Placeholder="Select status" Chips=true />
                                 </RadzenFormField>
                             </RadzenColumn>
                             <RadzenColumn SizeXS="6" SizeSM="3">
                                 <RadzenStack Orientation="Radzen.Orientation.Horizontal" JustifyContent="Radzen.JustifyContent.Center" AlignItems="AlignItems.Center" Gap="1rem" Wrap="Radzen.FlexWrap.Wrap" class="rz-mt-2">
-                                    <RadzenButton Variant="Variant.Flat" Text="Search" Icon="search" ButtonType="Radzen.ButtonType.Submit" Size="ButtonSize.Large" />
+                                    <RadzenButton Variant="Variant.Flat" Text="@_localizer["Search"]" Icon="search" ButtonType="Radzen.ButtonType.Submit" Size="ButtonSize.Large" />
                                 </RadzenStack>
                             </RadzenColumn>
                         </RadzenRow>
@@ -48,12 +50,13 @@ else
     <RadzenRow Gap="2rem" Class="rz-p-0 rz-p-lg-4">
         <RadzenColumn SizeXS="12" SizeMD="12">
             <RadzenStack>
-                <RadzenFieldset Text="Products list">
+
+                <RadzenFieldset Text="@_localizer["Product.List"]">
                     <RadzenStack Orientation=Radzen.Orientation.Vertical JustifyContent="Radzen.JustifyContent.Center" AlignItems="AlignItems.Stretch" Gap="5px">
                         <RadzenStack Orientation="Radzen.Orientation.Horizontal" JustifyContent="Radzen.JustifyContent.End"
                                      AlignItems="AlignItems.Center" Gap="1rem" Wrap="Radzen.FlexWrap.Wrap" class="rz-mt-2">
                             <RadzenButton Click=@(args => AddNewItemAsync()) Variant="Variant.Flat" Shade="Shade.Dark"
-                                          Text="Add New" Icon="add_circle" ButtonStyle="ButtonStyle.Success" />
+                                          Text="@_localizer["Create"]" Icon="add_circle" ButtonStyle="ButtonStyle.Success" />
                         </RadzenStack>
                         <RadzenDataGrid @ref="_profileGrid" AllowFiltering="true" FilterPopupRenderMode="PopupRenderMode.OnDemand" AllowPaging="true" PageSize="5" AllowSorting="true"
                                         Data="@_filteredModel" TItem="ProductDto" AllowColumnPicking="true" AllowColumnResize="true" AllowGrouping="false"
@@ -78,12 +81,12 @@ else
                                         </RadzenStack>
                                     </Template>
                                 </RadzenDataGridColumn>
-                                <RadzenDataGridColumn TItem="ProductDto" Width="200px" Property="ProductCode" Title="Product Code" TextAlign="TextAlign.Center" />
-                                <RadzenDataGridColumn TItem="ProductDto" Width="200px" Property="ProductName" Title="Product Name" TextAlign="TextAlign.Center" />
-                                <RadzenDataGridColumn TItem="ProductDto" Width="200px" Property="CategoryName" Title="Category Name" TextAlign="TextAlign.Center" />
-                                <RadzenDataGridColumn TItem="ProductDto" Width="200px" Property="SupplierName" Title="Supplier Name" TextAlign="TextAlign.Center" />
-                                <RadzenDataGridColumn TItem="ProductDto" Width="200px" Property="UnitName" Title="Unit" TextAlign="TextAlign.Center" />
-                                <RadzenDataGridColumn TItem="ProductDto" Width="200px" Property="ProductStatusString" Title="Status" TextAlign="TextAlign.Center" />
+                                <RadzenDataGridColumn TItem="ProductDto" Width="200px" Property="ProductCode" Title="@_localizer["Product.Code"]" TextAlign="TextAlign.Center" />
+                                <RadzenDataGridColumn TItem="ProductDto" Width="200px" Property="ProductName" Title="@_localizer["Product.Name"]" TextAlign="TextAlign.Center" />
+                                <RadzenDataGridColumn TItem="ProductDto" Width="200px" Property="CategoryName" Title="@_localizer["Category"]" TextAlign="TextAlign.Center" />
+                                <RadzenDataGridColumn TItem="ProductDto" Width="200px" Property="SupplierName" Title="@_localizer["Supplier.Code"]" TextAlign="TextAlign.Center" />
+                                <RadzenDataGridColumn TItem="ProductDto" Width="200px" Property="UnitName" Title="@_localizer["Unit"]" TextAlign="TextAlign.Center" />
+                                <RadzenDataGridColumn TItem="ProductDto" Width="200px" Property="ProductStatusString" Title="@_localizer["Status"]" TextAlign="TextAlign.Center" />
                             </Columns>
                         </RadzenDataGrid>
                     </RadzenStack>

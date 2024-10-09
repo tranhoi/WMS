@@ -2,6 +2,8 @@
 @using Application.DTOs.Request.Account
 @using Application.DTOs.Response.Account
 
+@inject IStringLocalizer<CommonResources> _localizer
+
 @if (_model == null)
 {
     <p><em>Loading...</em></p>
@@ -10,7 +12,7 @@ else
 {
       <RadzenRow>
         <RadzenColumn Size="12" SizeSM="12">
-            <RadzenLink Text="Back to Role List" Path="/rolelist" Icon="arrow_back_ios" Style="margin-bottom: 1rem;" />
+            <RadzenLink Text="@_localizer["RoleList"]" Path="/rolelist" Icon="arrow_back_ios" Style="margin-bottom: 1rem;" />
         </RadzenColumn>
     </RadzenRow>
     <RadzenTabs />
@@ -22,7 +24,7 @@ else
     <RadzenTemplateForm Data="@_model" Submit="@((CreateRoleRequestDTO args) => { Submit(args); })">
         <RadzenRow Gap="2rem" class="rz-p-0 rz-p-lg-4">
             <RadzenColumn Size="12" SizeMD="12">
-                <RadzenFormField Text="Name" Variant="Variant.Outlined" Style="display:flex;flex-direction:column;align-items:stretch;width:100%">
+                <RadzenFormField Text="@_localizer["RoleName"]" Variant="Variant.Outlined" Style="display:flex;flex-direction:column;align-items:stretch;width:100%">
                     <RadzenTextBox Name="_txtName" @bind-Value="@_model.Name" Placeholder="Typing..." />
                 </RadzenFormField>
                 <RadzenRequiredValidator Component="_txtName" Popup="false" Style="position: absolute" />
@@ -30,7 +32,7 @@ else
             </RadzenColumn>
         </RadzenRow>
         <RadzenStack Orientation="Radzen.Orientation.Horizontal" JustifyContent="Radzen.JustifyContent.Center" Gap="1rem" Class="rz-mt-8 rz-mb-4">
-            <RadzenButton ButtonType="Radzen.ButtonType.Submit" Size="ButtonSize.Large" Icon="save" Text="Save" Visible="@_visibleBtnSubmit" />
+            <RadzenButton ButtonType="Radzen.ButtonType.Submit" Size="ButtonSize.Large" Icon="save" Text="@_localizer["Save"]" Visible="@_visibleBtnSubmit" />
         </RadzenStack>
     </RadzenTemplateForm>
 }

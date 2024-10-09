@@ -26,57 +26,6 @@ namespace WebUIFinal.Pages
             await base.OnInitializedAsync();
         }
 
-        async void OnLogin(LoginArgs args)
-        {
-            Console.WriteLine($"Username: {args.Username} and password: {args.Password}");
-            try
-            {
-                var result = await _authenServices.LoginAccountAsync(new LoginRequestDTO()
-                {
-                    EmailAddress = args.Username,
-                    Password = args.Password
-                });
-
-                //Fail
-                if (!result.Flag)
-                {
-                    _notificationService.Notify(new NotificationMessage
-                    {
-                        Severity = NotificationSeverity.Error,
-                        Summary = "Error",
-                        Detail = result.Message,
-                        Duration = 5000
-                    });
-                    return;
-                }
-
-                token = result.Token;
-                login = result;
-
-                _notificationService.Notify(new NotificationMessage
-                {
-                    Severity = NotificationSeverity.Success,
-                    Summary = "Successfull",
-                    Detail = "Login OK",
-                    Duration = 5000
-                });
-                //await InvokeAsync(StateHasChanged);
-                //StateHasChanged();
-
-                _navigation.NavigateTo("/productlist");
-            }
-            catch (Exception ex)
-            {
-                _notificationService.Notify(new NotificationMessage
-                {
-                    Severity = NotificationSeverity.Error,
-                    Summary = "Error",
-                    Detail = $"Login fail: {ex.Message}",
-                    Duration = 5000
-                });
-            }
-        }
-
         async void Submit(LoginRequestDTO arg)
         {
             Console.WriteLine($"Username: {arg.EmailAddress} and password: {arg.Password}");
@@ -114,7 +63,7 @@ namespace WebUIFinal.Pages
                 //await InvokeAsync(StateHasChanged);
                 //StateHasChanged();
 
-                _navigation.NavigateTo("/userlist");
+                _navigation.NavigateTo("/productlist");
             }
             catch (Exception ex)
             {

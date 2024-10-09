@@ -1,5 +1,6 @@
 ﻿@page "/addpermission/{Title}"
 @using Application.DTOs.Response.Account
+@inject IStringLocalizer<CommonResources> _localizer
 
 @if (_roles.Count <= 0 || _model == null)
 {
@@ -9,7 +10,7 @@ else
 {
       <RadzenRow>
         <RadzenColumn Size="12" SizeSM="12">
-            <RadzenLink Text="Back to Permission List" Path="/permissionlist" Icon="arrow_back_ios" Style="margin-bottom: 1rem;" />
+            <RadzenLink Text="@_localizer["Permission.List"]" Path="/permissionlist" Icon="arrow_back_ios" Style="margin-bottom: 1rem;" />
         </RadzenColumn>
     </RadzenRow>
     <RadzenTabs />
@@ -25,20 +26,20 @@ else
                     <RadzenStack Gap="5px">
                         <RadzenRow AlignItems="AlignItems.Center" class="mt-4">
                             <RadzenColumn SizeXS="12" SizeSM="6">
-                                <RadzenFormField Text="Name" Variant="Variant.Outlined" Style="display:flex;flex-direction:column;align-items:stretch;width:100%">
+                                <RadzenFormField Text="@_localizer["Permission.Name"]" Variant="Variant.Outlined" Style="display:flex;flex-direction:column;align-items:stretch;width:100%">
                                     <RadzenTextBox Name="_txtName" @bind-Value="@_model.Name" Placeholder="Typing..." />
                                 </RadzenFormField>
                                 <RadzenRequiredValidator Component="_txtName" Popup="false" Style="position: absolute" />
                                 <RadzenRegexValidator Component="_txtName" Text="Only English letters allowed" Pattern="^[a-zA-Z\s]+$" />
                             </RadzenColumn>
                             <RadzenColumn SizeXS="12" SizeSM="6">
-                                <RadzenFormField Text="Description" Variant="Variant.Outlined" Style="display:flex;flex-direction:column;align-items:stretch;width:100%">
+                                <RadzenFormField Text="@_localizer["Description"]" Variant="Variant.Outlined" Style="display:flex;flex-direction:column;align-items:stretch;width:100%">
                                     <RadzenTextBox Name="_txtDescription" @bind-Value="@_model.Description" Placeholder="Typing..." />
                                 </RadzenFormField>
                                 <RadzenRequiredValidator Component="_txtDescription" Popup="false" Style="position: absolute" />
                             </RadzenColumn>
                             <RadzenColumn SizeXS="12" SizeSM="12">
-                                <RadzenFormField Text="Roles" Variant="Variant.Outlined" Style="display:flex;flex-direction:column;align-items:stretch;width:100%">
+                                <RadzenFormField Text="@_localizer["Role"]" Variant="Variant.Outlined" Style="display:flex;flex-direction:column;align-items:stretch;width:100%">
                                     <RadzenDropDown @bind-Value=@_selectedRoles Data=@_roles Name="_dropDownRoles"
                                                     TextProperty="@nameof(GetRoleResponseDTO.Name)" ValueProperty="@nameof(GetRoleResponseDTO.Id)"
                                                     Multiple=true AllowClear=true Placeholder="Select roles" Chips=true />

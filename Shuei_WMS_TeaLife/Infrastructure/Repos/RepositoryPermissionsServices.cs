@@ -223,8 +223,10 @@ namespace Infrastructure.Repos
         {
             try
             {
+                var c = dbContext.GetConnectionString();
+
                 var allPermission = new List<PermissionsListModel>();
-                using (var connection = new SqlConnection(dbContext.GetConnectionString()))
+                using (var connection = new SqlConnection(dbContext.Database.GetConnectionString()))
                 {
                     allPermission = connection.Query<PermissionsListModel>($"SELECT _per.*,_roleToPer.RoleId,_roleToPer.RoleName " +
                                $"FROM wms.[Permissions] _per " +

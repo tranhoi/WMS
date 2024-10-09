@@ -50,7 +50,7 @@ namespace Infrastructure.Migrations
 
                     b.HasKey("Code");
 
-                    b.ToTable("ApiCode");
+                    b.ToTable("ApiCode", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Entity.Commons.Channel", b =>
@@ -110,7 +110,7 @@ namespace Infrastructure.Migrations
 
                     b.HasIndex("ChannelMasterCodeNavigationChannelMasterCode");
 
-                    b.ToTable("Channels");
+                    b.ToTable("Channels", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Entity.Commons.ChannelMaster", b =>
@@ -141,7 +141,7 @@ namespace Infrastructure.Migrations
 
                     b.HasKey("ChannelMasterCode");
 
-                    b.ToTable("ChannelMasters");
+                    b.ToTable("ChannelMasters", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Entity.Commons.Company", b =>
@@ -167,7 +167,7 @@ namespace Infrastructure.Migrations
 
                     b.HasKey("CompanyTenantId");
 
-                    b.ToTable("Companys");
+                    b.ToTable("Companys", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Entity.Commons.CountryMaster", b =>
@@ -210,7 +210,7 @@ namespace Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("CountryMasters");
+                    b.ToTable("CountryMasters", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Entity.Commons.Currency", b =>
@@ -247,7 +247,7 @@ namespace Infrastructure.Migrations
 
                     b.HasKey("CurrencyCode");
 
-                    b.ToTable("Currencies");
+                    b.ToTable("Currencies", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Entity.Commons.CurrencyPairSetting", b =>
@@ -287,7 +287,7 @@ namespace Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("CurrencyPairSettings");
+                    b.ToTable("CurrencyPairSettings", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Entity.Commons.ExchangeRate", b =>
@@ -333,7 +333,7 @@ namespace Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("ExchangeRates");
+                    b.ToTable("ExchangeRates", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Entity.Commons.Order", b =>
@@ -465,7 +465,7 @@ namespace Infrastructure.Migrations
 
                     b.HasIndex("ChannelCodeNavigationChannelCode");
 
-                    b.ToTable("Orders");
+                    b.ToTable("Orders", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Entity.Commons.OrderItem", b =>
@@ -531,7 +531,7 @@ namespace Infrastructure.Migrations
 
                     b.HasIndex("OrderHeaderId");
 
-                    b.ToTable("OrderItems");
+                    b.ToTable("OrderItems", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Entity.Commons.OrderReturnItem", b =>
@@ -582,7 +582,7 @@ namespace Infrastructure.Migrations
 
                     b.HasIndex("OrderHeaderId");
 
-                    b.ToTable("OrderReturnItems");
+                    b.ToTable("OrderReturnItems", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Entity.Commons.OrderStatus", b =>
@@ -622,7 +622,7 @@ namespace Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("OrderStatuses");
+                    b.ToTable("OrderStatuses", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Entity.Commons.Product", b =>
@@ -758,7 +758,7 @@ namespace Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Products");
+                    b.ToTable("Products", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Entity.Commons.ProductBundle", b =>
@@ -812,7 +812,7 @@ namespace Infrastructure.Migrations
 
                     b.HasIndex("ParentProductId");
 
-                    b.ToTable("ProductBundles");
+                    b.ToTable("ProductBundles", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Entity.Commons.ProductJanCode", b =>
@@ -852,7 +852,7 @@ namespace Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("ProductJanCodes");
+                    b.ToTable("ProductJanCodes", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Entity.Commons.ProductStatus", b =>
@@ -889,7 +889,7 @@ namespace Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("ProductStatuses");
+                    b.ToTable("ProductStatuses", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Entity.Commons.ProductStock", b =>
@@ -935,7 +935,7 @@ namespace Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("ProductStocks");
+                    b.ToTable("ProductStocks", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Entity.Commons.SalesDatum", b =>
@@ -1005,7 +1005,7 @@ namespace Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("SalesDatums");
+                    b.ToTable("SalesDatums", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Entity.Commons.ShippingCountry", b =>
@@ -1042,7 +1042,7 @@ namespace Infrastructure.Migrations
 
                     b.HasKey("CountryCode");
 
-                    b.ToTable("ShippingCountries");
+                    b.ToTable("ShippingCountries", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Entity.Commons.SystemClassCompany", b =>
@@ -1115,7 +1115,7 @@ namespace Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("SystemClassCompanies");
+                    b.ToTable("SystemClassCompanies", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Entity.Commons.UserSetting", b =>
@@ -1134,7 +1134,7 @@ namespace Infrastructure.Migrations
 
                     b.HasKey("UserId");
 
-                    b.ToTable("UserSettings");
+                    b.ToTable("UserSettings", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Entity.Commons.UserVendor", b =>
@@ -1150,7 +1150,7 @@ namespace Infrastructure.Migrations
 
                     b.HasKey("UserId");
 
-                    b.ToTable("UserVendors");
+                    b.ToTable("UserVendors", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Entity.Commons.Vendor", b =>
@@ -1241,7 +1241,7 @@ namespace Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Vendors");
+                    b.ToTable("Vendors", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Entity.Commons.VendorBilling", b =>
@@ -1287,7 +1287,7 @@ namespace Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("VendorBilling");
+                    b.ToTable("VendorBilling", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Entity.Commons.VendorBillingDetail", b =>
@@ -1385,7 +1385,7 @@ namespace Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("VendorBillingDetail");
+                    b.ToTable("VendorBillingDetail", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Entity.Commons.WarehouseUserSetting", b =>
@@ -1419,7 +1419,7 @@ namespace Infrastructure.Migrations
 
                     b.HasKey("WarehouseUserId");
 
-                    b.ToTable("WarehouseUserSettings");
+                    b.ToTable("WarehouseUserSettings", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Entity.WMS.Authentication.ApplicationUser", b =>
@@ -2153,15 +2153,11 @@ namespace Infrastructure.Migrations
                     b.Property<string>("RoleNameNavigationRoleName")
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("UserId1")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
                     b.HasKey("UserId");
 
                     b.HasIndex("RoleNameNavigationRoleName");
 
-                    b.HasIndex("UserId1");
+                    b.HasIndex("UserId");
 
                     b.ToTable("UserToRole", "authp", t =>
                         {
@@ -2405,7 +2401,7 @@ namespace Infrastructure.Migrations
 
                     b.HasOne("Domain.Entity.authp.Commons.AuthUser", "User")
                         .WithMany("UserToRoles")
-                        .HasForeignKey("UserId1")
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 

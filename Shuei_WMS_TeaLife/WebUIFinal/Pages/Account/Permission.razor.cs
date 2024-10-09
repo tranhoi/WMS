@@ -26,7 +26,7 @@ namespace WebUIFinal.Pages.Account
         {
             try
             {
-                var confirm = await _dialogService.Confirm($"Are you sure you want to delete permission: {model.Name}?", "Delete pemission", new ConfirmOptions()
+                var confirm = await _dialogService.Confirm(_localizer["Confirmation.Delete"] + _localizer["Permission.Name"] + $": {model.Name}?", _localizer["Delete"] + " " + _localizer["Permission.Name"], new ConfirmOptions()
                 {
                     OkButtonText = "Yes",
                     CancelButtonText = "No",

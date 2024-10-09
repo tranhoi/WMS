@@ -25,7 +25,7 @@ namespace Infrastructure.IoC.DependencyInjection
         {
             services.AddDbContext<ApplicationDbContext>(o =>
                     o.UseSqlServer(config.GetConnectionString("DefaultConnection"))
-                        .EnableSensitiveDataLogging()
+                        .EnableSensitiveDataLogging(false)
             );
 
             // For Identity

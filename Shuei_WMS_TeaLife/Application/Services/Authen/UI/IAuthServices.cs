@@ -17,8 +17,9 @@ namespace Application.Services.Authen.UI
     public interface IAuthServices
     {
         Task<GeneralResponse> CreateSuperAdminAsync();
-        Task<GeneralResponse> CreateAccountAsync(CreateAccountRequestDTO model);
+        Task<GeneralResponse> CreateAccountAsync(CreateAccountRequestDTO model);        
         Task<LoginResponse> LoginAccountAsync(LoginRequestDTO model);
+        Task<LoginResponse> LoginAccountHTAsync(LoginRequestDTO model);
         Task<LoginResponse> RefreshTokenAsync();
         Task<GeneralResponse> CreateRoleAsysnc(CreateRoleRequestDTO model);
         Task<List<GetRoleResponseDTO>> GetRolesAsync();

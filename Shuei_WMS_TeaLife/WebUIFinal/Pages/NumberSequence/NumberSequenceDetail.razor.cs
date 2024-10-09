@@ -70,7 +70,7 @@ namespace WebUIFinal.Pages.NumberSequence
 
         async Task Submit(NumberSequenceEntity arg)
         {
-            var confirm = await _dialogService.Confirm($"Do you want to Save: {arg.JournalType}?", "number sequence", new ConfirmOptions()
+            var confirm = await _dialogService.Confirm($"Do you want to save: {arg.JournalType}?", "number sequence", new ConfirmOptions()
             {
                 OkButtonText = "Yes",
                 CancelButtonText = "No",

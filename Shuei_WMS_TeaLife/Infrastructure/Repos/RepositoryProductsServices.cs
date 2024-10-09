@@ -184,5 +184,42 @@ namespace Infrastructure.Repos
                 return await Result<IEnumerable<ProductDto>>.FailAsync($"{ex.Message}{Environment.NewLine}{ex.InnerException}");
             }
         }
+
+        public async Task<Result<ProductDto>> GetByProductCodeAsync(string code)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(code))
+                {
+                    return await Result<ProductDto>.FailAsync($"Product code is required");
+                }
+
+                var result = await dbContext.Products.Where(_ => _.ProductCode == code)
+                    .Join(dbContext.Units, x => x.UnitId, y => y.Id, (x, y) => new { x, y })
+                    .Select(_ => new ProductDto
+                    {
+                        Id = _.x.Id,
+                        ProductCode = _.x.ProductCode,
+                        ProductName = _.x.ProductName,
+                        ProductStatus = _.x.ProductStatus,
+                        UnitName = _.y.UnitName,
+                        ProductStatusString = ((EnumProductStatus)_.x.ProductStatus).ToString(),
+                        StockAvailableQuantity = _.x.StockAvailableQuanitty,
+                    }).FirstOrDefaultAsync();
+
+                if (result != null)
+                {
+                    return await Result<ProductDto>.SuccessAsync(result);
+                }
+                else
+                {
+                    return await Result<ProductDto>.FailAsync("");
+                }
+            }
+            catch (Exception ex)
+            {
+                return await Result<ProductDto>.FailAsync($"{ex.Message}{Environment.NewLine}{ex.InnerException}");
+            }
+        }
     }
 }

@@ -1,6 +1,7 @@
-using Application.Services;
+﻿using Application.Services;
 using Application.Services.Authen;
 using Application.Services.Authen.UI;
+using Application.Services.Inbound;
 using Application.Services.Suppliers;
 using Blazored.LocalStorage;
 using Microsoft.AspNetCore.Components.Authorization;
@@ -8,14 +9,31 @@ using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
 using Microsoft.AspNetCore.Components.WebAssembly.Authentication.Internal;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
+using Microsoft.Extensions.Hosting;
+using Microsoft.JSInterop;
 using Radzen;
 using RestEase.HttpClientFactory;
+using System.Globalization;
 using Toolbelt.Blazor.Extensions.DependencyInjection;
 using WebUIFinal;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.RootComponents.Add<App>("#app");
 builder.RootComponents.Add<HeadOutlet>("head::after");
+
+//// Thêm dịch vụ Localization
+builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");
+//builder.Services.AddLocalization();
+
+// Lấy ngôn ngữ đã lưu trong localStorage
+var jsInterop = builder.Build().Services.GetRequiredService<IJSRuntime>();
+var result = await jsInterop.InvokeAsync<string>("blazorCulture.get");
+var culture = result ?? "ja-JP";  // Nếu không tìm thấy ngôn ngữ trong localStorage, mặc định là "ja-JP"
+
+// Thiết lập ngôn ngữ cho ứng dụng
+CultureInfo.DefaultThreadCurrentCulture = new CultureInfo(culture);
+CultureInfo.DefaultThreadCurrentUICulture = new CultureInfo(culture);
+
 
 var config = builder.Configuration;
 
@@ -74,11 +92,14 @@ builder.Services.AddHttpClient("API")
     .UseWithRestEaseClient<IUserToTenant>()
     .UseWithRestEaseClient<IProductCategory>()
     .UseWithRestEaseClient<IUnits>()
-    .UseWithRestEaseClient<IProductJanCodes>() 
+    .UseWithRestEaseClient<IProductJanCodes>()
     .UseWithRestEaseClient<ISuppliers>()   
     .UseWithRestEaseClient<IBins>()    
     .UseWithRestEaseClient<IProductCategory>()
-    .UseWithRestEaseClient<INumberSequences>();
+    .UseWithRestEaseClient<INumberSequences>()
+    .UseWithRestEaseClient<IBatches>()
+    .UseWithRestEaseClient<IWarehouseReceiptOrder>() 
+    .UseWithRestEaseClient<IWarehouseReceiptOrderLine>(); 
 
 builder.Services.AddScoped<HttpClient>(sp => sp.GetRequiredService<IHttpClientFactory>().CreateClient("API"));
 

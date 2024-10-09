@@ -107,7 +107,7 @@ namespace WebUIFinal.Pages.Components
         }
         async void Submit(PermissionsListResponseDTO arg)
         {
-            var confirm = await _dialogService.Confirm($"Do you want to create a new permission: {arg.Name}?", "Create permission", new ConfirmOptions()
+            var confirm = await _dialogService.Confirm(_localizer["Confirmation.Create"] + _localizer["Permission.Name"] + $": {arg.Name}?", _localizer["Create"] + " " + _localizer["Permission.Name"], new ConfirmOptions()
             {
                 OkButtonText = "Yes",
                 CancelButtonText = "No",

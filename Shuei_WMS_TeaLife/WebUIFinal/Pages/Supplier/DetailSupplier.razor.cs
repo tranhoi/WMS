@@ -1,54 +1,50 @@
-﻿using Application.Enums;
-using Domain.Entity.Commons;
+﻿using Application.DTOs.Response.Account;
+using Application.Enums;
+using Domain.Entity.authp.Commons;
 using Microsoft.AspNetCore.Components;
 using Radzen;
+using System.Security.Cryptography;
 using WebUIFinal.Core;
-using SuppliersEntity = Domain.Entity.Commons.Supplier;
+using SupplierEntity = Domain.Entity.Commons.Supplier;
 
-namespace WebUIFinal.Pages.SupplierPage
+namespace WebUIFinal.Pages.Supplier
 {
-    public partial class DialogCardPageAddNewSupplier
+    public partial class DetailSupplier
     {
         [Parameter] public string Title { get; set; }
+        public string? Id { get; set; }
 
         private bool isDisabled = false;
-        private SuppliersEntity _model = new SuppliersEntity();
-        private List<string> _status = new List<string>();
-        private Status _selectStatus;
+        private SupplierEntity _model = new SupplierEntity();
+        private int? selectStatus;
 
-        bool _visibleBtnSubmit = true;
-        string _id = string.Empty;
+        List<TenantAuth> tenants = new();
 
         protected override async Task OnInitializedAsync()
         {
-            await base.OnInitializedAsync();
-
-
             await RefreshDataAsync();
+            await GetTenantsAsync();
+            await base.OnInitializedAsync();
         }
         async Task RefreshDataAsync()
         {
             try
             {
-                //_selectStatus = Status.Activated;
-
                 if (Title.Contains("|"))
                 {
-                    if (Title.Contains("View")) _visibleBtnSubmit = false;
+                    if (Title.Contains("Detail")) isDisabled = true;
                     var arr = Title.Split('|');
                     Title = arr[0];
-                    _id = arr[1];
+                    Id = arr[1];
 
-                    var res = await _suppliersServices.GetByIdAsync(int.Parse(_id));
+                    var res = await _suppliersServices.GetByIdAsync(int.Parse(Id));
 
                     if (res.Succeeded)
                     {
                         _model = res.Data;
+                        selectStatus = _model.TenantId;
                     }
-
-                    //_selectStatus = Status.Activated.ToString() == _model.Status ? Status.Activated : Status.Inactivated;
                 }
-
                 StateHasChanged();
             }
             catch (UnauthorizedAccessException) { }
@@ -64,11 +60,14 @@ namespace WebUIFinal.Pages.SupplierPage
                 return;
             }
         }
-
-
-        async void Submit(SuppliersEntity arg)
+        private async Task GetTenantsAsync()
         {
-            var confirm = await _dialogService.Confirm($"Do you want to Save: {arg.SupplierName}?", "Supplier", new ConfirmOptions()
+            var data = await _tenantsServices.GetAllAsync();
+            tenants.AddRange(data.Data);
+        }
+        async Task Submit(SupplierEntity arg)
+        {
+            var confirm = await _dialogService.Confirm($"Do you want to save: {arg.SupplierName}?", "Save", new ConfirmOptions()
             {
                 OkButtonText = "Yes",
                 CancelButtonText = "No",
@@ -77,18 +76,18 @@ namespace WebUIFinal.Pages.SupplierPage
 
             if (confirm == null || confirm == false) return;
 
-            arg.Status = _selectStatus.ToString();
+            arg.TenantId = (int)selectStatus;
 
-            if (string.IsNullOrEmpty(_id))//Add
+            if (Title.Contains("Create")) // Add new number sequence
             {
-                var res = await _suppliersServices.InsertAsync(_model);
+                var res = await _suppliersServices.InsertAsync(arg);
                 if (res.Succeeded)
                 {
                     _notificationService.Notify(new NotificationMessage()
                     {
                         Severity = NotificationSeverity.Success,
                         Summary = "Success",
-                        Detail = "Sucessfully created supplier",
+                        Detail = "Successfully created",
                         Duration = 5000
                     });
 
@@ -100,22 +99,22 @@ namespace WebUIFinal.Pages.SupplierPage
                     {
                         Severity = NotificationSeverity.Error,
                         Summary = "Error",
-                        Detail = "Failed to create supplier",
+                        Detail = "Failed to create",
                         Duration = 5000
                     });
                 }
             }
 
-            if (Title.Contains("Edit"))//update
+            if (Title.Contains("Edit")) // Update existing number sequence
             {
-                var res = await _suppliersServices.UpdateAsync(_model);
+                var res = await _suppliersServices.UpdateAsync(arg);
                 if (res.Succeeded)
                 {
                     _notificationService.Notify(new NotificationMessage()
                     {
                         Severity = NotificationSeverity.Success,
                         Summary = "Success",
-                        Detail = "Sucessfully edited supplier",
+                        Detail = "Successfully edited",
                         Duration = 5000
                     });
 
@@ -127,18 +126,17 @@ namespace WebUIFinal.Pages.SupplierPage
                     {
                         Severity = NotificationSeverity.Error,
                         Summary = "Error",
-                        Detail = "Failed to edit supplier",
+                        Detail = "Failed to edit",
                         Duration = 5000
                     });
                 }
             }
         }
-
-        async Task DeleteItemAsync(SuppliersEntity supplier)
+        async Task DeleteItemAsync(SupplierEntity _supplier)
         {
             try
             {
-                var confirm = await _dialogService.Confirm($"Are you sure you want to delete supplier: {supplier.SupplierName}?", "Delete supplier", new ConfirmOptions()
+                var confirm = await _dialogService.Confirm($"Are you sure you want to delete this: {_supplier.SupplierName}?", "Delete", new ConfirmOptions()
                 {
                     OkButtonText = "Yes",
                     CancelButtonText = "No",
@@ -147,7 +145,7 @@ namespace WebUIFinal.Pages.SupplierPage
 
                 if (confirm == null || confirm == false) return;
 
-                var res = await _suppliersServices.DeleteAsync(supplier);
+                var res = await _suppliersServices.DeleteAsync(_supplier);
 
                 if (res.Succeeded)
                 {
@@ -155,7 +153,7 @@ namespace WebUIFinal.Pages.SupplierPage
                     {
                         Severity = NotificationSeverity.Success,
                         Summary = "Success",
-                        Detail = $"Delete supplier {supplier.SupplierName} successfully.",
+                        Detail = $"Delete {_supplier.SupplierName} successfully.",
                         Duration = 5000
                     });
 
@@ -168,7 +166,7 @@ namespace WebUIFinal.Pages.SupplierPage
                     {
                         Severity = NotificationSeverity.Error,
                         Summary = "Error",
-                        Detail = $"Failed to delete supplier {supplier.SupplierName}.",
+                        Detail = $"Failed to delete {_supplier.SupplierName}.",
                         Duration = 5000
                     });
                 }
@@ -179,11 +177,9 @@ namespace WebUIFinal.Pages.SupplierPage
                 {
                     Severity = NotificationSeverity.Error,
                     Summary = "Error",
-                    Detail = $"Failed to delete supplier {supplier.SupplierName}.",
+                    Detail = $"Failed to delete {_supplier.SupplierName}.",
                     Duration = 5000
                 });
-
-                return;
             }
         }
     }
