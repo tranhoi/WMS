@@ -100,8 +100,8 @@ builder.Services.AddHttpClient("API")
     .UseWithRestEaseClient<INumberSequences>()
     .UseWithRestEaseClient<IBatches>()
     .UseWithRestEaseClient<IWarehouseReceiptOrder>() 
-    .UseWithRestEaseClient<IShippingCarrier>() 
-    .UseWithRestEaseClient<IWarehouseReceiptOrderLine>(); 
+    .UseWithRestEaseClient<IWarehouseReceiptOrderLine>()
+    .UseWithRestEaseClient<IShippingCarrier>();
 
 builder.Services.AddScoped<HttpClient>(sp => sp.GetRequiredService<IHttpClientFactory>().CreateClient("API"));
 
