@@ -2,6 +2,7 @@
 using Application.Services.Authen;
 using Application.Services.Authen.UI;
 using Application.Services.Inbound;
+using Application.Services.Outbound;
 using Application.Services.Suppliers;
 using Blazored.LocalStorage;
 using Microsoft.AspNetCore.Components.Authorization;
@@ -99,6 +100,7 @@ builder.Services.AddHttpClient("API")
     .UseWithRestEaseClient<INumberSequences>()
     .UseWithRestEaseClient<IBatches>()
     .UseWithRestEaseClient<IWarehouseReceiptOrder>() 
+    .UseWithRestEaseClient<IShippingCarrier>() 
     .UseWithRestEaseClient<IWarehouseReceiptOrderLine>(); 
 
 builder.Services.AddScoped<HttpClient>(sp => sp.GetRequiredService<IHttpClientFactory>().CreateClient("API"));

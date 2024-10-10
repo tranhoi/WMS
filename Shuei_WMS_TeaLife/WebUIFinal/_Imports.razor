@@ -4,6 +4,7 @@
 @using Application.Services.Authen
 @using Application.Services.Authen.UI
 @using Application.Services.Inbound
+@using Application.Services.Outbound
 @using Application.Services.Suppliers
 @using Microsoft.AspNetCore.Components.Authorization
 @using Microsoft.AspNetCore.Components.Forms
@@ -52,3 +53,4 @@
 @inject IBatches _batchServices
 @inject IWarehouseReceiptOrder _warehouseReceiptOrderService
 @inject IWarehouseReceiptOrderLine _warehouseReceiptOrderLineService
+@inject IShippingCarrier _shippingCarrierServices
