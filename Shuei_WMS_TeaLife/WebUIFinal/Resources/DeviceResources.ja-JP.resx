@@ -126,7 +126,7 @@
   <data name="Name" xml:space="preserve">
     <value>名前</value>
   </data>
-  <data name="Device.Model" xml:space="preserve">
+  <data name="Model" xml:space="preserve">
     <value>モデル</value>
   </data>
   <data name="Status" xml:space="preserve">
