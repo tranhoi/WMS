@@ -1,0 +1,125 @@
+﻿@page "/detaildevice/{Title}"
+
+@using Application.Extentions
+@using Domain.Enums;
+@using DeviceEntity = Domain.Entity.WMS.Device;
+@using Microsoft.AspNetCore.Authorization
+
+@inject IStringLocalizer<CommonResources> _localizerCommon
+@inject IStringLocalizer<DeviceResources> _localizer
+
+@attribute [Authorize(Policy = "Admin")]
+
+@if (_model == null)
+{
+    <p><em>@_localizer["Loading"]...</em></p>
+}
+else
+{
+    <RadzenRow>
+        <RadzenColumn Size="12" SizeSM="12">
+            <RadzenLink Text="@_localizerCommon["Detail.BackToList"]" Path="/devicelist" Icon="arrow_back_ios" Style="margin-bottom: 1rem;" />
+        </RadzenColumn>
+    </RadzenRow>
+    <RadzenRow>
+        <RadzenColumn Size="12" SizeSM="6">
+            <RadzenText TextStyle="TextStyle.Body1"><strong>@Title</strong></RadzenText>
+        </RadzenColumn>
+        @if (!Title.Contains($"{_localizerCommon["Detail.Create"]}"))
+        {
+            <RadzenColumn Size="12" SizeSM="6">
+                <RadzenStack Orientation="Radzen.Orientation.Horizontal" JustifyContent="Radzen.JustifyContent.End" AlignItems="AlignItems.Center" Gap=" 5px">
+                    <RadzenButton Click=@(args => DeleteItemAsync(_model)) Variant="Variant.Flat" Shade="Shade.Dark"
+                                  Text="@_localizerCommon["Delete"]" Icon="cancel" ButtonStyle="ButtonStyle.Danger" />
+                </RadzenStack>
+            </RadzenColumn>
+        }
+    </RadzenRow>
+    <RadzenTemplateForm Data="@_model" Submit="@((DeviceEntity args) => { Submit(args); })">
+        <RadzenRow Gap="2rem" class="rz-p-0 rz-p-lg-4">
+            <RadzenColumn Size="12" SizeMD="12">
+                <RadzenFieldset Text="@_localizer["Information"]" Disabled="@isDisabled">
+                    <RadzenStack Gap="5px">
+                        <RadzenRow AlignItems="AlignItems.Center" class="mt-3">
+                            <RadzenColumn SizeXS="12" SizeSM="6">
+                                <RadzenFormField Text="@_localizerCommon["Name"]" Variant="Variant.Outlined" Style="display:flex; flex-direction:column; align-items:stretch; width:100%">
+                                    <RadzenTextBox Name="_txtname" @bind-Value="@_model.Name" Style="color:black" />
+                                </RadzenFormField>
+                                <RadzenRequiredValidator Component="_txtname" Popup="false" Style="position: absolute" />
+                            </RadzenColumn>
+                            <RadzenColumn SizeXS="12" SizeSM="6">
+                                <RadzenFormField Text="@_localizer["Type"]" Variant="Variant.Outlined" Style="display:flex; flex-direction:column; align-items:stretch; width:100%">
+                                    <RadzenTextBox Name="_txtType" @bind-Value="@_model.Type" Style="color:black" />
+                                </RadzenFormField>
+                                <RadzenRequiredValidator Component="_txtType" Popup="false" Style="position: absolute" />
+                            </RadzenColumn>
+                        </RadzenRow>
+                        <RadzenRow AlignItems="AlignItems.Center" class="mt-3">
+                            <RadzenColumn SizeXS="12" SizeSM="6">
+                                <RadzenFormField Text="@_localizer["Model"]" Variant="Variant.Outlined" Style="display:flex; flex-direction:column; align-items:stretch; width:100%">
+                                    <RadzenTextBox Name="_txtModel" @bind-Value="@_model.Model" Style="color:black" />
+                                </RadzenFormField>
+                                <RadzenRequiredValidator Component="_txtModel" Popup="false" Style="position: absolute" />
+                            </RadzenColumn>
+                            <RadzenColumn SizeXS="12" SizeSM="6">
+                                <RadzenFormField Text="@_localizer["Memory"]" Variant="Variant.Outlined" Style="display:flex; flex-direction:column; align-items:stretch; width:100%">
+                                    <RadzenTextBox Name="_txtMemory" @bind-Value="@_model.Memory" Style="color:black" />
+                                </RadzenFormField>
+                                <RadzenRequiredValidator Component="_txtMemory" Popup="false" Style="position: absolute" />
+                            </RadzenColumn>
+                        </RadzenRow>
+                        <RadzenRow AlignItems="AlignItems.Center" class="mt-3">
+                            <RadzenColumn SizeXS="12" SizeSM="6">
+                                <RadzenFormField Text="OS" Variant="Variant.Outlined" Style="display:flex; flex-direction:column; align-items:stretch; width:100%">
+                                    <RadzenTextBox Name="_txtOS" @bind-Value="@_model.OS" Style="color:black" />
+                                </RadzenFormField>
+                                <RadzenRequiredValidator Component="_txtOS" Popup="false" Style="position: absolute" />
+                            </RadzenColumn>
+                            <RadzenColumn SizeXS="12" SizeSM="6">
+                                <RadzenFormField Text="CPU" Variant="Variant.Outlined" Style="display:flex; flex-direction:column; align-items:stretch; width:100%">
+                                    <RadzenTextBox Name="_txtCPU" @bind-Value="@_model.CPU" Style="color:black" />
+                                </RadzenFormField>
+                                <RadzenRequiredValidator Component="_txtCPU" Popup="false" Style="position: absolute" />
+                            </RadzenColumn>
+                        </RadzenRow>
+                        <RadzenRow AlignItems="AlignItems.Center" class="mt-3">
+                            <RadzenColumn SizeXS="12" SizeSM="6">
+                                <RadzenFormField Text="@_localizerCommon["Status"]" Variant="Variant.Outlined" Style="display:flex; flex-direction:column; align-items:stretch; width:100%">
+                                    <RadzenDropDown Disabled="@isDisabled" @bind-Value=@selectStatus Data=@(Enum.GetValues(typeof(EnumStatus)).Cast<Enum>()) Name="_dropDownStatus"
+                                                    Multiple=false AllowClear=true Placeholder="@_localizerCommon["Select"]" Chips=true />
+                                </RadzenFormField>
+                            </RadzenColumn>
+                            <RadzenColumn SizeXS="12" SizeSM="6">
+                                <RadzenFormField Text="@_localizer["ActiveUser"]" Variant="Variant.Outlined" Style="display:flex; flex-direction:column; align-items:stretch; width:100%">
+                                    <RadzenDropDown @bind-Value="@_model.ActiveUser" Data="@_users" TextProperty="FullName" ValueProperty="FullName" Name="_dropDownActiveUser"
+                                                    Placeholder="@_localizerCommon["Select"]" AllowClear="true" Multiple=false Chips=true Disabled="@isDisabled" />
+                                </RadzenFormField>
+                                <RadzenRequiredValidator Component="_dropDownActiveUser" Popup="false" Style="position: absolute" />
+                            </RadzenColumn>
+                        </RadzenRow>
+                        <RadzenRow AlignItems="AlignItems.Center" class="mt-3">
+                            <RadzenColumn SizeXS="12" SizeSM="12">
+                                <RadzenFormField Text="@_localizerCommon["Description"]" Variant="Variant.Outlined" Style="display:flex; flex-direction:column; align-items:stretch; width:100%">
+                                    <RadzenTextArea @bind-Value=@_model.Description oninput="event.target.style.height = Math.max(event.target.clientHeight, event.target.scrollHeight) + 'px';"
+                                                    Style="width: 100% ; color:black" aria-label="Auto-resize" />
+                                </RadzenFormField>
+                            </RadzenColumn>
+                        </RadzenRow>
+                    </RadzenStack>
+                </RadzenFieldset>
+            </RadzenColumn>
+        </RadzenRow>
+        <RadzenStack Orientation="Radzen.Orientation.Horizontal" JustifyContent="Radzen.JustifyContent.Center" Gap="1rem" Class="rz-mt-8 rz-mb-4">
+            @if (!isDisabled)
+            {
+                <RadzenButton Click=@(_ => _navigation.NavigateTo("/devicelist")) Style="background-color:cadetblue" Size="ButtonSize.Large" Icon="cancel" Text="@_localizerCommon["Cancel"]" />
+                <RadzenButton ButtonType="Radzen.ButtonType.Submit" Size="ButtonSize.Large" Icon="save" Text="@_localizerCommon["Save"]" />
+            }
+            else
+            {
+                <RadzenButton Click=@(_ => _navigation.NavigateTo("/devicelist")) Style="background-color:cadetblue" Size="ButtonSize.Large" Icon="cancel" Text="@_localizerCommon["Cancel"]" />
+                <RadzenButton Click=@(_ => _navigation.NavigateTo($"/detaildevice/Edit Device|{_model.Id}", true)) ButtonType="Radzen.ButtonType.Button" Size="ButtonSize.Large" Icon="edit" Text="@_localizerCommon["Edit"]" />
+            }
+        </RadzenStack>
+    </RadzenTemplateForm>
+}

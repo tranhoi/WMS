@@ -1,0 +1,42 @@
+﻿@page "/addrole/{Title}"
+@using Application.DTOs.Request.Account
+@using Application.DTOs.Response.Account
+@using Application.Extentions
+@using Microsoft.AspNetCore.Authorization
+
+@attribute [Authorize(Policy = "Admin")]
+
+@inject IStringLocalizer<CommonResources> _localizer
+
+@if (_model == null)
+{
+    <p><em>@_localizer["Loading"]...</em></p>
+}
+else
+{
+      <RadzenRow>
+        <RadzenColumn Size="12" SizeSM="12">
+            <RadzenLink Text="@_localizer["Detail.BackToList"]" Path="/rolelist" Icon="arrow_back_ios" Style="margin-bottom: 1rem;" />
+        </RadzenColumn>
+    </RadzenRow>
+    <RadzenTabs />
+    <RadzenRow AlignItems="AlignItems.Start">
+        <RadzenColumn Size="12" SizeSM="12">
+            <RadzenText TextStyle="TextStyle.Body1"><strong>@Title</strong></RadzenText>
+        </RadzenColumn>
+    </RadzenRow>
+    <RadzenTemplateForm Data="@_model" Submit="@((CreateRoleRequestDTO args) => { Submit(args); })">
+        <RadzenRow Gap="2rem" class="rz-p-0 rz-p-lg-4">
+            <RadzenColumn Size="12" SizeMD="12">
+                <RadzenFormField Text="@_localizer["RoleName"]" Variant="Variant.Outlined" Style="display:flex;flex-direction:column;align-items:stretch;width:100%">
+                    <RadzenTextBox Name="_txtName" @bind-Value="@_model.Name" Placeholder="Typing..." />
+                </RadzenFormField>
+                <RadzenRequiredValidator Component="_txtName" Popup="false" Style="position: absolute" />
+                <RadzenRegexValidator Component="_txtName" Text="Only English letters allowed" Pattern="^[a-zA-Z\s]+$" />
+            </RadzenColumn>
+        </RadzenRow>
+        <RadzenStack Orientation="Radzen.Orientation.Horizontal" JustifyContent="Radzen.JustifyContent.Center" Gap="1rem" Class="rz-mt-8 rz-mb-4">
+            <RadzenButton ButtonType="Radzen.ButtonType.Submit" Size="ButtonSize.Large" Icon="save" Text="@_localizer["Save"]" Visible="@_visibleBtnSubmit" />
+        </RadzenStack>
+    </RadzenTemplateForm>
+}

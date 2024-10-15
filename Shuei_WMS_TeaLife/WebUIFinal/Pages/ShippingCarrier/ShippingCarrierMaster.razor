@@ -1,0 +1,51 @@
+﻿@page "/shippingcarrierlist"
+
+@using Domain.Enums
+@using Application.Extentions
+@using Microsoft.AspNetCore.Authorization
+@using WebUIFinal.Core
+@using Domain.Entity.WMS.Outbound
+@using Microsoft.AspNetCore.Authorization
+
+@attribute [Authorize(Policy = "AdminAndStaff")]
+
+@if (_dataGrid == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <RadzenRow Gap="2rem" Class="rz-p-0 rz-p-lg-4">
+        <RadzenColumn SizeXS="12" SizeMD="12">
+            <RadzenStack>
+                <RadzenFieldset Text="Shipping Carrier Manager">
+                    <RadzenStack Orientation="Radzen.Orientation.Vertical" JustifyContent="Radzen.JustifyContent.Center" AlignItems="AlignItems.Stretch" Gap="5px">
+                        <RadzenStack Orientation="Radzen.Orientation.Horizontal" JustifyContent="Radzen.JustifyContent.End" AlignItems="AlignItems.Center" Gap="1rem" Wrap="Radzen.FlexWrap.Wrap" class="rz-mt-2">
+                            <RadzenButton Click=@(args => AddNewItemAsync()) Variant="Variant.Flat" Shade="Shade.Dark"
+                                          Text="Add New" Icon="add_circle" ButtonStyle="ButtonStyle.Success" />
+                        </RadzenStack>
+
+                        <RadzenDataGrid Data="@_dataGrid" TItem="ShippingCarrier" AllowFiltering="true" FilterPopupRenderMode="PopupRenderMode.OnDemand" AllowPaging="true" PageSize="5" AllowSorting="true" AllowColumnPicking="true" AllowColumnResize="true" AllowGrouping="false" GridLines="Radzen.DataGridGridLines.Both" ShowPagingSummary="@_showPagerSummary" PagingSummaryFormat="@_pagingSummaryFormat" PageSizeOptions="@_pageSizeOptions">
+                            <Columns>
+                                <RadzenDataGridColumn TItem="ShippingCarrier" Filterable="false" TextAlign="TextAlign.Center" Frozen="true" FrozenPosition="FrozenColumnPosition.Left" Width="150px">
+                                    <HeaderTemplate><RadzenText Text="Actions" /></HeaderTemplate>
+                                    <Template Context="data">
+                                        <RadzenStack Orientation="Radzen.Orientation.Horizontal" JustifyContent="Radzen.JustifyContent.Center" AlignItems="AlignItems.Center" Gap="2px" Wrap="Radzen.FlexWrap.Wrap">
+                                            <RadzenButton ButtonStyle="ButtonStyle.Light" Icon="visibility" Variant="Variant.Flat" Shade="Shade.Lighter" Size="ButtonSize.Medium" class="my-1 ms-1" Click="@(() => ViewItemAsync(data))" @onclick:stopPropagation="true" />
+                                            <RadzenButton ButtonStyle="ButtonStyle.Light" Icon="edit" Variant="Variant.Flat" Shade="Shade.Lighter" Size="ButtonSize.Medium" class="my-1 ms-1" Click="@(() => EditItemAsync(data))" @onclick:stopPropagation="true" />
+                                            <RadzenButton ButtonStyle="ButtonStyle.Danger" Icon="delete" Variant="Variant.Flat" Shade="Shade.Lighter" Size="ButtonSize.Medium" class="my-1 ms-1" Click="@(() => DeleteItemAsync(data))" @onclick:stopPropagation="true" />
+                                        </RadzenStack>
+                                    </Template>
+                                </RadzenDataGridColumn>
+                                <RadzenDataGridColumn TItem="ShippingCarrier" Width="200px" Property="JournalType" Title="JournalType" TextAlign="TextAlign.Center" />
+                                <RadzenDataGridColumn TItem="ShippingCarrier" Width="200px" Property="Prefix" Title="Prefix" TextAlign="TextAlign.Center" />
+                                <RadzenDataGridColumn TItem="ShippingCarrier" Width="200px" Property="SequenceLength" Title="SequenceLength" TextAlign="TextAlign.Center" />
+                                <RadzenDataGridColumn TItem="ShippingCarrier" Width="200px" Property="CurrentSequenceNo" Title="CurrentSequenceNo" TextAlign="TextAlign.Center" />
+                            </Columns>
+                        </RadzenDataGrid>
+                    </RadzenStack>
+                </RadzenFieldset>
+            </RadzenStack>
+        </RadzenColumn>
+    </RadzenRow>
+}

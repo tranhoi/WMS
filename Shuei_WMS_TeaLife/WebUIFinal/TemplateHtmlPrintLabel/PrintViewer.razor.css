@@ -1,0 +1,56 @@
+﻿@media print {
+
+    /* Loại bỏ khoảng trắng mặc định của trình duyệt khi in */
+    @page {
+        size: auto;
+        margin: 0;
+    }
+
+    /* Đảm bảo nội dung chiếm hết chiều rộng trang */
+    body {
+        margin: 0;
+        padding: 0;
+    }
+
+    /* Ẩn nút khi in */
+    button {
+        display: none;
+    }
+
+    .label-container {
+        page-break-inside: avoid; /* Tránh cắt nhãn giữa các trang */
+    }
+}
+
+.grid-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2px;
+}
+/* Định dạng grid-container để chia 2 cột cho tất cả các nhãn */
+.flex-container {
+    display: flex; /* Thiết lập Flexbox cho bố cục */
+    justify-content: flex-start; /* Căn chỉnh nội dung ở hai bên */
+    align-items: center; /* Căn giữa theo chiều dọc */
+}
+
+.label-container {
+    border: 1px solid #ccc;
+    padding: 10px;
+    page-break-inside: avoid; /* Tránh cắt nhãn giữa các trang khi in */
+}
+
+.qr-code {
+    margin-right: 10px;
+    width:100px;
+}
+
+.label-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.info-line {
+    margin-bottom: 5px;
+    font-size: 12px;
+}

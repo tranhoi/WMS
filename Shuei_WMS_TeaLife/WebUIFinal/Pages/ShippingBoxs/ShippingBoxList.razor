@@ -1,0 +1,87 @@
+﻿@page "/shippingboxlist"
+@using Application.DTOs.Response.ShippingBoxs
+@using Application.Extentions
+@using Domain.Enums
+@using Microsoft.AspNetCore.Authorization
+@using WebUIFinal.Core
+@using ShippingBoxModel = Domain.Entity.WMS.Outbound.ShippingBox
+
+@inject IStringLocalizer<ShippingBoxResources> _localizer
+@inject IStringLocalizer<CommonResources> _CLoc
+
+@attribute [Authorize(Policy = "AdminAndStaff")]
+@if (_shippingBoxes == null)
+{
+    <p><em>@_CLoc["Loading"]</em></p>
+}
+else
+{
+    <RadzenRow Gap="2rem" Class="rz-p-0 rz-p-lg-4">
+        <RadzenColumn SizeXS="12" SizeMD="12">
+            <RadzenStack>
+                <RadzenFieldset Text="@_localizer["ShippingBoxeslist"]">
+                    <RadzenStack Orientation=Radzen.Orientation.Vertical JustifyContent="Radzen.JustifyContent.Center" AlignItems="AlignItems.Stretch" Gap="5px">
+                        <RadzenStack Orientation="Radzen.Orientation.Horizontal" JustifyContent="Radzen.JustifyContent.End"
+                                     AlignItems="AlignItems.Center" Gap="1rem" Wrap="Radzen.FlexWrap.Wrap" class="rz-mt-2">
+                            <RadzenButton Click=@(args => AddNewItemAsync()) Variant="Variant.Flat" Shade="Shade.Dark"
+                                          Text="@_CLoc["AddNew"]" Icon="add_circle" ButtonStyle="ButtonStyle.Success" />
+                        </RadzenStack>
+                        <RadzenDataGrid @ref="_profileGrid" AllowFiltering="true" FilterPopupRenderMode="PopupRenderMode.OnDemand" AllowPaging="true" PageSize="5" AllowSorting="true"
+                                                Data="@_shippingBoxes" TItem="ShippingBoxModel" AllowColumnPicking="true" AllowColumnResize="true" AllowGrouping="false"
+                                        GridLines="Radzen.DataGridGridLines.Both" AllowAlternatingRows="false"
+                                        ShowPagingSummary=@_showPagerSummary PagingSummaryFormat="@Constants.PagingSummaryFormat" PageSizeOptions="@Constants.PageSizeOptions">
+                            <Columns>
+                                <RadzenDataGridColumn TItem="ShippingBoxModel" Filterable="false" TextAlign="TextAlign.Center"
+                                                      Frozen="true" FrozenPosition="FrozenColumnPosition.Left" Width="170px">
+                                    <HeaderTemplate>
+                                        <RadzenText Text="@_CLoc["Actions"]" />
+                                    </HeaderTemplate>
+                                    <Template Context="data">
+                                        <RadzenStack Orientation="Radzen.Orientation.Horizontal" JustifyContent="Radzen.JustifyContent.Center" AlignItems="AlignItems.Center" Gap="2px" Wrap="Radzen.FlexWrap.Wrap">
+                                            <RadzenButton ButtonStyle="ButtonStyle.Light" Icon="visibility" Variant="Variant.Flat" Shade="Shade.Lighter"
+                                                          Size="ButtonSize.Medium" class="my-1 ms-1" Click="@(args => NavigateDetailPage(data.Id))" @onclick:stopPropagation="true" />
+                                            <RadzenButton ButtonStyle="ButtonStyle.Light" Icon="edit" Variant="Variant.Flat" Shade="Shade.Lighter"
+                                                          Size="ButtonSize.Medium" class="my-1 ms-1" Click="@(args => EditItemAsync(data.Id))" @onclick:stopPropagation="true" />
+                                            <RadzenButton ButtonStyle="ButtonStyle.Danger" Icon="delete" Variant="Variant.Flat" Shade="Shade.Lighter"
+                                                          Size="ButtonSize.Medium" class="my-1 ms-1"
+                                                          Click="@(args => DeleteItemAsync(new ShippingBoxModel { Id = data.Id }))"
+                                                          @onclick:stopPropagation="true" />
+                                        </RadzenStack>
+                                    </Template>
+                                </RadzenDataGridColumn>
+                                <RadzenDataGridColumn TItem="ShippingBoxModel" Width="200px" Property="BoxName" Title="@_localizer["BoxName"]" TextAlign="TextAlign.Center" />
+                                <RadzenDataGridColumn TItem="ShippingBoxModel" Width="200px" Property="BoxType" Title="@_localizer["BoxType"]" TextAlign="TextAlign.Center" />
+                                <RadzenDataGridColumn TItem="ShippingBoxModel" Width="200px" Property="Length" Title="@_localizer["Length"]" TextAlign="TextAlign.Center" />
+                                <RadzenDataGridColumn TItem="ShippingBoxModel" Width="200px" Property="Width" Title="@_CLoc["Width"]" TextAlign="TextAlign.Center" />
+                                <RadzenDataGridColumn TItem="ShippingBoxModel" Width="200px" Property="Height" Title="@_CLoc["Height"]" TextAlign="TextAlign.Center" />
+                                <RadzenDataGridColumn TItem="ShippingBoxModel" Width="200px" Property="MaxWeight" Title="@_localizer["MaxWeight"]" TextAlign="TextAlign.Center" />
+                                <RadzenDataGridColumn TItem="ShippingBoxModel" Width="200px" Property="Status" Title="@_CLoc["Status"]" TextAlign="TextAlign.Center" />
+                            </Columns>
+                        </RadzenDataGrid>
+                    </RadzenStack>
+                </RadzenFieldset>
+            </RadzenStack>
+        </RadzenColumn>
+    </RadzenRow>
+}
+<style>
+    .register-button {
+        background-color: #8A42F3; /* Purple color */
+        color: white;
+        font-size: 16px;
+        font-weight: bold;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+    }
+
+    .rz-grid-table thead th > div:not(.rz-cell-filter) {
+        background-color: #CC686F !important;
+    }
+
+    .rz-panel {
+        margin-right: 18px;
+        margin-left: 18px;
+    }
+</style>

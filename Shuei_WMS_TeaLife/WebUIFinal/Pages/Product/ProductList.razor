@@ -1,0 +1,156 @@
+﻿@page "/productlist"
+@using Application.DTOs.Response.Product
+@using Application.Extentions
+@using Domain.Enums
+@using Microsoft.AspNetCore.Authorization
+@using WebUIFinal.Core
+@using ProductModel = Domain.Entity.Commons.Product
+
+@inject IStringLocalizer<CommonResources> _localizer
+
+@attribute [Authorize(Policy = "Admin")]
+@if (_products == null || _products.Count <= 0)
+{
+    <p><em>@_localizer["Loading"]...</em></p>
+}
+else
+{
+    <RadzenTemplateForm Data="@_searchModel" Submit="@((ProductSearchModel args) => { OnSearch(args); })">
+        <RadzenRow Gap="2rem" class="rz-p-0 rz-p-lg-4">
+            <RadzenColumn Size="12" SizeMD="12">
+                <RadzenFieldset Text="@_localizer["Product.SearchProduct"]">
+                    <RadzenStack Gap="5px">
+                        <RadzenRow AlignItems="AlignItems.Center">
+                            <RadzenColumn SizeXS="12" SizeSM="3">
+                                <RadzenFormField Text="@_localizer["Product.Code"]" Variant="Variant.Outlined" Style="width:100%">
+                                    <RadzenTextBox Name="productCode" @bind-Value="@_searchModel.ProductCode" Placeholder="Enter product code" />
+                                </RadzenFormField>
+                            </RadzenColumn>
+                            <RadzenColumn SizeXS="12" SizeSM="3">
+                                <RadzenFormField Text="@_localizer["Product.Name"]" Variant="Variant.Outlined" Style="width:100%">
+                                    <RadzenTextBox Name="productName" @bind-Value="@_searchModel.ProductName" Placeholder="Enter product name" />
+                                </RadzenFormField>
+                            </RadzenColumn>
+                            <RadzenColumn SizeXS="12" SizeSM="3">
+                                <RadzenFormField Text="@_localizer["Status"]" Variant="Variant.Outlined" Style="width: 100%;">
+                                    <RadzenDropDown @bind-Value="@_searchModel.ProductStatus" Data=@(Enum.GetValues(typeof(EnumProductStatus)).Cast<Enum>()) Name="_dropDownStatus"
+                                                    Multiple=false AllowClear=true Placeholder="@_localizer["Select"]" Chips=true />
+                                </RadzenFormField>
+                            </RadzenColumn>
+                            <RadzenColumn SizeXS="6" SizeSM="3">
+                                <RadzenStack Orientation="Radzen.Orientation.Horizontal" JustifyContent="Radzen.JustifyContent.Center" AlignItems="AlignItems.Center" Gap="1rem" Wrap="Radzen.FlexWrap.Wrap" class="rz-mt-2">
+                                    <RadzenButton Variant="Variant.Flat" Text="@_localizer["Search"]" Icon="search" ButtonType="Radzen.ButtonType.Submit" Size="ButtonSize.Large" />
+                                </RadzenStack>
+                            </RadzenColumn>
+                        </RadzenRow>
+                    </RadzenStack>
+                </RadzenFieldset>
+            </RadzenColumn>
+        </RadzenRow>
+    </RadzenTemplateForm>
+    <RadzenRow Gap="2rem" Class="rz-p-0 rz-p-lg-4">
+        <RadzenColumn SizeXS="12" SizeMD="12">
+            <RadzenStack>
+
+                <RadzenFieldset Text="@_localizer["Product.List"]">
+                    <RadzenStack Orientation=Radzen.Orientation.Vertical JustifyContent="Radzen.JustifyContent.Center" AlignItems="AlignItems.Stretch" Gap="5px">
+                        <RadzenStack Orientation="Radzen.Orientation.Horizontal" JustifyContent="Radzen.JustifyContent.End"
+                                     AlignItems="AlignItems.Center" Gap="1rem" Wrap="Radzen.FlexWrap.Wrap" class="rz-mt-2">
+                            <RadzenButton Click=@(args => AddNewItemAsync()) Variant="Variant.Flat" Shade="Shade.Dark"
+                                          Text="@_localizer["Create"]" Icon="add_circle" ButtonStyle="ButtonStyle.Success" />
+                        </RadzenStack>
+                        <RadzenDataGrid @ref="_profileGrid" AllowFiltering="true" FilterPopupRenderMode="PopupRenderMode.OnDemand" AllowPaging="true" PageSize="5"
+                                        PageSizeText="@_localizer["items per page"]" AllowSorting="true" EmptyText="@_localizer["No records to display."]"
+                                        Data="@_filteredModel" TItem="ProductDto" AllowColumnPicking="false" AllowColumnResize="true" AllowGrouping="false"
+                                        GridLines="Radzen.DataGridGridLines.Both" AllowAlternatingRows="false"
+                                        ShowPagingSummary=@_showPagerSummary PagingSummaryFormat="@Constants.PagingSummaryFormat" PageSizeOptions="@Constants.PageSizeOptions">
+                            <Columns>
+                                <RadzenDataGridColumn TItem="ProductDto" Filterable="false" TextAlign="TextAlign.Center"
+                                                      Frozen="true" FrozenPosition="FrozenColumnPosition.Left" Width="170px">
+                                    <HeaderTemplate>
+                                        <RadzenText Text="Actions" />
+                                    </HeaderTemplate>
+                                    <Template Context="data">
+                                        <RadzenStack Orientation="Radzen.Orientation.Horizontal" JustifyContent="Radzen.JustifyContent.Center" AlignItems="AlignItems.Center" Gap="2px" Wrap="Radzen.FlexWrap.Wrap">
+                                            <RadzenButton ButtonStyle="ButtonStyle.Light" Icon="visibility" Variant="Variant.Flat" Shade="Shade.Lighter"
+                                                          Size="ButtonSize.Medium" class="my-1 ms-1" Click="@(args => NavigateDetailPage(data.Id))" @onclick:stopPropagation="true" />
+                                            <RadzenButton ButtonStyle="ButtonStyle.Light" Icon="edit" Variant="Variant.Flat" Shade="Shade.Lighter"
+                                                          Size="ButtonSize.Medium" class="my-1 ms-1" Click="@(args => EditItemAsync(data.Id))" @onclick:stopPropagation="true" />
+                                            <RadzenButton ButtonStyle="ButtonStyle.Danger" Icon="delete" Variant="Variant.Flat" Shade="Shade.Lighter"
+                                                          Size="ButtonSize.Medium" class="my-1 ms-1"
+                                                          Click="@(args => DeleteItemAsync(new ProductModel { Id = data.Id }))"
+                                                          @onclick:stopPropagation="true" />
+                                        </RadzenStack>
+                                    </Template>
+                                </RadzenDataGridColumn>
+                                <RadzenDataGridColumn TItem="ProductDto" Width="200px" Property="ProductCode" Title="@_localizer["Product.Code"]" TextAlign="TextAlign.Center" />
+                                <RadzenDataGridColumn TItem="ProductDto" Width="200px" Property="ProductName" Title="@_localizer["Product.Name"]" TextAlign="TextAlign.Center" />
+                                <RadzenDataGridColumn TItem="ProductDto" Width="200px" Property="CategoryName" Title="@_localizer["Category"]" TextAlign="TextAlign.Center" />
+                                <RadzenDataGridColumn TItem="ProductDto" Width="200px" Property="SupplierName" Title="@_localizer["Supplier.Code"]" TextAlign="TextAlign.Center" />
+                                <RadzenDataGridColumn TItem="ProductDto" Width="200px" Property="UnitName" Title="@_localizer["Unit"]" TextAlign="TextAlign.Center" />
+                                <RadzenDataGridColumn TItem="ProductDto" Width="200px" Property="ProductStatusString" Title="@_localizer["Status"]" TextAlign="TextAlign.Center" />
+                            </Columns>
+                        </RadzenDataGrid>
+                    </RadzenStack>
+                </RadzenFieldset>
+            </RadzenStack>
+        </RadzenColumn>
+    </RadzenRow>
+}
+<style>
+    .register-button {
+        background-color: #8A42F3; /* Purple color */
+        color: white;
+        font-size: 16px;
+        font-weight: bold;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+    }
+
+    .rz-grid-table thead th > div:not(.rz-cell-filter) {
+        background-color: #CC686F !important;
+    }
+
+    .rz-panel {
+        margin-right: 18px;
+        margin-left: 18px;
+    }
+</style>
+@code {
+    // Dropdown options for the status field
+    public class ProductSearchModel
+    {
+        public string? ProductCode { get; set; }
+        public string? ProductName { get; set; }
+        public EnumProductStatus? ProductStatus { get; set; }
+    }
+
+    private string? searchVendorCode;
+    private string? searchVendorName;
+    private ProductSearchModel _searchModel = new ProductSearchModel();
+    private List<ProductDto> _filteredModel = new List<ProductDto>();
+
+    private void OnSearch(ProductSearchModel args)
+    {
+        _filteredModel = _products;
+
+        if (!string.IsNullOrEmpty(args.ProductName))
+        {
+            _filteredModel = _filteredModel.Where(_ => _.ProductName.Contains(args.ProductName, StringComparison.OrdinalIgnoreCase)).ToList();
+        }
+
+        if (!string.IsNullOrEmpty(args.ProductCode))
+        {
+            _filteredModel = _filteredModel.Where(_ => _.ProductCode.Contains(args.ProductCode, StringComparison.OrdinalIgnoreCase)).ToList();
+        }
+
+        if (args.ProductStatus.HasValue)
+        {
+            _filteredModel = _filteredModel.Where(_ => _.ProductStatus == (int)args.ProductStatus).ToList();
+        }
+
+        StateHasChanged();
+    }
+}

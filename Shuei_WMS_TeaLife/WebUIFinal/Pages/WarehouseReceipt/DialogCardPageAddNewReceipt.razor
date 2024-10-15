@@ -1,0 +1,164 @@
+﻿@page "/addreceipt/{Title}"
+@using Application.DTOs
+@using Domain.Enums
+@using Microsoft.AspNetCore.Authorization
+@using WebUIFinal.Core
+
+@attribute [Authorize(Policy = "AdminAndStaff")]
+@if (warehouseReceiptOrder == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <RadzenRow>
+        <RadzenColumn Size="12" SizeSM="12">
+            <RadzenLink Text="Back to Receipt Order List" Path="/warehouse-receiptlist" Icon="arrow_back_ios" Style="margin-bottom: 1rem;" />
+        </RadzenColumn>
+    </RadzenRow>
+    <RadzenTabs />
+    <RadzenRow AlignItems="AlignItems.Start">
+        <RadzenColumn Size="12" SizeSM="12">
+            <RadzenText TextStyle="TextStyle.Body1"><strong>@Title</strong></RadzenText>
+        </RadzenColumn>
+    </RadzenRow>
+
+    <RadzenTemplateForm Data="@warehouseReceiptOrder" Submit="@((WarehouseReceiptOrderDto args) => { Submit(args); })">
+        <RadzenRow Gap="2rem" class="rz-p-0 rz-p-lg-4">
+            <RadzenColumn Size="12" SizeMD="12">
+                <RadzenFieldset Text="Receipt Order Information">
+                    <RadzenStack Gap="5px">
+                        <RadzenRow AlignItems="AlignItems.Center" class="mt-3">
+                            <RadzenColumn SizeXS="12" SizeSM="6">
+                                <RadzenFormField Text="Receipt No" Variant="Variant.Outlined" Style="display:flex;flex-direction:column;align-items:stretch;width:100%">
+                                    <RadzenTextBox Name="_txtReceiptNo" @bind-Value="@warehouseReceiptOrder.ReceiptNo" Placeholder="Typing..." Disabled />
+                                </RadzenFormField>
+                            </RadzenColumn>
+                            <RadzenColumn SizeXS="12" SizeSM="6">
+                                <RadzenFormField Text="Scheduled Arrival Number" Variant="Variant.Outlined" Style="display:flex;flex-direction:column;align-items:stretch;width:100%">
+                                    <RadzenNumeric TValue="int?" Name="_txtScheduledArrivalNumber" @bind-Value="@warehouseReceiptOrder.ScheduledArrivalNumber" Placeholder="Typing..." Disabled="@isDisabled" />
+                                </RadzenFormField>
+                            </RadzenColumn>
+                            <RadzenColumn SizeXS="12" SizeSM="6">
+                                <RadzenFormField Text="Tenant" Variant="Variant.Outlined" Style="display:flex;flex-direction:column;align-items:stretch;width:100%">
+                                    <RadzenDropDown @bind-Value="@warehouseReceiptOrder.TenantId" TValue="int" Data="@tenants" TextProperty="TenantFullName" ValueProperty="TenantId" Name="_dropDownTenant"
+                                                    Multiple=false AllowClear=true Placeholder="Select Tenant" Chips=true Disabled="@isDisabled" />
+                                </RadzenFormField>
+                                <RadzenRequiredValidator Component="_dropDownTenant" Popup="false" Style="position: absolute" />
+                            </RadzenColumn>
+                            <RadzenColumn SizeXS="12" SizeSM="6">
+                                <RadzenFormField Text="Location" Variant="Variant.Outlined" Style="display:flex;flex-direction:column;align-items:stretch;width:100%">
+                                    <RadzenDropDown TValue="string" Name="_dropDownLocation" @bind-Value="@warehouseReceiptOrder.Location" Data="@locations"
+                                                    Multiple=false AllowClear=true Placeholder="Select Location" Chips=true Disabled="@isDisabled"
+                                                    TextProperty="LocationName" ValueProperty="Id"/>
+                                </RadzenFormField>
+                                <RadzenRequiredValidator Component="_dropDownLocation" Popup="false" Style="position: absolute" />
+                            </RadzenColumn>
+                            <RadzenColumn SizeXS="12" SizeSM="6">
+                                <RadzenFormField RadzenFormField Text="Supplier Code" Variant="Variant.Outlined" Style="width: 100%; display: flex; flex-direction: column; align-items: stretch;">
+                                    <RadzenDropDown TValue="int" Name="_dropDownSupplier" @bind-Value="@warehouseReceiptOrder.SupplierId" Data="@suppliers"
+                                                    Multiple=false AllowClear=true Placeholder="Select Supplier Code" Chips=true Disabled="@isDisabled"
+                                                    TextProperty="SupplierName" ValueProperty="Id" />
+                                </RadzenFormField>
+                                <RadzenRequiredValidator Component="_dropDownSupplier" Popup="false" Style="position: absolute" />
+                            </RadzenColumn>
+                            <RadzenColumn SizeXS="12" SizeSM="6">
+                                <RadzenFormField Text="Person In-Charge" Variant="Variant.Outlined" Style="display:flex;flex-direction:column;align-items:stretch;width:100%">
+                                    <RadzenTextBox @bind-Value="@warehouseReceiptOrder.PersonInCharge" Name="_txtPersonInCharge" Placeholder="Typing..." Disabled="@isDisabled" />
+                                </RadzenFormField>
+                                <RadzenRequiredValidator Component="_txtPersonInCharge" Popup="false" Style="position: absolute" />
+                            </RadzenColumn>
+                            <RadzenColumn SizeXS="12" SizeSM="6">
+                                <RadzenFormField Text="ExpectedDate" Variant="Variant.Outlined" Style="display:flex;flex-direction:column;align-items:stretch;width:100%">
+                                    <RadzenDatePicker DateFormat="MM/dd/yyyy" @bind-Value="@warehouseReceiptOrder.ExpectedDate" Name="_expectedDate" Placeholder="Enter Expected Date" Disabled="@isDisabled" />
+                                </RadzenFormField>
+                                <RadzenRequiredValidator Component="_expectedDate" Popup="false" Style="position: absolute" />
+                            </RadzenColumn>
+                            <RadzenColumn SizeXS="12" SizeSM="6">
+                                <RadzenFormField Text="Status" Variant="Variant.Outlined" Style="display:flex;flex-direction:column;align-items:stretch;width:100%">
+                                    <RadzenDropDown @bind-Value="@selectedReceiptStatus" Data=@(Enum.GetValues(typeof(EnumReceiptStatus)).Cast<Enum>()) Name="_dropDownStatus"
+                                                    Multiple=false AllowClear=true Placeholder="Status" Chips=true
+                                                    Disabled />
+                                </RadzenFormField>
+                            </RadzenColumn>
+                        </RadzenRow>
+                    </RadzenStack>
+                </RadzenFieldset>
+            </RadzenColumn>
+        </RadzenRow>
+        <RadzenRow Gap="2rem" class="rz-p-0 rz-p-lg-4">
+            <RadzenColumn Size="12" SizeMD="12">
+                <RadzenFieldset Text="Receipt Order Line List" Disabled="@isDisabled">
+                    <RadzenStack Orientation=Orientation.Vertical JustifyContent="JustifyContent.Center" AlignItems="AlignItems.Stretch" Gap="5px">
+                        <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.End" AlignItems="AlignItems.Center" Gap=" 5px">
+                            <RadzenButton Click=@(args => SyncHTData()) Variant="Variant.Flat" Shade="Shade.Dark"
+                                          Text="Reflected HT inspection results" Icon="edit" ButtonStyle="ButtonStyle.Success" />
+                            <RadzenButton Click=@(args => AddReceiptOrderLine()) Variant="Variant.Flat" Shade="Shade.Dark"
+                                          Text="Add New" Icon="add_circle" ButtonStyle="ButtonStyle.Success" />
+                        </RadzenStack>
+                        <RadzenDataGrid @ref="_profileGrid" Data="@warehouseReceiptOrderLines" TItem="WarehouseReceiptOrderLineDto" AllowFiltering="true" class="custom-grid"
+                                        FilterPopupRenderMode="PopupRenderMode.OnDemand" AllowPaging="true" PageSize="5" AllowSorting="true"
+                                        AllowColumnPicking="false" AllowColumnResize="true" AllowGrouping="false"
+                                        GridLines="Radzen.DataGridGridLines.Both" AllowAlternatingRows="false"
+                                        ShowPagingSummary=@_showPagerSummary PagingSummaryFormat="@Constants.PagingSummaryFormat" PageSizeOptions="@Constants.PageSizeOptions"
+                                        AllowRowSelectOnRowClick="@allowRowSelectOnRowClick" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
+                                        SelectionMode="DataGridSelectionMode.Multiple" @bind-Value=@selectedReceiptOrderLines>
+                            <Columns>
+                                <RadzenDataGridColumn Width="60px" Sortable="false" Filterable="false">
+                                    <HeaderTemplate>
+                                        <RadzenCheckBox TabIndex="-1" TriState="false" TValue="bool?" InputAttributes="@(new Dictionary<string,object>(){ { "aria-label", "Select all items" }})"
+                                                        Value="@(selectedReceiptOrderLines == null || selectedReceiptOrderLines?.Any() != true ? false : !warehouseReceiptOrderLines.All(i => selectedReceiptOrderLines.Contains(i)) ? null : warehouseReceiptOrderLines.Any(i => selectedReceiptOrderLines.Contains(i)))"
+                                                        Change="@(args => selectedReceiptOrderLines = args == true ? warehouseReceiptOrderLines.ToList() : null)" />
+                                    </HeaderTemplate>
+                                    <Template Context="data">
+                                        <RadzenCheckBox TabIndex="-1" TriState="false" Value="@(selectedReceiptOrderLines != null && selectedReceiptOrderLines.Contains(data))" InputAttributes="@(new Dictionary<string,object>(){ { "aria-label", "Select item" }})"
+                                                        TValue="bool" Change=@(args => { if(!allowRowSelectOnRowClick) { _profileGrid.SelectRow(data); }}) />
+                                    </Template>
+                                </RadzenDataGridColumn>
+                                <RadzenDataGridColumn TItem="WarehouseReceiptOrderLineDto" Filterable="false" TextAlign="TextAlign.Center" Visible="@_visibleBtnSubmit"
+                                                      Frozen="true" FrozenPosition="FrozenColumnPosition.Left" Width="170px">
+                                    <HeaderTemplate>
+                                        <RadzenText Text="Actions" />
+                                    </HeaderTemplate>
+                                    <Template Context="data">
+                                        <RadzenStack Orientation="Radzen.Orientation.Horizontal" JustifyContent="Radzen.JustifyContent.Center" AlignItems="AlignItems.Center" Gap="2px" Wrap="Radzen.FlexWrap.Wrap">
+                                            <RadzenButton ButtonStyle="ButtonStyle.Light" Icon="edit" Variant="Variant.Flat" Shade="Shade.Lighter"
+                                                          Size="ButtonSize.Medium" class="my-1 ms-1" Click="@(args => EditReceiptOrderLineItemAsync(data))"
+                                                          @onclick:stopPropagation="true" />
+                                            <RadzenButton ButtonStyle="ButtonStyle.Danger" Icon="delete" Variant="Variant.Flat" Shade="Shade.Lighter"
+                                                          Size="ButtonSize.Medium" class="my-1 ms-1"
+                                                          Click="@(args => DeleteReceiptOrderLineItemAsync(data))"
+                                                          @onclick:stopPropagation="true" />
+                                        </RadzenStack>
+                                    </Template>
+                                </RadzenDataGridColumn>
+                                <RadzenDataGridColumn TItem="WarehouseReceiptOrderLineDto" Width="200px" Property="ProductCode" Title="Product Code" />
+                                <RadzenDataGridColumn TItem="WarehouseReceiptOrderLineDto" Width="200px" Property="ProductName" Title="Product Name" />
+                                <RadzenDataGridColumn TItem="WarehouseReceiptOrderLineDto" Width="200px" Property="UnitName" Title="Unit Name" />
+                                <RadzenDataGridColumn TItem="WarehouseReceiptOrderLineDto" Width="200px" Property="StockAvailableQuantity" Title="Stock Quantity" />
+                                @* <RadzenDataGridColumn TItem="WarehouseReceiptOrderLineDto" Width="200px" Title="" /> *@
+                                <RadzenDataGridColumn TItem="WarehouseReceiptOrderLineDto" Width="200px" Property="OrderQty" Title="Order Quantity" />
+                                <RadzenDataGridColumn TItem="WarehouseReceiptOrderLineDto" Width="200px" Property="TransQty" Title="Actual Quantity" />
+                                <RadzenDataGridColumn TItem="WarehouseReceiptOrderLineDto" Width="200px" Property="LotNo" Title="Lot No" />
+                                <RadzenDataGridColumn TItem="WarehouseReceiptOrderLineDto" Width="200px" Property="Bin" Title="Bin" />
+                                <RadzenDataGridColumn TItem="WarehouseReceiptOrderLineDto" Width="200px" Property="ExpirationDate" Title="Expiration Date" />
+                            </Columns>
+                        </RadzenDataGrid>
+
+                    </RadzenStack>
+                </RadzenFieldset>
+            </RadzenColumn>
+        </RadzenRow>
+        <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.Center" Gap="1rem" Class="rz-mt-8 rz-mb-4">
+            <RadzenButton ButtonType="ButtonType.Button" Size="ButtonSize.Large" Icon="cancel" Text="Cancel" Visible="@_visibleBtnSubmit" Style="background-color:cadetblue" Click=@(_ => _navigation.NavigateTo("/warehouse-receiptlist")) />
+            <RadzenButton ButtonType="ButtonType.Button" Size="ButtonSize.Large" Icon="edit" Text="Close Receipt" Visible="@_visibleBtnSubmit" Click="@(args => AdjustStatusReceipt(EnumReceiptStatus.Close.ToString()))" />
+            <RadzenButton ButtonType="ButtonType.Button" Size="ButtonSize.Large" Icon="edit" Text="Create Shelved" Visible="@_visibleBtnSubmit"  Click="@(args => InsertWarehousePutAwayOrder())" />
+            <RadzenButton ButtonType="ButtonType.Button" Size="ButtonSize.Large" Icon="edit" Text="Confirm" Visible="@_visibleBtnSubmit" Click="@(args => AdjustStatusReceipt(EnumReceiptStatus.Open.ToString()))" />
+            <RadzenButton ButtonType="ButtonType.Submit" Size="ButtonSize.Large" Icon="save" Text="Save" Visible="@_visibleBtnSubmit" />
+        </RadzenStack>
+    </RadzenTemplateForm>
+}
+
+@code {
+
+}

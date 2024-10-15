@@ -1,0 +1,58 @@
+﻿@using Application.DTOs
+@using Domain.Enums
+@using Domain.Entity.Commons
+@using Domain.Entity.WMS.Inbound
+@using Microsoft.AspNetCore.Authorization
+
+@attribute [Authorize(Policy = "AdminAndStaff")]
+@if (warehouseReceiptOrderLine == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <RadzenTemplateForm Data="@warehouseReceiptOrderLine" Submit="@((WarehouseReceiptOrderLineDto args) => { Submit(args); })">
+        <RadzenFieldset Text="Warehouse Receipt Order Line information">
+            <RadzenRow Gap="2rem">
+                <RadzenColumn SizeXS="12" SizeSM="12">
+                    <RadzenFormField Text="Product Code" Variant="Variant.Outlined" Style="width: 100%; display: flex; flex-direction: column; align-items: stretch;">
+                        <RadzenTextBox Name="_txtProductCode" @bind-Value="@warehouseReceiptOrderLine.ProductCode" Placeholder="Typing..." />
+                    </RadzenFormField>
+                    <RadzenRequiredValidator Component="_txtProductCode" Popup="false" Style="position: absolute" />
+                </RadzenColumn>
+                <RadzenColumn SizeXS="12" SizeSM="12">
+                    <RadzenFormField Text="Bin" Variant="Variant.Outlined" Style="width: 100%; display: flex; flex-direction: column; align-items: stretch;">
+                        <RadzenDropDown @bind-Value="@warehouseReceiptOrderLine.Bin" Data="@bins" Name="_dropDownBin"
+                                        Multiple=false AllowClear=true Placeholder="Select Bin" Chips=true
+                                        TextProperty="BinCode" ValueProperty="BinCode" />
+                    </RadzenFormField>
+                    <RadzenRequiredValidator Component="_dropDownBin" Popup="false" Style="position: absolute" />
+                </RadzenColumn>
+                <RadzenColumn SizeXS="12" SizeSM="12">
+                    <RadzenFormField Text="Order Quantity" Variant="Variant.Outlined" Style="width: 100%; display: flex; flex-direction: column; align-items: stretch;">
+                        <RadzenNumeric TValue="double?" @bind-Value=@warehouseReceiptOrderLine.OrderQty Style="width: 100%" aria-label="Auto-resize" />
+                    </RadzenFormField>
+                </RadzenColumn>
+                <RadzenColumn SizeXS="12" SizeSM="12">
+                    <RadzenFormField Text="Actual Quantity" Variant="Variant.Outlined" Style="width: 100%; display: flex; flex-direction: column; align-items: stretch;">
+                        <RadzenNumeric TValue="double?" @bind-Value=@warehouseReceiptOrderLine.TransQty Style="width: 100%" aria-label="Auto-resize" />
+                    </RadzenFormField>
+                </RadzenColumn>
+                <RadzenColumn SizeXS="12" SizeSM="12">
+                    <RadzenFormField Text="Lot No" Variant="Variant.Outlined" Style="width: 100%; display: flex; flex-direction: column; align-items: stretch;">
+                        <RadzenTextBox Name="_txtLotNo" @bind-Value="@warehouseReceiptOrderLine.LotNo" Placeholder="Typing..." />
+                    </RadzenFormField>
+                    <RadzenRequiredValidator Component="_txtLotNo" Popup="false" Style="position: absolute" />
+                </RadzenColumn>
+                <RadzenColumn SizeXS="12" SizeSM="12">
+                    <RadzenFormField Text="Expiration Date" Variant="Variant.Outlined" Style="width: 100%; display: flex; flex-direction: column; align-items: stretch;">
+                            <RadzenDatePicker DateFormat="MM/dd/yyyy" @bind-Value="@warehouseReceiptOrderLine.ExpirationDate" Name="_expirationDate" Placeholder="Enter Expiration Date" />
+                    </RadzenFormField>
+                </RadzenColumn>
+            </RadzenRow>
+        </RadzenFieldset>
+        <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.Center" Gap="1rem" Class="rz-mt-8 rz-mb-4">
+            <RadzenButton ButtonType="ButtonType.Submit" Size="ButtonSize.Large" Icon="save" Text="Save" Visible="@VisibleBtnSubmit" />
+        </RadzenStack>
+    </RadzenTemplateForm>
+}

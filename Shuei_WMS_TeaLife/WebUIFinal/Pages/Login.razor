@@ -1,0 +1,55 @@
+﻿@page "/login"
+@using Application.DTOs.Request.Account
+
+@layout LoginLayout
+@inject IStringLocalizer<CommonResources> _localizer
+
+<RadzenCard id="_login" class="rz-my-12 rz-mx-auto rz-shadow-10" Style="width: 100%; max-width: 400px; overflow: hidden">
+    @if (_loginRequest == null)
+    {
+        <p><em>Loading...</em></p>
+    }
+    else
+    {
+        <RadzenTemplateForm Data="@_loginRequest" Submit="@((LoginRequestDTO args) => { Submit(args); })">
+            <RadzenStack Orientation="Radzen.Orientation.Vertical" JustifyContent="Radzen.JustifyContent.Center" AlignItems="AlignItems.Center" Gap="20px">
+                <RadzenImage Path="images/logoTeaLifeTransparent.png" style="width: 200px; height: 150px;"></RadzenImage>
+                <RadzenText TextStyle="TextStyle.DisplayH3" Style="color:#fff"><strong>FBT-WMS</strong></RadzenText>
+                <RadzenStack Gap="5px">
+                    <RadzenRow AlignItems="AlignItems.Center">
+                        <RadzenColumn Size="12" SizeSM="12">
+                            <RadzenFormField Text="@_localizer["Email"]" Variant="Variant.Outlined"
+                                             Style="display:flex;flex-direction:column;align-items:stretch;width:100%; text-align:left;">
+                                <RadzenTextBox Name="_txtEmail" @bind-Value="@_loginRequest.EmailAddress" Placeholder="Typing..." />
+                            </RadzenFormField>
+                            <RadzenRequiredValidator Component="_txtEmail" Text="Email is required" Popup=false Style="position: absolute" />
+                            <RadzenEmailValidator Component="_txtEmail" Text="Provide a valid email address" Popup=false Style="position: absolute" />
+                        </RadzenColumn>
+                        <RadzenColumn Size="12" SizeSM="12">
+                            <RadzenFormField Text="@_localizer["Password"]" Variant="Variant.Outlined" Style="display:flex;flex-direction:column;align-items:stretch;width:100%">
+
+                                <ChildContent>
+                                    <RadzenTextBox Name="_txtPass" @bind-Value="@_loginRequest.Password" Visible="@(!password)" />
+                                    <RadzenPassword @bind-Value="@_loginRequest.Password" Visible="@password" />
+                                </ChildContent>
+                                <End>
+                                    <RadzenButton Icon="@(password ? "visibility" : "visibility_off")" Click="TogglePassword"
+                                                  Variant="Variant.Text" Size="ButtonSize.Small" />
+                                </End>
+                            </RadzenFormField>
+                            <RadzenRequiredValidator Component="_txtPass" Text="Password is required" Popup=false Style="position: absolute" />
+                        </RadzenColumn>
+                    </RadzenRow>
+                </RadzenStack>
+            </RadzenStack>
+            <RadzenStack Orientation="Radzen.Orientation.Vertical" JustifyContent="Radzen.JustifyContent.Center" AlignItems="AlignItems.Start" Gap="20px" class="mt-4">
+                <RadzenStack Orientation="Radzen.Orientation.Horizontal" JustifyContent="Radzen.JustifyContent.Start" AlignItems="AlignItems.Center" Gap="5px">
+                    <RadzenCheckBox @bind-Value=@_remember Name="CheckBox1" />
+                    <RadzenLabel Text="@_localizer["RememberMe"]" Component="CheckBox1" class="rz-ms-2" />
+                </RadzenStack>
+                <RadzenButton ButtonType="Radzen.ButtonType.Submit" Size="ButtonSize.Large" Icon="login" Text="@_localizer["Login"]" Style="width: 50%;" />
+                @* <RadzenText TextStyle="TextStyle.Body1" style="text-align:left">Copyright © 2024 <strong>SHUEI INFOTECH Co. Ltd</strong>. All Rights Reserved</RadzenText> *@
+            </RadzenStack>
+        </RadzenTemplateForm>
+    }
+</RadzenCard>

@@ -1,0 +1,53 @@
+﻿@page "/changepass"
+
+@using Application.DTOs.Request.Account
+@using Microsoft.AspNetCore.Authorization
+
+@inject IStringLocalizer<CommonResources> _localizer
+
+@attribute [Authorize]
+
+@if (string.IsNullOrEmpty(_model.Id))
+{
+    <p><em>@_localizer["Loading"]...</em></p>
+}
+else
+{
+    <RadzenRow>
+        <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.H3">@_localizer["Change password user"]: @GlobalVariable.UserAuthorizationInfo.EmailName</RadzenText>
+    </RadzenRow>
+    <RadzenTemplateForm Data="@_model" Submit="@((ChangePassRequestDTO args) => { Submit(args); })">
+        <RadzenStack Gap="1rem" class="rz-p-sm-12">
+            @* <RadzenFormField Text="Current Password" Variant="Variant.Outlined">
+        <ChildContent>
+        <RadzenTextBox Name="CurrentPass" @bind-Value=@_model.CurrentPassword />
+        </ChildContent>
+        <Helper>
+        <RadzenRequiredValidator Component="CurrentPass" Text="Current password is required." />
+        </Helper>
+        </RadzenFormField> *@
+            <RadzenFormField Text="@_localizer["New Password"]" Variant="Variant.Outlined">
+                <ChildContent>
+                    <RadzenTextBox Name="NewPass" @bind-Value=@_model.NewPassword />
+                </ChildContent>
+                <Helper>
+                    <RadzenRequiredValidator Component="NewPass" Text="@_localizer["New password is required"]" />
+                    <RadzenLengthValidator Component="NewPass" Min="4" Text="@_localizer["Password should be at least 4 characters"]" Popup=false />
+                </Helper>
+            </RadzenFormField>
+            <RadzenFormField Text="@_localizer["Confirm New Password"]" Variant="Variant.Outlined">
+                <ChildContent>
+                    <RadzenTextBox Name="ConfirmNewPass" @bind-Value=@_model.ConfirmNewPassword />
+                </ChildContent>
+                <Helper>
+                    <RadzenRequiredValidator Component="ConfirmNewPass" Text="@_localizer["Confirm is required"]" />
+                    <RadzenCompareValidator Visible=@(!string.IsNullOrEmpty(_model.ConfirmNewPassword)) Value=@_model.NewPassword
+                                            Component="ConfirmNewPass" Text="@_localizer["New Pass Dont Matching"]" Popup="false" />
+                </Helper>
+            </RadzenFormField>
+
+
+            <RadzenButton ButtonType="ButtonType.Submit" Text="@_localizer["Save"]"></RadzenButton>
+        </RadzenStack>
+    </RadzenTemplateForm>
+}

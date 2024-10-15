@@ -1,0 +1,612 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="User.List" xml:space="preserve">
+    <value>User list</value>
+  </data>
+  <data name="Action" xml:space="preserve">
+    <value>Action</value>
+  </data>
+  <data name="UserName" xml:space="preserve">
+    <value>Id</value>
+  </data>
+  <data name="Email" xml:space="preserve">
+    <value>Email Address</value>
+  </data>
+  <data name="Fullname" xml:space="preserve">
+    <value>Full name</value>
+  </data>
+  <data name="Role" xml:space="preserve">
+    <value>Role</value>
+  </data>
+  <data name="Search" xml:space="preserve">
+    <value>Search</value>
+  </data>
+  <data name="Create" xml:space="preserve">
+    <value>Create new </value>
+  </data>
+  <data name="RoleList" xml:space="preserve">
+    <value>Role list</value>
+  </data>
+  <data name="RoleName" xml:space="preserve">
+    <value>Role name</value>
+  </data>
+  <data name="Remarks" xml:space="preserve">
+    <value>Remarks</value>
+  </data>
+  <data name="User.Details" xml:space="preserve">
+    <value>User detail</value>
+  </data>
+  <data name="Tenant" xml:space="preserve">
+    <value>Tenant </value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="Save" xml:space="preserve">
+    <value>Save</value>
+  </data>
+  <data name="Delete" xml:space="preserve">
+    <value>Delete</value>
+  </data>
+  <data name="User.Print" xml:space="preserve">
+    <value>Print user label</value>
+  </data>
+  <data name="Status" xml:space="preserve">
+    <value>Status</value>
+  </data>
+  <data name="Password" xml:space="preserve">
+    <value>Password</value>
+  </data>
+  <data name="Product.Code" xml:space="preserve">
+    <value>Product code</value>
+  </data>
+  <data name="Product.List" xml:space="preserve">
+    <value>Product List</value>
+  </data>
+  <data name="Loading" xml:space="preserve">
+    <value>Loading</value>
+  </data>
+  <data name="Login" xml:space="preserve">
+    <value>Login</value>
+  </data>
+  <data name="Welcome" xml:space="preserve">
+    <value>Welcome</value>
+  </data>
+  <data name="Language" xml:space="preserve">
+    <value>Language</value>
+  </data>
+  <data name="Japanese" xml:space="preserve">
+    <value>Japanese</value>
+  </data>
+  <data name="English" xml:space="preserve">
+    <value>English</value>
+  </data>
+  <data name="RememberMe" xml:space="preserve">
+    <value>Remember me?</value>
+  </data>
+  <data name="Profile.UserInfo" xml:space="preserve">
+    <value>User Info</value>
+  </data>
+  <data name="Profile.UserManager" xml:space="preserve">
+    <value>User Manager</value>
+  </data>
+  <data name="Profile.ChangePassword" xml:space="preserve">
+    <value>Change Password</value>
+  </data>
+  <data name="Profile.Logout" xml:space="preserve">
+    <value>Logout</value>
+  </data>
+  <data name="Nav.MasterManagement" xml:space="preserve">
+    <value>Master Management</value>
+  </data>
+  <data name="Nav.MasterManagement.UserList" xml:space="preserve">
+    <value>User List</value>
+  </data>
+  <data name="Nav.MasterManagement.RolesList" xml:space="preserve">
+    <value>Roles List</value>
+  </data>
+  <data name="Nav.MasterManagement.PermissionList" xml:space="preserve">
+    <value>Permissions List</value>
+  </data>
+  <data name="Nav.MasterManagement.Products" xml:space="preserve">
+    <value>Products</value>
+  </data>
+  <data name="Nav.MasterManagement.Locations" xml:space="preserve">
+    <value>Locations</value>
+  </data>
+  <data name="Nav.MasterManagement.Devices" xml:space="preserve">
+    <value>Devices</value>
+  </data>
+  <data name="Nav.MasterManagement.Units" xml:space="preserve">
+    <value>Units</value>
+  </data>
+  <data name="Nav.MasterManagement.ProductCategory" xml:space="preserve">
+    <value>Product Category</value>
+  </data>
+  <data name="Nav.SystemManagement.NumberSequence" xml:space="preserve">
+    <value>Number Sequence</value>
+  </data>
+  <data name="Nav.MasterManagement.Suppliers" xml:space="preserve">
+    <value>Suppliers</value>
+  </data>
+  <data name="Nav.MasterManagement.StockReceipt" xml:space="preserve">
+    <value>Stock Receipt</value>
+  </data>
+  <data name="Nav.StockReceipt.ScheduledArrival" xml:space="preserve">
+    <value>Scheduled Arrival</value>
+  </data>
+  <data name="Nav.SystemManagement" xml:space="preserve">
+    <value>System Management</value>
+  </data>
+  <data name="Nav.SystemManagement.Batches" xml:space="preserve">
+    <value>Batches</value>
+  </data>
+  <data name="Nav.StockReceipt" xml:space="preserve">
+    <value>Stock Receipt</value>
+  </data>
+  <data name="Nav.Issue" xml:space="preserve">
+    <value>Issue</value>
+  </data>
+  <data name="Nav.Issue.ShippingInstructions" xml:space="preserve">
+    <value>Shipping Instructions</value>
+  </data>
+  <data name="Nav.Issue.Pick" xml:space="preserve">
+    <value>Picking</value>
+  </data>
+  <data name="Nav.Issue.Packing" xml:space="preserve">
+    <value>Packing</value>
+  </data>
+  <data name="Nav.Issue.Returns" xml:space="preserve">
+    <value>Returns</value>
+  </data>
+  <data name="Nav.StockReceipt.StockingInstructions" xml:space="preserve">
+    <value>Stocking Instructions</value>
+  </data>
+  <data name="Nav.StockReceipt.PutAway" xml:space="preserve">
+    <value>Put Away</value>
+  </data>
+  <data name="Nav.InventoryManagement" xml:space="preserve">
+    <value>Inventory Management</value>
+  </data>
+  <data name="Nav.InventoryManagement.WHTransfer" xml:space="preserve">
+    <value>Warehouse Transfer</value>
+  </data>
+  <data name="Nav.InventoryManagement.WHMovement" xml:space="preserve">
+    <value>Warehouse Movement</value>
+  </data>
+  <data name="Nav.InventoryManagement.StockInformation" xml:space="preserve">
+    <value>Stock Information</value>
+  </data>
+  <data name="Nav.InventoryManagement.InventoryHistory" xml:space="preserve">
+    <value>Inventory History</value>
+  </data>
+  <data name="Nav.Inventory" xml:space="preserve">
+    <value>Inventory</value>
+  </data>
+  <data name="Nav.Inventory.Instructions" xml:space="preserve">
+    <value>Instructions</value>
+  </data>
+  <data name="Nav.Inventory.Recording" xml:space="preserve">
+    <value>Recording</value>
+  </data>
+  <data name="Product.Name" xml:space="preserve">
+    <value>Product name</value>
+  </data>
+  <data name="Category.Name" xml:space="preserve">
+    <value>Category name</value>
+  </data>
+  <data name="Supplier.Name" xml:space="preserve">
+    <value>Supplier name</value>
+  </data>
+  <data name="Product.ShortCode" xml:space="preserve">
+    <value>Product short code</value>
+  </data>
+  <data name="Category" xml:space="preserve">
+    <value>Category</value>
+  </data>
+  <data name="Width" xml:space="preserve">
+    <value>Width (mm)</value>
+  </data>
+  <data name="Unit" xml:space="preserve">
+    <value>Unit</value>
+  </data>
+  <data name="Currency" xml:space="preserve">
+    <value>Currency</value>
+  </data>
+  <data name="Depth" xml:space="preserve">
+    <value>Depth (mm)</value>
+  </data>
+  <data name="Product.StandardPrice" xml:space="preserve">
+    <value>Standard price</value>
+  </data>
+  <data name="Height" xml:space="preserve">
+    <value>Height (mm)</value>
+  </data>
+  <data name="Supplier.Code" xml:space="preserve">
+    <value>Supplier code</value>
+  </data>
+  <data name="Product.MfgCode" xml:space="preserve">
+    <value>Manufacturing code</value>
+  </data>
+  <data name="Weight" xml:space="preserve">
+    <value>Weight (g)</value>
+  </data>
+  <data name="Product.Type" xml:space="preserve">
+    <value>Product type</value>
+  </data>
+  <data name="Product.URL" xml:space="preserve">
+    <value>Product URL</value>
+  </data>
+  <data name="Product.WmsProcessingFlag" xml:space="preserve">
+    <value>Warehouse Processing Flag</value>
+  </data>
+  <data name="Tenant.Info" xml:space="preserve">
+    <value>Tenant information</value>
+  </data>
+  <data name="Product.StockQty" xml:space="preserve">
+    <value>Stock quantity</value>
+  </data>
+  <data name="Product.OrderQty" xml:space="preserve">
+    <value>Ordered</value>
+  </data>
+  <data name="Product.ShipQty" xml:space="preserve">
+    <value>Shipping quantity</value>
+  </data>
+  <data name="Product.JanCode" xml:space="preserve">
+    <value>Product Jan code</value>
+  </data>
+  <data name="Description" xml:space="preserve">
+    <value>Description</value>
+  </data>
+  <data name="Product.BackProductList" xml:space="preserve">
+    <value>Back to Product List</value>
+  </data>
+  <data name="Product.SelectSupplierCode" xml:space="preserve">
+    <value>Select Supplier Code</value>
+  </data>
+  <data name="Edit" xml:space="preserve">
+    <value>Edit </value>
+  </data>
+  <data name="Product.StockInfo" xml:space="preserve">
+    <value>Stock information</value>
+  </data>
+  <data name="Product.MaxShipDays" xml:space="preserve">
+    <value>Maximum shipping days</value>
+  </data>
+  <data name="Product.Info" xml:space="preserve">
+    <value>product information</value>
+  </data>
+  <data name="Product" xml:space="preserve">
+    <value>Product</value>
+  </data>
+  <data name="Product.SearchProduct" xml:space="preserve">
+    <value>Search products</value>
+  </data>
+  <data name="Product.JanCodeNew" xml:space="preserve">
+    <value>Create product Jan code</value>
+  </data>
+  <data name="Product.JanCodeMsgNew" xml:space="preserve">
+    <value>Do you want to create a new Product Jan Code: </value>
+  </data>
+  <data name="Product.JanCodeMsgUpdate" xml:space="preserve">
+    <value>Do you want to update Jan Code: </value>
+  </data>
+  <data name="Prduct.JanCodeUpdate" xml:space="preserve">
+    <value>Update Product Jan Code</value>
+  </data>
+  <data name="Product.JanCodeCreate" xml:space="preserve">
+    <value>Create product JAN Code</value>
+  </data>
+  <data name="Product.JanCodeEdit" xml:space="preserve">
+    <value>Edit product Jan code</value>
+  </data>
+  <data name="Name" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="Permission.List" xml:space="preserve">
+    <value>Permission list</value>
+  </data>
+  <data name="Permission.Name" xml:space="preserve">
+    <value>Permission name</value>
+  </data>
+  <data name="Permission.AssginedToRole" xml:space="preserve">
+    <value>Assigned to Role</value>
+  </data>
+  <data name="CreatedDate" xml:space="preserve">
+    <value>Created date</value>
+  </data>
+  <data name="Confirmation.Update" xml:space="preserve">
+    <value>Do you want to update</value>
+  </data>
+  <data name="Confirmation.Create" xml:space="preserve">
+    <value>Do you want to create a  new</value>
+  </data>
+  <data name="Update" xml:space="preserve">
+    <value>Update </value>
+  </data>
+  <data name="Confirmation.Delete" xml:space="preserve">
+    <value>Are you sure you want to delete</value>
+  </data>
+  <data name="Nav.StockReceipt.Shelved" xml:space="preserve">
+    <value>Shelved</value>
+  </data>
+  <data name="DisplayPage" xml:space="preserve">
+    <value>Displaying page</value>
+  </data>
+  <data name="Total" xml:space="preserve">
+    <value>total</value>
+  </data>
+  <data name="Of" xml:space="preserve">
+    <value>Of</value>
+  </data>
+  <data name="Records" xml:space="preserve">
+    <value>records</value>
+  </data>
+  <data name="UserDetail.BackToList" xml:space="preserve">
+    <value>Back to user list</value>
+  </data>
+  <data name="Detail.Create" xml:space="preserve">
+    <value>Create New</value>
+  </data>
+  <data name="Detail.Edit" xml:space="preserve">
+    <value>Edit</value>
+  </data>
+  <data name="Detail.View" xml:space="preserve">
+    <value>View</value>
+  </data>
+  <data name="UesrDetail.Information" xml:space="preserve">
+    <value>User information</value>
+  </data>
+  <data name="Select status" xml:space="preserve">
+    <value>Select status</value>
+  </data>
+  <data name="UserDetail.SelectTenant" xml:space="preserve">
+    <value>Select Tenant</value>
+  </data>
+  <data name="Validate.EmailRequried" xml:space="preserve">
+    <value>Email is required</value>
+  </data>
+  <data name="Validate.EmailFormat" xml:space="preserve">
+    <value>Provide a valid email address</value>
+  </data>
+  <data name="Validate.Role" xml:space="preserve">
+    <value>Select roles</value>
+  </data>
+  <data name="User" xml:space="preserve">
+    <value>User</value>
+  </data>
+  <data name="Permission" xml:space="preserve">
+    <value>Permission</value>
+  </data>
+  <data name="Location" xml:space="preserve">
+    <value>Location</value>
+  </data>
+  <data name="Bin" xml:space="preserve">
+    <value>Bin</value>
+  </data>
+  <data name="Location.Name" xml:space="preserve">
+    <value>Location Name</value>
+  </data>
+  <data name="Location.Address" xml:space="preserve">
+    <value>Location Address</value>
+  </data>
+  <data name="Location.Type" xml:space="preserve">
+    <value>Location Type</value>
+  </data>
+  <data name="PrintLabelFor" xml:space="preserve">
+    <value>Print label for</value>
+  </data>
+  <data name="Location.List" xml:space="preserve">
+    <value>Location list</value>
+  </data>
+  <data name="Detail.BackToList" xml:space="preserve">
+    <value>Back to list</value>
+  </data>
+  <data name="Location.CD" xml:space="preserve">
+    <value>Location CD</value>
+  </data>
+  <data name="Location.Phone" xml:space="preserve">
+    <value>Phone</value>
+  </data>
+  <data name="Location.Fax" xml:space="preserve">
+    <value>Fax</value>
+  </data>
+  <data name="Location.Abbreviation" xml:space="preserve">
+    <value>Abbreviation</value>
+  </data>
+  <data name="Bin.List" xml:space="preserve">
+    <value>Bin List</value>
+  </data>
+  <data name="Bin.Code" xml:space="preserve">
+    <value>Bin Code</value>
+  </data>
+  <data name="PrintLabel" xml:space="preserve">
+    <value>Print Label</value>
+  </data>
+  <data name="Location.Information" xml:space="preserve">
+    <value>Location Information</value>
+  </data>
+  <data name="Bin.Information" xml:space="preserve">
+    <value>Bin Information</value>
+  </data>
+  <data name="Confirmation.Save" xml:space="preserve">
+    <value>Do you want to save</value>
+  </data>
+  <data name="New Password" xml:space="preserve">
+    <value>New Password</value>
+  </data>
+  <data name="Confirm New Password" xml:space="preserve">
+    <value>Confirm New Password</value>
+  </data>
+  <data name="New Pass Dont Matching" xml:space="preserve">
+    <value>The new password don't matching</value>
+  </data>
+  <data name="Confirm is required" xml:space="preserve">
+    <value>Confirm is required</value>
+  </data>
+  <data name="New password is required" xml:space="preserve">
+    <value>New password is required</value>
+  </data>
+  <data name="Password should be at least 4 characters" xml:space="preserve">
+    <value>Password should be at least 4 characters</value>
+  </data>
+  <data name="Change password user" xml:space="preserve">
+    <value>Change password user</value>
+  </data>
+  <data name="Information" xml:space="preserve">
+    <value>Information</value>
+  </data>
+  <data name="items per page" xml:space="preserve">
+    <value>items per page</value>
+  </data>
+  <data name="Select" xml:space="preserve">
+    <value>Select ...</value>
+  </data>
+  <data name="No records to display." xml:space="preserve">
+    <value>No records to display.</value>
+  </data>
+  <data name="Required" xml:space="preserve">
+    <value>Required</value>
+  </data>
+  <data name="Typing ..." xml:space="preserve">
+    <value>Typing ...</value>
+  </data>
+  <data name="Sorry, there's nothing at this address." xml:space="preserve">
+    <value>Sorry, there's nothing at this address.</value>
+  </data>
+  <data name="Sorry, You do not have authorization." xml:space="preserve">
+    <value>Sorry, You do not have authorization.</value>
+  </data>
+  <data name="Choose file" xml:space="preserve">
+    <value>Choose file</value>
+  </data>
+  <data name="Product image" xml:space="preserve">
+    <value>Product image</value>
+  </data>
+  <data name="aaaaaaaaaaaaaaaaaaaaaaaaa" xml:space="preserve">
+    <value>ccc</value>
+  </data>
+  <data name="Permission information" xml:space="preserve">
+    <value>Permission information</value>
+  </data>
+  <data name="Nav.Issue.ShippingBox" xml:space="preserve">
+    <value>Shipping Box</value>
+  </data>
+</root>

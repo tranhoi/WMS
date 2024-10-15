@@ -1,0 +1,106 @@
+﻿@page "/packinglist"
+@using Application.Extentions
+@using Domain.Entity.WMS
+@using Domain.Enums
+@using Microsoft.AspNetCore.Authorization
+@inject IStringLocalizer<CommonResources> _localizerCommon
+@inject IStringLocalizer<PackingListResources> _localizer
+
+@attribute [Authorize(Policy = "AdminAndStaff")]
+@if (_dataGrid == null)
+{
+    <p><em>@_localizerCommon["Loading"]...</em></p>
+}
+else
+{
+
+    <RadzenTemplateForm Data="@_searchModel" Submit="@((PackingListSearchModel args) => { Submit(args); })">
+        <RadzenRow Gap="2rem" class="rz-p-0 rz-p-lg-4">
+            <RadzenColumn Size="12" SizeMD="12">
+                <RadzenFieldset Text="@_localizerCommon["Search"]">
+                    <RadzenStack Gap="5px">
+                        <RadzenRow AlignItems="AlignItems.Center">
+
+                            <RadzenColumn Size="12" SizeSM="4">
+                                <RadzenFormField Text="Instruction Number" Variant="Variant.Outlined" Style="width:100%">
+                                    <ChildContent>
+                                        <RadzenTextBox Name="_txtInstructionNumber" @bind-Value=@_searchModel.InstructionNumber />
+                                    </ChildContent>
+                                    <Helper>
+                                        <RadzenRequiredValidator Component="_txtInstructionNumber" Text="@_localizer["Instruction Number is required"]" />
+                                    </Helper>
+                                </RadzenFormField>
+                            </RadzenColumn>
+                            <RadzenColumn Size="12" SizeSM="8">
+                                <RadzenFormField Text="Instruction Number" Variant="Variant.Outlined" Style="width:100%">
+                                    <ChildContent>
+                                        <RadzenTextBox Name="_txtInstructionNumber" @bind-Value=@_searchModel.InstructionNumber />
+                                    </ChildContent>
+                                    <Helper>
+                                        <RadzenRequiredValidator Component="_txtInstructionNumber" Text="@_localizer["Instruction Number is required"]" />
+                                    </Helper>
+                                </RadzenFormField>
+                            </RadzenColumn>
+                            <RadzenColumn Size="12" SizeSM="4">
+                                <RadzenFormField Text="Instruction Number" Variant="Variant.Outlined" Style="width:100%">
+                                    <ChildContent>
+                                        <RadzenTextBox Name="_txtInstructionNumber" @bind-Value=@_searchModel.InstructionNumber />
+                                    </ChildContent>
+                                    <Helper>
+                                        <RadzenRequiredValidator Component="_txtInstructionNumber" Text="@_localizer["Instruction Number is required"]" />
+                                    </Helper>
+                                </RadzenFormField>
+                            </RadzenColumn>
+                            <RadzenColumn Size="12" SizeSM="4">
+                                <RadzenFormField Text="Instruction Number" Variant="Variant.Outlined" Style="width:100%">
+                                    <ChildContent>
+                                        <RadzenTextBox Name="_txtInstructionNumber" @bind-Value=@_searchModel.InstructionNumber />
+                                    </ChildContent>
+                                    <Helper>
+                                        <RadzenRequiredValidator Component="_txtInstructionNumber" Text="@_localizer["Instruction Number is required"]" />
+                                    </Helper>
+                                </RadzenFormField>
+                            </RadzenColumn>
+                            <RadzenColumn Size="12" SizeSM="4">
+                                <RadzenFormField Text="Instruction Number" Variant="Variant.Outlined" Style="width:100%">
+                                    <ChildContent>
+                                        <RadzenTextBox Name="_txtInstructionNumber" @bind-Value=@_searchModel.InstructionNumber />
+                                    </ChildContent>
+                                    <Helper>
+                                        <RadzenRequiredValidator Component="_txtInstructionNumber" Text="@_localizer["Instruction Number is required"]" />
+                                    </Helper>
+                                </RadzenFormField>
+                            </RadzenColumn>
+                        </RadzenRow>
+                        <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.Center" AlignItems="AlignItems.Center" Gap="10px">
+                            <RadzenButton ButtonType="ButtonType.Submit" Text="@_localizer["Search"]" Style="width:20%"></RadzenButton>
+                            <RadzenButton ButtonType="ButtonType.Submit" Text="@_localizer["Search"]" Style="width:20%"></RadzenButton>
+                        </RadzenStack>
+                    </RadzenStack>
+                </RadzenFieldset>
+            </RadzenColumn>
+        </RadzenRow>
+
+    </RadzenTemplateForm>
+}
+
+@code {
+    public class PackingListSearchModel
+    {
+        /// <summary>
+        /// Instruction number
+        /// </summary>
+        public string? InstructionNumber { get; set; }
+        public DateOnly? ScheduledShipDateFrom { get; set; }
+        public DateOnly? ScheduledShipDateTo { get; set; }
+        /// <summary>
+        /// Select location.
+        /// </summary>
+        public string? DeliveryLocation { get; set; }
+        /// <summary>
+        /// Select Bin.
+        /// </summary>
+        public string? OutgoingBin { get; set; }
+        public EnumOrderStatus? Status { get; set; }
+    }
+}
