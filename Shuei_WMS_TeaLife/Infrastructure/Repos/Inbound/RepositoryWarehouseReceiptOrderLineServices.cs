@@ -1,6 +1,5 @@
 ﻿using Application.Extentions;
 using Application.Services.Inbound;
-using Domain.Entity.WMS.Inbound;
 using Infrastructure.Data;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;

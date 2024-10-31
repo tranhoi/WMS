@@ -117,16 +117,13 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="Instruction number" xml:space="preserve">
-    <value>指示番号</value>
-  </data>
-  <data name="Delivery location" xml:space="preserve">
+  <data name="Delivery Location" xml:space="preserve">
     <value>出庫ロケ</value>
   </data>
-  <data name="Scheduled Ship Date" xml:space="preserve">
+  <data name="Estimated Ship Date" xml:space="preserve">
     <value>出荷予定日</value>
   </data>
-  <data name="Outgoing bin" xml:space="preserve">
+  <data name="Outgoing Bin" xml:space="preserve">
     <value>出庫ビン</value>
   </data>
   <data name="Packing List" xml:space="preserve">
@@ -137,5 +134,86 @@
   </data>
   <data name="Pick List" xml:space="preserve">
     <value>ピック一覧</value>
+  </data>
+  <data name="Keep" xml:space="preserve">
+    <value>保存</value>
+  </data>
+  <data name="Manual Entry" xml:space="preserve">
+    <value>手動入力</value>
+  </data>
+  <data name="Pick Details" xml:space="preserve">
+    <value>ピック詳細</value>
+  </data>
+  <data name="Product Scan" xml:space="preserve">
+    <value>商品スキャン</value>
+  </data>
+  <data name="Delivery Address" xml:space="preserve">
+    <value>お届け先</value>
+  </data>
+  <data name="From" xml:space="preserve">
+    <value>から</value>
+  </data>
+  <data name="To" xml:space="preserve">
+    <value>まで</value>
+  </data>
+  <data name="Instruction" xml:space="preserve">
+    <value>指示</value>
+  </data>
+  <data name="Delivery Company" xml:space="preserve">
+    <value>配送業者</value>
+  </data>
+  <data name="Instruction Number" xml:space="preserve">
+    <value>指示番号</value>
+  </data>
+  <data name="Packing Check" xml:space="preserve">
+    <value>パッキング確認</value>
+  </data>
+  <data name="Basic Information" xml:space="preserve">
+    <value>基本情報</value>
+  </data>
+  <data name="Complete Packing" xml:space="preserve">
+    <value>パッキング完成</value>
+  </data>
+  <data name="Phone Number" xml:space="preserve">
+    <value>電話番号</value>
+  </data>
+  <data name="Address" xml:space="preserve">
+    <value>住所</value>
+  </data>
+  <data name="Shipping Address" xml:space="preserve">
+    <value>お届け先</value>
+  </data>
+  <data name="Shipping Carrier" xml:space="preserve">
+    <value>配送業者</value>
+  </data>
+  <data name="Picked Date" xml:space="preserve">
+    <value>ピック作成日</value>
+  </data>
+  <data name="Tracking Code" xml:space="preserve">
+    <value>トラッキング コード</value>
+  </data>
+  <data name="Shipment Order Qty" xml:space="preserve">
+    <value>出庫指示数</value>
+  </data>
+  <data name="Packed Qty" xml:space="preserve">
+    <value>パッキング数</value>
+  </data>
+  <data name="Remaining" xml:space="preserve">
+    <value>残数</value>
+  </data>
+  <data name="True" xml:space="preserve">
+    <value>の上</value>
+  </data>
+  <data name="False" xml:space="preserve">
+    <value>オフ</value>
+  </data>
+  <data name="is fully packed" xml:space="preserve">
+    <value>満員です</value>
+  </data>
+  <data name="do not exist in the shipment" xml:space="preserve">
+    <value>出荷品には存在しません</value>
+  </data>
+  <data name="Shipment No." xml:space="preserve">
+    <value>指示番号</value>
   </data>
 </root>

@@ -1,18 +1,10 @@
 ﻿using Application.DTOs;
-using Domain.Enums;
 using Application.Extentions;
 using Application.Services.Suppliers;
-using Domain.Entity.authp.Commons;
-using Domain.Entity.Commons;
 using Infrastructure.Data;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using RestEase;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Infrastructure.Repos
 {
@@ -86,6 +78,18 @@ namespace Infrastructure.Repos
         {
             try
             {
+                var existCD = await dbContext.Suppliers.Where(x => x.SupplierId == model.SupplierId).FirstOrDefaultAsync();
+                if (existCD != null)
+                {
+                    return await Result<Supplier>.FailAsync($"Suppliers Id: {model.SupplierId} is already created");
+                }
+
+                var existName = await dbContext.Suppliers.Where(x => x.SupplierName == model.SupplierName).FirstOrDefaultAsync();
+                if (existName != null)
+                {
+                    return await Result<Supplier>.FailAsync($"Supplier name: {model.SupplierName} is already created");
+
+                }
                 await dbContext.Suppliers.AddAsync(model);
                 await dbContext.SaveChangesAsync();
                 return await Result<Supplier>.SuccessAsync(model);
@@ -133,7 +137,7 @@ namespace Infrastructure.Repos
                 foreach (var supplier in suppliers)
                 {
                     // Lấy Tenant dựa trên TenantId của Supplier (nếu có TenantId)
-                    var tenant = await dbContext.TenantAuth.FirstOrDefaultAsync(t => t.TenantId == supplier.TenantId);
+                    var tenant = await dbContext.TenantAuth.FirstOrDefaultAsync(t => t.TenantId == supplier.CompanyId);
 
                     // Tạo DTO cho từng Supplier và Tenant tương ứng
                     var dto = new SupplierTenantDTO
@@ -141,7 +145,7 @@ namespace Infrastructure.Repos
                         Id = supplier.Id,
                         SupplierName = supplier.SupplierName,
                         SupplierId = supplier.SupplierId,
-                        TenantId = supplier.TenantId,
+                        TenantId = supplier.CompanyId,
                         TenantFullName = tenant?.TenantFullName // Kiểm tra Tenant có null hay không
                     };
 
@@ -152,8 +156,7 @@ namespace Infrastructure.Repos
             catch (Exception ex)
             {
                 return await Result<List<SupplierTenantDTO>>.FailAsync($"{ex.Message}{Environment.NewLine}{ex.InnerException}");
-            }
-            
+            }           
         }
     }
 }

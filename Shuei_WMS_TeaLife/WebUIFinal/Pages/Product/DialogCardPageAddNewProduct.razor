@@ -1,11 +1,10 @@
 ﻿@page "/addproduct/{Title}"
 @using Application.DTOs.Request.Products
 @using Application.Extentions
-@using Domain.Enums
-@using Domain.Entity.Commons
-@using ProductModel = Domain.Entity.Commons.Product
+@using FBT.ShareModels.Entities
+@using ProductModel = FBT.ShareModels.Entities.Product
 @using Microsoft.AspNetCore.Authorization
-@using ProductJanCode = Domain.Entity.Commons.ProductJanCode
+@using ProductJanCode = FBT.ShareModels.Entities.ProductJanCode
 @using WebUIFinal.Core
 
 @inject IStringLocalizer<CommonResources> _localizer
@@ -64,38 +63,35 @@
 
 @attribute [Authorize(Policy = "Admin")]
 @if (model == null || (!Title.Contains(_localizer["Detail.Create"]) && string.IsNullOrEmpty(model.ProductCode))
-                || _currencyList == null || _currencyList.Count <= 0)
+             || _currencyList == null || _currencyList.Count <= 0)
 {
     <p><em>@_localizer["Loading"]...</em></p>
 }
 else
 {
-    <RadzenRow>
+    <RadzenRow Gap="2rem" Class="rz-p-0 rz-p-lg-2">
         <RadzenColumn Size="12" SizeSM="12">
             <RadzenLink Text="@_localizer["Detail.BackToList"]" Path="/productlist" Icon="arrow_back_ios" Style="margin-bottom: 1rem;" />
         </RadzenColumn>
     </RadzenRow>
     <RadzenTabs />
-    <RadzenRow>
+    <RadzenRow Gap="2rem" Class="rz-p-0 rz-p-lg-2">
         <RadzenColumn Size="12" SizeSM="6">
-            <RadzenText TextStyle="TextStyle.Body1"><strong>@_localizer["Create"] @_localizer["Product"]</strong></RadzenText>
+            <RadzenText TextStyle="TextStyle.Body1"><strong>@Title</strong></RadzenText>
         </RadzenColumn>
-        @if (!Title.Contains("Create"))
-        {
-            <RadzenColumn Size="12" SizeSM="6">
-                <RadzenStack Orientation="Radzen.Orientation.Horizontal" JustifyContent="Radzen.JustifyContent.End" AlignItems="AlignItems.Center" Gap=" 5px">
-                    <RadzenButton Click=@(args => DeleteItemAsync(model)) Variant="Variant.Flat" Shade="Shade.Dark"
-                                  Text="@_localizer["Delete"]" Icon="cancel" ButtonStyle="ButtonStyle.Danger" />
-                </RadzenStack>
-            </RadzenColumn>
-        }
+        <RadzenColumn Size="12" SizeSM="6">
+            <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.End" AlignItems="AlignItems.Center" Gap="10px" class="mb-2">
+                <RadzenButton Click=@(args => DeleteItemAsync(new ProductModel(){Id = model.Id})) Variant="Variant.Flat" Shade="Shade.Dark"
+                              Text="@_localizer["Delete"]" Icon="delete" ButtonStyle="ButtonStyle.Danger" Visible="_visibleBtnSubmit" />
+            </RadzenStack>
+        </RadzenColumn>
     </RadzenRow>
     <RadzenTemplateForm Data="@model" Submit="@((ProductModel args) => {Submit(args);})">
-        <RadzenRow Gap="2rem" class="rz-p-0 rz-p-lg-4">
+        <RadzenRow Gap="2rem" Class="rz-p-0 rz-p-lg-2">
             <RadzenColumn Size="12" SizeMD="12">
                 <RadzenFieldset Text="@_localizer["Product.Info"]" Disabled="@isDisabled">
                     <RadzenStack Gap="5px">
-                        <RadzenRow AlignItems="AlignItems.Center" class="mt-3">
+                        <RadzenRow AlignItems="AlignItems.Center">
                             <RadzenColumn SizeXS="12" SizeSM="6">
                                 <RadzenFormField Text="@_localizer["Product.Code"]" Variant="Variant.Outlined" Style="display:flex;flex-direction:column;align-items:stretch;width:100%">
                                     <RadzenTextBox Name="_txtProductCode" @bind-Value="@model.ProductCode" @onchange="@(args => model.ProductCode = args.Value.ToString())" Placeholder="@_localizer["Typing ..."]" />
@@ -246,14 +242,14 @@ else
                 </RadzenFieldset>
             </RadzenColumn>
         </RadzenRow>
-        <RadzenRow Gap="2rem" class="rz-p-0 rz-p-lg-4">
+        <RadzenRow Gap="2rem" Class="rz-p-0 rz-p-lg-2">
             <RadzenColumn Size="12" SizeMD="12">
                 <RadzenFieldset Text="@_localizer["Tenant.Info"]" Disabled="@isDisabled">
                     <RadzenStack Gap="5px">
                         <RadzenRow AlignItems="AlignItems.Center">
                             <RadzenColumn SizeXS="12" SizeSM="6">
                                 <RadzenFormField Text="@_localizer["Tenant"]" Variant="Variant.Outlined" Style="display:flex;flex-direction:column;align-items:stretch;width:100%">
-                                    <RadzenDropDown @bind-Value="@model.TenantId" TValue="int?" Data="@tenants" TextProperty="TenantFullName" ValueProperty="TenantId" Name="_dropDownTenant"
+                                    <RadzenDropDown @bind-Value="@model.CompanyId" TValue="int" Data="@tenants" TextProperty="TenantFullName" ValueProperty="TenantId" Name="_dropDownTenant"
                                                     Multiple=false AllowClear=true Placeholder="@_localizer["Select"]" Chips=true Disabled="@isDisabled" />
                                 </RadzenFormField>
                                 <RadzenRequiredValidator Component="_dropDownTenant" Popup="false" Style="position: absolute" />
@@ -263,7 +259,7 @@ else
                 </RadzenFieldset>
             </RadzenColumn>
         </RadzenRow>
-        <RadzenRow Gap="2rem" class="rz-p-0 rz-p-lg-4">
+        <RadzenRow Gap="2rem" Class="rz-p-0 rz-p-lg-2">
             <RadzenColumn Size="12" SizeMD="12">
                 <RadzenFieldset Text="@_localizer["Product.StockInfo"]" Disabled>
                     <RadzenStack Gap="5px">
@@ -291,7 +287,7 @@ else
                 </RadzenFieldset>
             </RadzenColumn>
         </RadzenRow>
-        <RadzenRow Gap="2rem" class="rz-p-0 rz-p-lg-4">
+        <RadzenRow Gap="2rem" Class="rz-p-0 rz-p-lg-2">
             <RadzenColumn Size="12" SizeMD="12">
                 <RadzenFieldset Text="@_localizer["Product.JanCode"]">
                     <RadzenStack Orientation=Orientation.Vertical JustifyContent="JustifyContent.Center" AlignItems="AlignItems.Stretch" Gap="5px">
@@ -307,28 +303,17 @@ else
                                         AllowRowSelectOnRowClick="@allowRowSelectOnRowClick" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
                                         SelectionMode="DataGridSelectionMode.Multiple" Disabled="@isDisabled">
                             <Columns>
-                                <RadzenDataGridColumn TItem="ProductJanCode" Filterable="false" TextAlign="TextAlign.Center" Visible="@_visibleBtnSubmit"
-                                                      Frozen="true" FrozenPosition="FrozenColumnPosition.Left" Width="170px">
+                                <RadzenDataGridColumn Width="200px" Property="@nameof(ProductJanCode.JanCode)" TextAlign="TextAlign.Center" CssClass="rz-grid-col-flex-start">
                                     <HeaderTemplate>
-                                        <RadzenText Text="@_localizer["Action"]" />
+                                        JAN
                                     </HeaderTemplate>
                                     <Template Context="data">
-                                        <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.Center" AlignItems="AlignItems.Center" Gap="2px" Wrap="FlexWrap.Wrap">
-                                            <RadzenButton ButtonStyle="ButtonStyle.Light" Icon="visibility" Variant="Variant.Flat" Shade="Shade.Lighter"
-                                                          Size="ButtonSize.Medium" class="my-1 ms-1" Click="@(args => ViewJanCodeItemAsync(data))"
-                                                          @onclick:stopPropagation="true" />
-                                            <RadzenButton ButtonStyle="ButtonStyle.Light" Icon="edit" Variant="Variant.Flat" Shade="Shade.Lighter"
-                                                          Size="ButtonSize.Medium" class="my-1 ms-1" Click="@(args => EditJanCodeItemAsync(data))"
-                                                          @onclick:stopPropagation="true" />
-                                            <RadzenButton ButtonStyle="ButtonStyle.Danger" Icon="delete" Variant="Variant.Flat" Shade="Shade.Lighter"
-                                                          Size="ButtonSize.Medium" class="my-1 ms-1"
-                                                          Click="@(args => DeleteJanCodeItemAsync(data))"
-                                                          @onclick:stopPropagation="true" />
-                                        </RadzenStack>
+                                        <a class="text-green" @onclick="@(() => EditJanCodeItemAsync(data))" style="cursor:pointer;">
+                                            @data.JanCode
+                                        </a>
                                     </Template>
                                 </RadzenDataGridColumn>
-                                <RadzenDataGridColumn TItem="ProductJanCode" Width="200px" Property="JanCode" Title="JAN" />
-                                <RadzenDataGridColumn TItem="ProductJanCode" Width="200px" Property="JanDescription" Title="@_localizer["Description"]" />
+                                <RadzenDataGridColumn TItem="ProductJanCode" Width="200px" Property="Description" Title="@_localizer["Description"]" />
                                 <RadzenDataGridColumn TItem="ProductJanCode" Width="200px" Property="Status" Title="@_localizer["Status"]" />
                             </Columns>
                         </RadzenDataGrid>
@@ -339,16 +324,8 @@ else
         </RadzenRow>
 
         <RadzenStack Orientation="Radzen.Orientation.Horizontal" JustifyContent="Radzen.JustifyContent.Center" Gap="1rem" Class="rz-mt-8 rz-mb-4">
-            @if (!isDisabled)
-            {
-                <RadzenButton Click=@(_ => _navigation.NavigateTo("/productlist")) Style="background-color:cadetblue" Size="ButtonSize.Large" Icon="cancel" Text="@_localizer["Cancel"]" />
-                <RadzenButton ButtonType="Radzen.ButtonType.Submit" Size="ButtonSize.Large" Icon="save" Text="@_localizer["Save"]" />
-            }
-            else
-            {
-                <RadzenButton Click=@(_ => _navigation.NavigateTo("/productlist")) Style="background-color:cadetblue" Size="ButtonSize.Large" Icon="cancel" Text="@_localizer["Cancel"]" />
-                <RadzenButton Click=@(_ => _navigation.NavigateTo($"/addproduct/Edit Product|{model.Id}", true)) ButtonType="Radzen.ButtonType.Button" Size="ButtonSize.Large" Icon="edit" Text="@_localizer["Edit"]" />
-            }
+            <RadzenButton Click=@(_ => _navigation.NavigateTo("/productlist")) Style="background-color:cadetblue" Size="ButtonSize.Large" Icon="cancel" Text="@_localizer["Cancel"]" />
+            <RadzenButton ButtonType="Radzen.ButtonType.Submit" Size="ButtonSize.Large" Icon="save" Text="@_localizer["Save"]" Visible="true" />
         </RadzenStack>
     </RadzenTemplateForm>
 }

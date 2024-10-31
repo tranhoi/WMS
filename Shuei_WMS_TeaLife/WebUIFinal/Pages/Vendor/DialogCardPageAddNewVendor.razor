@@ -1,9 +1,8 @@
 ﻿@page "/addvendor/{Title}"
 
 @using Application.Extentions
-@using Domain.Enums;
 @using Microsoft.AspNetCore.Authorization
-@using VendorEntity = Domain.Entity.Commons.Vendor;
+@using VendorEntity = FBT.ShareModels.Entities.Vendor;
 
 @attribute [Authorize(Policy = "Admin")]
 @if (_model == null)
@@ -27,11 +26,11 @@ else
         }
     </RadzenRow>
     <RadzenTemplateForm Data="@_model" Submit="@((VendorEntity args) => { Submit(args); })">
-        <RadzenRow Gap="2rem" class="rz-p-0 rz-p-lg-4">
+        <RadzenRow Gap="2rem" Class="rz-p-0 rz-p-lg-2">
             <RadzenColumn Size="12" SizeMD="12">
                 <RadzenFieldset Text="Vendor information" Disabled="@isDisabled">
                     <RadzenStack Gap="5px">
-                        <RadzenRow AlignItems="AlignItems.Center" class="mt-4">
+                        <RadzenRow AlignItems="AlignItems.Center">
                             <RadzenColumn SizeXS="12" SizeSM="6">
                                 <RadzenFormField Text="Vendor Code" Variant="Variant.Outlined" Style="display:flex;flex-direction:column;align-items:stretch;width:100%">
                                     <RadzenTextBox Name="_txtVendorCode" @bind-Value="@_model.VendorCode" Placeholder="Typing..." />
@@ -82,7 +81,7 @@ else
             <RadzenColumn Size="12" SizeMD="12">
                 <RadzenFieldset Text="Bank information" Disabled="@isDisabled">
                     <RadzenStack Gap="5px">
-                        <RadzenRow AlignItems="AlignItems.Center" class="mt-4">
+                        <RadzenRow AlignItems="AlignItems.Center">
                             <RadzenColumn SizeXS="12" SizeSM="6">
                                 <RadzenFormField Text="Bank Name" Variant="Variant.Outlined" Style="display:flex;flex-direction:column;align-items:stretch;width:100%">
                                     <RadzenTextBox Name="_txtBankName" @bind-Value="@_model.BankName" Placeholder="Typing..." />

@@ -1,6 +1,6 @@
 ﻿using Application.Extentions;
 using Application.Services.Base;
-using Domain.Entity.Commons;
+
 using RestEase;
 
 namespace Application.Services

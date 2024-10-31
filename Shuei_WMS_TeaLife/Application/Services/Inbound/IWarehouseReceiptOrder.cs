@@ -1,7 +1,6 @@
 ﻿using Application.DTOs;
 using Application.Extentions;
 using Application.Services.Base;
-using Domain.Entity.WMS.Inbound;
 using RestEase;
 
 namespace Application.Services.Inbound
@@ -26,5 +25,10 @@ namespace Application.Services.Inbound
 
         [Post(ApiRoutes.WarehouseReceiptOrder.SyncHTData)]
         Task<Result<WarehouseReceiptOrderDto>> SyncHTData([Body] WarehouseReceiptOrderDto receiptDto);
+        [Post(ApiRoutes.WarehouseReceiptOrder.CreateLineFromArrivalNo)]
+        Task<Result<WarehouseReceiptOrderDto>> CreateLineFromArrivalNo([Body] WarehouseReceiptOrderDto receiptDto);
+
+        [Post(ApiRoutes.WarehouseReceiptOrder.AdjustActionReceiptOrder)]
+        Task<Result<WarehouseReceiptOrderDto>> AdjustActionReceiptOrder([Body] WarehouseReceiptOrderDto request);
     }
 }

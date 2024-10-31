@@ -16,12 +16,16 @@ using Microsoft.CodeAnalysis;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using Microsoft.JSInterop;
+using Polly;
 using Radzen;
 using RestEase.HttpClientFactory;
 using System.Globalization;
+using System.Net;
 using System.Reflection.Metadata;
+using System.Threading;
 using Toolbelt.Blazor.Extensions.DependencyInjection;
 using WebUIFinal;
+using WebUIFinal.Core;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.RootComponents.Add<App>("#app");
@@ -35,6 +39,7 @@ builder.Services.AddLocalization(options => options.ResourcesPath = "Resources")
 var jsInterop = builder.Build().Services.GetRequiredService<IJSRuntime>();
 var result = await jsInterop.InvokeAsync<string>("blazorCulture.get");
 var culture = result ?? "ja-JP";  // Nếu không tìm thấy ngôn ngữ trong localStorage, mặc định là "ja-JP"
+//var culture = "ja-JP";
 
 // Thiết lập ngôn ngữ cho ứng dụng
 CultureInfo.DefaultThreadCurrentCulture = new CultureInfo(culture);
@@ -51,7 +56,11 @@ var config = builder.Configuration;
 //});
 #endregion
 
+//add dịch vụ để truyền data model từ master vào details.
+builder.Services.AddSingleton<MasterTransferToDetails>();
+
 builder.Services.AddRadzenComponents();
+//builder.Services.AddBlazorBootstrap();
 
 builder.Services.AddBlazoredLocalStorage();
 builder.Services.AddBlazoredSessionStorage();
@@ -117,6 +126,8 @@ builder.Services.AddAuthorizationCore(b =>
 builder.Services.AddCascadingAuthenticationState();
 
 var url = config["AppSettings:ApiBaseUrl"];
+
+builder.Services.AddScoped<TokenRetrievalHandler>();
 //Register client and services use RestEase library
 // Register the RestEase client
 builder.Services.AddHttpClient("API")
@@ -126,12 +137,15 @@ builder.Services.AddHttpClient("API")
         x.EnableIntercept(sp);
     })
     .AddHttpMessageHandler<AuthenticationHeaderHandler>()
+
+    .AddPolicyHandler((sp, request) => RetryRefreshTokenHandler.GetTokenRefresher(sp, request))
+    .AddHttpMessageHandler<TokenRetrievalHandler>()
+
     .UseWithRestEaseClient<IProducts>()
     .UseWithRestEaseClient<IPermissions>()
     .UseWithRestEaseClient<IRoleToPermissions>()
     .UseWithRestEaseClient<IVendors>()
     .UseWithRestEaseClient<ILocations>()
-    .UseWithRestEaseClient<IProducts>() 
     .UseWithRestEaseClient<IDevices>()   
     .UseWithRestEaseClient<ITenants>()   
     .UseWithRestEaseClient<IUserToTenant>()
@@ -142,19 +156,28 @@ builder.Services.AddHttpClient("API")
     .UseWithRestEaseClient<IBins>()  
     .UseWithRestEaseClient<IWarehousePutAway>()
     .UseWithRestEaseClient<IWarehousePutAwayLine>()
+    .UseWithRestEaseClient<IWarehousePutAwayLine>()
+    .UseWithRestEaseClient<IWarehousePutAwayStaging>()
     .UseWithRestEaseClient<IProductCategory>()  
     .UseWithRestEaseClient<IBins>()    
     .UseWithRestEaseClient<IProductCategory>()
     .UseWithRestEaseClient<INumberSequences>()
     .UseWithRestEaseClient<IBatches>()
     .UseWithRestEaseClient<IWarehouseReceiptOrder>() 
-
     .UseWithRestEaseClient<IWarehouseReceiptOrderLine>() 
     .UseWithRestEaseClient<ICurrency>()
     .UseWithRestEaseClient<IShippingBox>()
-
-    .UseWithRestEaseClient<IShippingCarrier>();
+    .UseWithRestEaseClient<IShippingCarrier>()
+    .UseWithRestEaseClient<IWarehousePickingList>()
+    .UseWithRestEaseClient<IWarehousePickingLine>()
+    .UseWithRestEaseClient<IWarehouseShipment>()
+    .UseWithRestEaseClient<ICategories>()
+    .UseWithRestEaseClient<IArrivalInstructions>()
+    .UseWithRestEaseClient<IPackingList>()
+    .UseWithRestEaseClient<IInventTransfer>()
+    .UseWithRestEaseClient<IInventTransferLines>();
 
 builder.Services.AddScoped<HttpClient>(sp => sp.GetRequiredService<IHttpClientFactory>().CreateClient("API"));
+builder.Services.AddBlazoredLocalStorage();
 
 await builder.Build().RunAsync();

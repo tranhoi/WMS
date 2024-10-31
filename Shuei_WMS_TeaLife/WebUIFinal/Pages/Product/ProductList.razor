@@ -1,22 +1,21 @@
 ﻿@page "/productlist"
 @using Application.DTOs.Response.Product
 @using Application.Extentions
-@using Domain.Enums
 @using Microsoft.AspNetCore.Authorization
 @using WebUIFinal.Core
-@using ProductModel = Domain.Entity.Commons.Product
+@using ProductModel = FBT.ShareModels.Entities.Product
 
 @inject IStringLocalizer<CommonResources> _localizer
 
 @attribute [Authorize(Policy = "Admin")]
-@if (_products == null || _products.Count <= 0)
+@if (_products == null)
 {
     <p><em>@_localizer["Loading"]...</em></p>
 }
 else
 {
     <RadzenTemplateForm Data="@_searchModel" Submit="@((ProductSearchModel args) => { OnSearch(args); })">
-        <RadzenRow Gap="2rem" class="rz-p-0 rz-p-lg-4">
+        <RadzenRow Gap="2rem" Class="rz-p-0 rz-p-lg-2">
             <RadzenColumn Size="12" SizeMD="12">
                 <RadzenFieldset Text="@_localizer["Product.SearchProduct"]">
                     <RadzenStack Gap="5px">
@@ -48,7 +47,7 @@ else
             </RadzenColumn>
         </RadzenRow>
     </RadzenTemplateForm>
-    <RadzenRow Gap="2rem" Class="rz-p-0 rz-p-lg-4">
+    <RadzenRow Gap="2rem" Class="rz-p-0 rz-p-lg-2">
         <RadzenColumn SizeXS="12" SizeMD="12">
             <RadzenStack>
 
@@ -65,25 +64,16 @@ else
                                         GridLines="Radzen.DataGridGridLines.Both" AllowAlternatingRows="false"
                                         ShowPagingSummary=@_showPagerSummary PagingSummaryFormat="@Constants.PagingSummaryFormat" PageSizeOptions="@Constants.PageSizeOptions">
                             <Columns>
-                                <RadzenDataGridColumn TItem="ProductDto" Filterable="false" TextAlign="TextAlign.Center"
-                                                      Frozen="true" FrozenPosition="FrozenColumnPosition.Left" Width="170px">
+                                <RadzenDataGridColumn Width="200px" Property="@nameof(ProductDto.ProductCode)" TextAlign="TextAlign.Center" CssClass="rz-grid-col-flex-start">
                                     <HeaderTemplate>
-                                        <RadzenText Text="Actions" />
+                                        @_localizer["Product.Code"]
                                     </HeaderTemplate>
                                     <Template Context="data">
-                                        <RadzenStack Orientation="Radzen.Orientation.Horizontal" JustifyContent="Radzen.JustifyContent.Center" AlignItems="AlignItems.Center" Gap="2px" Wrap="Radzen.FlexWrap.Wrap">
-                                            <RadzenButton ButtonStyle="ButtonStyle.Light" Icon="visibility" Variant="Variant.Flat" Shade="Shade.Lighter"
-                                                          Size="ButtonSize.Medium" class="my-1 ms-1" Click="@(args => NavigateDetailPage(data.Id))" @onclick:stopPropagation="true" />
-                                            <RadzenButton ButtonStyle="ButtonStyle.Light" Icon="edit" Variant="Variant.Flat" Shade="Shade.Lighter"
-                                                          Size="ButtonSize.Medium" class="my-1 ms-1" Click="@(args => EditItemAsync(data.Id))" @onclick:stopPropagation="true" />
-                                            <RadzenButton ButtonStyle="ButtonStyle.Danger" Icon="delete" Variant="Variant.Flat" Shade="Shade.Lighter"
-                                                          Size="ButtonSize.Medium" class="my-1 ms-1"
-                                                          Click="@(args => DeleteItemAsync(new ProductModel { Id = data.Id }))"
-                                                          @onclick:stopPropagation="true" />
-                                        </RadzenStack>
+                                        <NavLink class="nav-link" href="@($"/addproduct/{_localizer["Detail.Edit"]} {_localizer["Product"]}|{data.Id}")" Match="NavLinkMatch.All" style="padding: 0!important;">
+                                            @data.ProductCode
+                                        </NavLink>
                                     </Template>
                                 </RadzenDataGridColumn>
-                                <RadzenDataGridColumn TItem="ProductDto" Width="200px" Property="ProductCode" Title="@_localizer["Product.Code"]" TextAlign="TextAlign.Center" />
                                 <RadzenDataGridColumn TItem="ProductDto" Width="200px" Property="ProductName" Title="@_localizer["Product.Name"]" TextAlign="TextAlign.Center" />
                                 <RadzenDataGridColumn TItem="ProductDto" Width="200px" Property="CategoryName" Title="@_localizer["Category"]" TextAlign="TextAlign.Center" />
                                 <RadzenDataGridColumn TItem="ProductDto" Width="200px" Property="SupplierName" Title="@_localizer["Supplier.Code"]" TextAlign="TextAlign.Center" />
@@ -148,7 +138,7 @@ else
 
         if (args.ProductStatus.HasValue)
         {
-            _filteredModel = _filteredModel.Where(_ => _.ProductStatus == (int)args.ProductStatus).ToList();
+            _filteredModel = _filteredModel.Where(_ => _.ProductStatus == args.ProductStatus).ToList();
         }
 
         StateHasChanged();

@@ -1,9 +1,9 @@
-﻿using Domain.Enums;
+﻿
 using Application.Extentions;
 using Application.Models;
 using Application.Services;
-using Domain.Entity.Commons;
-using Domain.Entity.WMS;
+
+
 using Infrastructure.Data;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
@@ -87,6 +87,12 @@ namespace Infrastructure.Repos
         {
             try
             {
+                var existCD = await dbContext.Units.Where(x => x.UnitName == model.UnitName).FirstOrDefaultAsync();
+                if (existCD != null)
+                {
+                    return await Result<Unit>.FailAsync($"Unit name: {model.UnitName} is already created");
+                }
+
                 await dbContext.Units.AddAsync(model);
                 await dbContext.SaveChangesAsync();
                 return await Result<Unit>.SuccessAsync(model);

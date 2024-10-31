@@ -1,9 +1,8 @@
 ﻿@page "/vendorlist"
 
-@using Domain.Enums
 @using Application.Extentions
 @using Microsoft.AspNetCore.Authorization
-@using VendorEntity = Domain.Entity.Commons.Vendor;
+@using VendorEntity = FBT.ShareModels.Entities.Vendor;
 @using WebUIFinal.Core
 
 @attribute [Authorize(Policy = "Admin")]
@@ -14,7 +13,7 @@
 else
 {
     <RadzenTemplateForm Data="@_searchModel" Submit="@((VendorSearchModel args) => { OnSearch(args); })">
-        <RadzenRow Gap="2rem" class="rz-p-0 rz-p-lg-4">
+        <RadzenRow Gap="2rem" Class="rz-p-0 rz-p-lg-2">
             <RadzenColumn Size="12" SizeMD="12">
                 <RadzenFieldset Text="Search Vendor Records" Disabled="@isDisabled">
                     <RadzenStack Gap="5px">
@@ -46,7 +45,7 @@ else
             </RadzenColumn>
         </RadzenRow>
     </RadzenTemplateForm>
-    <RadzenRow Gap="2rem" Class="rz-p-0 rz-p-lg-4">
+    <RadzenRow Gap="2rem" Class="rz-p-0 rz-p-lg-2">
         <RadzenColumn SizeXS="12" SizeMD="12">
             <RadzenStack>
                 <RadzenFieldset Text="Vendor list">

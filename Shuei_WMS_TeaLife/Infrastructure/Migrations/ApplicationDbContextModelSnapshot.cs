@@ -17,12 +17,58 @@ namespace Infrastructure.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.8")
+                .HasAnnotation("ProductVersion", "8.0.10")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("Domain.Entity.Commons.ApiCode", b =>
+            modelBuilder.Entity("FBT.ShareModels.ArrivalInstructionDetail", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime?>("CreateAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreateOperatorId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool?>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("ProductCode")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ProductName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("Quantity")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Remarks")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("ScheduledArrivalNumber")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Status")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("UpdateAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UpdateOperatorId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ArrivalInstructionDetails");
+                });
+
+            modelBuilder.Entity("FBT.ShareModels.Entities.ApiCode", b =>
                 {
                     b.Property<string>("Code")
                         .HasColumnType("nvarchar(450)");
@@ -50,10 +96,71 @@ namespace Infrastructure.Migrations
 
                     b.HasKey("Code");
 
-                    b.ToTable("ApiCode", (string)null);
+                    b.ToTable("ApiCodes");
                 });
 
-            modelBuilder.Entity("Domain.Entity.Commons.Channel", b =>
+            modelBuilder.Entity("FBT.ShareModels.Entities.ArrivalInstruction", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CompanyId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("CreateAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreateOperatorId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("DataKey")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool?>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime>("OrderDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("OrderNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ProductCode")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ProductName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("ScheduledArrivalDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("ScheduledArrivalNumber")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SupplierId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("SupplierName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("UpdateAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UpdateOperatorId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ArrivalInstructions");
+                });
+
+            modelBuilder.Entity("FBT.ShareModels.Entities.Channel", b =>
                 {
                     b.Property<string>("ChannelCode")
                         .HasColumnType("nvarchar(450)");
@@ -62,9 +169,6 @@ namespace Infrastructure.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ChannelMasterCode")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ChannelMasterCodeNavigationChannelMasterCode")
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("ChannelMasterName")
@@ -73,8 +177,8 @@ namespace Infrastructure.Migrations
                     b.Property<string>("ChannelName")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("CompanyId")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("CompanyId")
+                        .HasColumnType("int");
 
                     b.Property<DateTime?>("CreateAt")
                         .HasColumnType("datetime2");
@@ -108,12 +212,12 @@ namespace Infrastructure.Migrations
 
                     b.HasKey("ChannelCode");
 
-                    b.HasIndex("ChannelMasterCodeNavigationChannelMasterCode");
+                    b.HasIndex("ChannelMasterCode");
 
-                    b.ToTable("Channels", (string)null);
+                    b.ToTable("Channels");
                 });
 
-            modelBuilder.Entity("Domain.Entity.Commons.ChannelMaster", b =>
+            modelBuilder.Entity("FBT.ShareModels.Entities.ChannelMaster", b =>
                 {
                     b.Property<string>("ChannelMasterCode")
                         .HasColumnType("nvarchar(450)");
@@ -141,16 +245,16 @@ namespace Infrastructure.Migrations
 
                     b.HasKey("ChannelMasterCode");
 
-                    b.ToTable("ChannelMasters", (string)null);
+                    b.ToTable("ChannelMasters");
                 });
 
-            modelBuilder.Entity("Domain.Entity.Commons.Company", b =>
+            modelBuilder.Entity("FBT.ShareModels.Entities.CompanyTenant", b =>
                 {
                     b.Property<Guid>("CompanyTenantId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("AuthPtenantId")
+                    b.Property<int>("AuthPTenantId")
                         .HasColumnType("int");
 
                     b.Property<string>("DataKey")
@@ -167,10 +271,10 @@ namespace Infrastructure.Migrations
 
                     b.HasKey("CompanyTenantId");
 
-                    b.ToTable("Companys", (string)null);
+                    b.ToTable("Companys");
                 });
 
-            modelBuilder.Entity("Domain.Entity.Commons.CountryMaster", b =>
+            modelBuilder.Entity("FBT.ShareModels.Entities.CountryMaster", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -210,10 +314,10 @@ namespace Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("CountryMasters", (string)null);
+                    b.ToTable("CountryMasters");
                 });
 
-            modelBuilder.Entity("Domain.Entity.Commons.Currency", b =>
+            modelBuilder.Entity("FBT.ShareModels.Entities.Currency", b =>
                 {
                     b.Property<string>("CurrencyCode")
                         .HasColumnType("nvarchar(450)");
@@ -247,10 +351,10 @@ namespace Infrastructure.Migrations
 
                     b.HasKey("CurrencyCode");
 
-                    b.ToTable("Currencies", (string)null);
+                    b.ToTable("Currencies");
                 });
 
-            modelBuilder.Entity("Domain.Entity.Commons.CurrencyPairSetting", b =>
+            modelBuilder.Entity("FBT.ShareModels.Entities.CurrencyPairSetting", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -287,10 +391,10 @@ namespace Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("CurrencyPairSettings", (string)null);
+                    b.ToTable("CurrencyPairSettings");
                 });
 
-            modelBuilder.Entity("Domain.Entity.Commons.ExchangeRate", b =>
+            modelBuilder.Entity("FBT.ShareModels.Entities.ExchangeRate", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -333,10 +437,10 @@ namespace Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("ExchangeRates", (string)null);
+                    b.ToTable("ExchangeRates");
                 });
 
-            modelBuilder.Entity("Domain.Entity.Commons.Order", b =>
+            modelBuilder.Entity("FBT.ShareModels.Entities.Order", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -357,16 +461,13 @@ namespace Infrastructure.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ChannelCode")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ChannelCodeNavigationChannelCode")
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<double?>("CodCharge")
                         .HasColumnType("float");
 
-                    b.Property<string>("CompanyId")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("CompanyId")
+                        .HasColumnType("int");
 
                     b.Property<DateTime?>("CreateAt")
                         .HasColumnType("datetime2");
@@ -377,7 +478,19 @@ namespace Infrastructure.Migrations
                     b.Property<string>("Currency")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("CustomerId")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("DataKey")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("DeliveryAddress1")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("DeliveryAddress2")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("DeliveryAddress3")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("DeliveryCity")
@@ -392,7 +505,16 @@ namespace Infrastructure.Migrations
                     b.Property<string>("DeliveryMail")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("DeliveryName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("DeliveryPhone")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("DeliveryState")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("DeliveryZipcode")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<double?>("DiscountAmount")
@@ -401,8 +523,14 @@ namespace Infrastructure.Migrations
                     b.Property<double?>("Giftvoucher")
                         .HasColumnType("float");
 
+                    b.Property<int>("HadCheckAttachItem")
+                        .HasColumnType("int");
+
                     b.Property<double?>("HandlingCharge")
                         .HasColumnType("float");
+
+                    b.Property<string>("HoldJudgmentMemo")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("InternalRemarks")
                         .HasColumnType("nvarchar(max)");
@@ -412,6 +540,9 @@ namespace Infrastructure.Migrations
 
                     b.Property<bool?>("IsDeltaData")
                         .HasColumnType("bit");
+
+                    b.Property<int>("OnHoldStatus")
+                        .HasColumnType("int");
 
                     b.Property<DateTime?>("OrderDate")
                         .HasColumnType("datetime2");
@@ -443,8 +574,14 @@ namespace Infrastructure.Migrations
                     b.Property<double?>("Shipping")
                         .HasColumnType("float");
 
+                    b.Property<int>("StockUpStatus")
+                        .HasColumnType("int");
+
                     b.Property<double?>("SubTotal")
                         .HasColumnType("float");
+
+                    b.Property<int>("SubscriptionStatus")
+                        .HasColumnType("int");
 
                     b.Property<double?>("TaxAmount")
                         .HasColumnType("float");
@@ -463,12 +600,12 @@ namespace Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ChannelCodeNavigationChannelCode");
+                    b.HasIndex("ChannelCode");
 
-                    b.ToTable("Orders", (string)null);
+                    b.ToTable("Orders");
                 });
 
-            modelBuilder.Entity("Domain.Entity.Commons.OrderItem", b =>
+            modelBuilder.Entity("FBT.ShareModels.Entities.OrderItem", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -476,8 +613,8 @@ namespace Infrastructure.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("CompanyId")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("CompanyId")
+                        .HasColumnType("int");
 
                     b.Property<DateTime?>("CreateAt")
                         .HasColumnType("datetime2");
@@ -506,6 +643,15 @@ namespace Infrastructure.Migrations
                     b.Property<string>("OrderId")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("ParentItemCode")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ProductCode")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ProductName")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<double?>("PurchaseUnitPrice")
                         .HasColumnType("float");
 
@@ -531,10 +677,10 @@ namespace Infrastructure.Migrations
 
                     b.HasIndex("OrderHeaderId");
 
-                    b.ToTable("OrderItems", (string)null);
+                    b.ToTable("OrderItems");
                 });
 
-            modelBuilder.Entity("Domain.Entity.Commons.OrderReturnItem", b =>
+            modelBuilder.Entity("FBT.ShareModels.Entities.OrderReturnItem", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -542,8 +688,8 @@ namespace Infrastructure.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("CompanyId")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("CompanyId")
+                        .HasColumnType("int");
 
                     b.Property<DateTime?>("CreateAt")
                         .HasColumnType("datetime2");
@@ -582,10 +728,10 @@ namespace Infrastructure.Migrations
 
                     b.HasIndex("OrderHeaderId");
 
-                    b.ToTable("OrderReturnItems", (string)null);
+                    b.ToTable("OrderReturnItems");
                 });
 
-            modelBuilder.Entity("Domain.Entity.Commons.OrderStatus", b =>
+            modelBuilder.Entity("FBT.ShareModels.Entities.OrderStatus", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -622,10 +768,10 @@ namespace Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("OrderStatuses", (string)null);
+                    b.ToTable("OrderStatuses");
                 });
 
-            modelBuilder.Entity("Domain.Entity.Commons.Product", b =>
+            modelBuilder.Entity("FBT.ShareModels.Entities.Product", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -633,14 +779,17 @@ namespace Infrastructure.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("CategoryId")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<double?>("BaseCost")
+                        .HasColumnType("float");
 
-                    b.Property<string>("CategoryName")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<double?>("BaseCostOther")
+                        .HasColumnType("float");
 
-                    b.Property<string>("CompanyId")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("CategoryId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("CompanyId")
+                        .HasColumnType("int");
 
                     b.Property<string>("CountryOfOrigin")
                         .HasColumnType("nvarchar(max)");
@@ -654,7 +803,7 @@ namespace Infrastructure.Migrations
                     b.Property<string>("Currency")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("CustomerProductCode")
+                    b.Property<string>("CurrencyCode")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("DataKey")
@@ -666,14 +815,20 @@ namespace Infrastructure.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<DateTime?>("FromApplyPreBundles")
+                        .HasColumnType("datetime2");
+
                     b.Property<double?>("Height")
                         .HasColumnType("float");
 
                     b.Property<string>("HsCode")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool?>("IsBundle")
+                    b.Property<bool?>("IndividuallyShippedItem")
                         .HasColumnType("bit");
+
+                    b.Property<string>("InventoryMethod")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<bool?>("IsDeleted")
                         .HasColumnType("bit");
@@ -681,16 +836,31 @@ namespace Infrastructure.Migrations
                     b.Property<string>("JanCode")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<double?>("Length")
+                        .HasColumnType("float");
+
                     b.Property<string>("MakerManagementCode")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("MaxDiscount")
-                        .HasColumnType("int");
+                    b.Property<double?>("Net")
+                        .HasColumnType("float");
 
                     b.Property<string>("ProductCode")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("ProductImage")
+                    b.Property<string>("ProductEname")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ProductImageName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ProductImageUrl")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ProductIname")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ProductModelNumber")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ProductName")
@@ -702,38 +872,62 @@ namespace Infrastructure.Migrations
                     b.Property<string>("ProductShortName")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("ProductStatus")
+                    b.Property<int?>("ProductStatus")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ProductType")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ProductUrl")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("ProductType")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ProductURL")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<DateTime?>("RegistrationDate")
+                        .HasColumnType("datetime2");
 
                     b.Property<double?>("RegularPrice")
                         .HasColumnType("float");
 
-                    b.Property<string>("SalesName")
+                    b.Property<string>("Remark")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<double?>("SalesPrice")
-                        .HasColumnType("float");
+                    b.Property<string>("SaleProductCode")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("SalesProductCode")
+                    b.Property<string>("SaleProductName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("ShippingLimitDays")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ShopifyAdminGraphqlApiId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ShopifyInventoryItemId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ShopifyLocationId")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<double?>("StandardPrice")
                         .HasColumnType("float");
 
-                    b.Property<string>("Status")
+                    b.Property<int>("StockAvailableQuanitty")
+                        .HasColumnType("int");
+
+                    b.Property<string>("StockReceiptProcessInstruction")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("ThirdplSystemSku")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int?>("StockThreshold")
+                        .HasColumnType("int");
 
-                    b.Property<string>("UnitId")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("SupplierId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("ToApplyPreBundles")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("UnitId")
+                        .HasColumnType("int");
 
                     b.Property<DateTime?>("UpdateAt")
                         .HasColumnType("datetime2");
@@ -741,13 +935,10 @@ namespace Infrastructure.Migrations
                     b.Property<string>("UpdateOperatorId")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("VendorCode")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("VendorId")
+                        .HasColumnType("int");
 
                     b.Property<string>("VendorProductName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("WarehouseCode")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<bool?>("WarehouseProcessingFlag")
@@ -756,12 +947,15 @@ namespace Infrastructure.Migrations
                     b.Property<double?>("Weight")
                         .HasColumnType("float");
 
+                    b.Property<double?>("Width")
+                        .HasColumnType("float");
+
                     b.HasKey("Id");
 
-                    b.ToTable("Products", (string)null);
+                    b.ToTable("Products");
                 });
 
-            modelBuilder.Entity("Domain.Entity.Commons.ProductBundle", b =>
+            modelBuilder.Entity("FBT.ShareModels.Entities.ProductBundle", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -769,11 +963,14 @@ namespace Infrastructure.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("BundleCode")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("BundlePriceRatio")
+                        .HasColumnType("int");
 
-                    b.Property<string>("CompanyId")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("ChildProductStatus")
+                        .HasColumnType("int");
+
+                    b.Property<int>("CompanyId")
+                        .HasColumnType("int");
 
                     b.Property<DateTime?>("CreateAt")
                         .HasColumnType("datetime2");
@@ -784,20 +981,26 @@ namespace Infrastructure.Migrations
                     b.Property<string>("DataKey")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<DateTime?>("EndTime")
+                        .HasColumnType("datetime2");
+
                     b.Property<bool?>("IsDeleted")
                         .HasColumnType("bit");
 
-                    b.Property<int>("ParentProductId")
-                        .HasColumnType("int");
+                    b.Property<string>("ProductBundleCode")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<double?>("PriceRate")
-                        .HasColumnType("float");
+                    b.Property<string>("ProductCode")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("Quantity")
                         .HasColumnType("int");
 
-                    b.Property<string>("SalesProductCode")
+                    b.Property<string>("SaleProductBundleCode")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("StartTime")
+                        .HasColumnType("datetime2");
 
                     b.Property<DateTime?>("UpdateAt")
                         .HasColumnType("datetime2");
@@ -805,17 +1008,55 @@ namespace Infrastructure.Migrations
                     b.Property<string>("UpdateOperatorId")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("WarehouseCode")
+                    b.HasKey("Id");
+
+                    b.ToTable("ProductBundles");
+                });
+
+            modelBuilder.Entity("FBT.ShareModels.Entities.ProductCategory", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("CategoryName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("CompanyId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("CreateAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreateOperatorId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("DataKey")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool?>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<int?>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("UpdateAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UpdateOperatorId")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ParentProductId");
-
-                    b.ToTable("ProductBundles", (string)null);
+                    b.ToTable("ProductCategories");
                 });
 
-            modelBuilder.Entity("Domain.Entity.Commons.ProductJanCode", b =>
+            modelBuilder.Entity("FBT.ShareModels.Entities.ProductJanCode", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -829,20 +1070,23 @@ namespace Infrastructure.Migrations
                     b.Property<string>("CreateOperatorId")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("DataKey")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<bool?>("IsDeleted")
                         .HasColumnType("bit");
 
                     b.Property<string>("JanCode")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("JanDescription")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<int>("ProductId")
                         .HasColumnType("int");
 
-                    b.Property<string>("Status")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
 
                     b.Property<DateTime?>("UpdateAt")
                         .HasColumnType("datetime2");
@@ -852,10 +1096,10 @@ namespace Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("ProductJanCodes", (string)null);
+                    b.ToTable("ProductJanCodes");
                 });
 
-            modelBuilder.Entity("Domain.Entity.Commons.ProductStatus", b =>
+            modelBuilder.Entity("FBT.ShareModels.Entities.ProductStatus", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -889,10 +1133,10 @@ namespace Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("ProductStatuses", (string)null);
+                    b.ToTable("ProductStatuses");
                 });
 
-            modelBuilder.Entity("Domain.Entity.Commons.ProductStock", b =>
+            modelBuilder.Entity("FBT.ShareModels.Entities.ProductStock", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -900,8 +1144,12 @@ namespace Infrastructure.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("CompanyId")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<string>("BinCode")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<int>("CompanyId")
+                        .HasColumnType("int");
 
                     b.Property<DateTime?>("CreateAt")
                         .HasColumnType("datetime2");
@@ -912,16 +1160,20 @@ namespace Infrastructure.Migrations
                     b.Property<string>("DataKey")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<DateTime?>("Expried")
+                        .HasColumnType("datetime2");
+
                     b.Property<bool?>("IsDeleted")
                         .HasColumnType("bit");
 
-                    b.Property<string>("SalesProductCode")
+                    b.Property<string>("LOT")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("ProductCode")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("StockQuantity")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("StockThreshold")
                         .HasColumnType("int");
 
                     b.Property<DateTime?>("UpdateAt")
@@ -935,10 +1187,10 @@ namespace Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("ProductStocks", (string)null);
+                    b.ToTable("ProductStocks");
                 });
 
-            modelBuilder.Entity("Domain.Entity.Commons.SalesDatum", b =>
+            modelBuilder.Entity("FBT.ShareModels.Entities.SalesData", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -952,8 +1204,8 @@ namespace Infrastructure.Migrations
                     b.Property<string>("City")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("CompanyId")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("CompanyId")
+                        .HasColumnType("int");
 
                     b.Property<double>("CostOfSales")
                         .HasColumnType("float");
@@ -1005,10 +1257,10 @@ namespace Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("SalesDatums", (string)null);
+                    b.ToTable("SalesDatas");
                 });
 
-            modelBuilder.Entity("Domain.Entity.Commons.ShippingCountry", b =>
+            modelBuilder.Entity("FBT.ShareModels.Entities.ShippingCountry", b =>
                 {
                     b.Property<string>("CountryCode")
                         .HasColumnType("nvarchar(450)");
@@ -1042,10 +1294,53 @@ namespace Infrastructure.Migrations
 
                     b.HasKey("CountryCode");
 
-                    b.ToTable("ShippingCountries", (string)null);
+                    b.ToTable("ShippingCountries");
                 });
 
-            modelBuilder.Entity("Domain.Entity.Commons.SystemClassCompany", b =>
+            modelBuilder.Entity("FBT.ShareModels.Entities.Supplier", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int?>("CompanyId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("CreateAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreateOperatorId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("DataKey")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool?>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<string>("SupplierId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("SupplierName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("UpdateAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UpdateOperatorId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Suppliers");
+                });
+
+            modelBuilder.Entity("FBT.ShareModels.Entities.SystemClassCompany", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -1059,8 +1354,8 @@ namespace Infrastructure.Migrations
                     b.Property<string>("Code2")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("CompanyId")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("CompanyId")
+                        .HasColumnType("int");
 
                     b.Property<DateTime?>("CreateAt")
                         .HasColumnType("datetime2");
@@ -1115,10 +1410,10 @@ namespace Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("SystemClassCompanies", (string)null);
+                    b.ToTable("SystemClassCompanies");
                 });
 
-            modelBuilder.Entity("Domain.Entity.Commons.UserSetting", b =>
+            modelBuilder.Entity("FBT.ShareModels.Entities.UserSetting", b =>
                 {
                     b.Property<string>("UserId")
                         .HasColumnType("nvarchar(450)");
@@ -1134,10 +1429,10 @@ namespace Infrastructure.Migrations
 
                     b.HasKey("UserId");
 
-                    b.ToTable("UserSettings", (string)null);
+                    b.ToTable("UserSettings");
                 });
 
-            modelBuilder.Entity("Domain.Entity.Commons.UserVendor", b =>
+            modelBuilder.Entity("FBT.ShareModels.Entities.UserVendor", b =>
                 {
                     b.Property<string>("UserId")
                         .HasColumnType("nvarchar(450)");
@@ -1150,10 +1445,10 @@ namespace Infrastructure.Migrations
 
                     b.HasKey("UserId");
 
-                    b.ToTable("UserVendors", (string)null);
+                    b.ToTable("UserVendors");
                 });
 
-            modelBuilder.Entity("Domain.Entity.Commons.Vendor", b =>
+            modelBuilder.Entity("FBT.ShareModels.Entities.Vendor", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -1203,7 +1498,7 @@ namespace Infrastructure.Migrations
                     b.Property<string>("DataKey")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("DeadOfficeAddress")
+                    b.Property<string>("HeadOfficeAddress")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("HeadOfficeFax")
@@ -1221,8 +1516,8 @@ namespace Infrastructure.Migrations
                     b.Property<string>("Remarks")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Status")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
 
                     b.Property<DateTime?>("UpdateAt")
                         .HasColumnType("datetime2");
@@ -1241,22 +1536,16 @@ namespace Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Vendors", (string)null);
+                    b.ToTable("Vendors");
                 });
 
-            modelBuilder.Entity("Domain.Entity.Commons.VendorBilling", b =>
+            modelBuilder.Entity("FBT.ShareModels.Entities.WarehouseUserSetting", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
+                    b.Property<string>("WarehouseUserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("CompanyId")
                         .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("BillingPeriod")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("CompanyId")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime?>("CreateAt")
                         .HasColumnType("datetime2");
@@ -1270,8 +1559,79 @@ namespace Infrastructure.Migrations
                     b.Property<bool?>("IsDeleted")
                         .HasColumnType("bit");
 
-                    b.Property<string>("Status")
+                    b.Property<DateTime?>("UpdateAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UpdateOperatorId")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("WarehouseCode")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("WarehouseUserId");
+
+                    b.ToTable("WarehouseUserSettings");
+                });
+
+            modelBuilder.Entity("FBT.ShareModels.TenantAuth", b =>
+                {
+                    b.Property<int>("TenantId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("TenantId"));
+
+                    b.Property<string>("DatabaseInfoName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool?>("HasOwnDb")
+                        .HasColumnType("bit");
+
+                    b.Property<bool?>("IsHierarchical")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("ParentDataKey")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("ParentTenantId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("TenantFullName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("TenantId");
+
+                    b.ToTable("Tenants", "authp");
+                });
+
+            modelBuilder.Entity("FBT.ShareModels.VendorBilling", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("BillingPeriod")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("CompanyId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("CreateAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreateOperatorId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("DataKey")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool?>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
 
                     b.Property<double?>("Total")
                         .HasColumnType("float");
@@ -1287,10 +1647,10 @@ namespace Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("VendorBilling", (string)null);
+                    b.ToTable("VendorBilling");
                 });
 
-            modelBuilder.Entity("Domain.Entity.Commons.VendorBillingDetail", b =>
+            modelBuilder.Entity("FBT.ShareModels.VendorBillingDetail", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -1304,9 +1664,8 @@ namespace Infrastructure.Migrations
                     b.Property<string>("CHannelMasterCode")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("CompanyId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("CompanyId")
+                        .HasColumnType("int");
 
                     b.Property<DateTime?>("CreateAt")
                         .HasColumnType("datetime2");
@@ -1365,8 +1724,8 @@ namespace Infrastructure.Migrations
                     b.Property<double?>("SlsLgsShippingFee")
                         .HasColumnType("float");
 
-                    b.Property<string>("Status")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
 
                     b.Property<double?>("SubTotal")
                         .HasColumnType("float");
@@ -1385,44 +1744,10 @@ namespace Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("VendorBillingDetail", (string)null);
+                    b.ToTable("VendorBillingDetail");
                 });
 
-            modelBuilder.Entity("Domain.Entity.Commons.WarehouseUserSetting", b =>
-                {
-                    b.Property<string>("WarehouseUserId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("CompanyId")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("CreateAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("CreateOperatorId")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("DataKey")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool?>("IsDeleted")
-                        .HasColumnType("bit");
-
-                    b.Property<DateTime?>("UpdateAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("UpdateOperatorId")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("WarehouseCode")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("WarehouseUserId");
-
-                    b.ToTable("WarehouseUserSettings", (string)null);
-                });
-
-            modelBuilder.Entity("Domain.Entity.WMS.Authentication.ApplicationUser", b =>
+            modelBuilder.Entity("FBT.ShareModels.WMS.ApplicationUser", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
@@ -1473,8 +1798,8 @@ namespace Infrastructure.Migrations
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Status")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int?>("Status")
+                        .HasColumnType("int");
 
                     b.Property<bool>("TwoFactorEnabled")
                         .HasColumnType("bit");
@@ -1493,35 +1818,10 @@ namespace Infrastructure.Migrations
                         .HasDatabaseName("UserNameIndex")
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
-                    b.ToTable("AspNetUsers", "wms", t =>
-                        {
-                            t.ExcludeFromMigrations();
-                        });
+                    b.ToTable("AspNetUsers", "wms");
                 });
 
-            modelBuilder.Entity("Domain.Entity.WMS.Authentication.MstUserSetting", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Currency")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("MstUserSetting", "wms", t =>
-                        {
-                            t.ExcludeFromMigrations();
-                        });
-                });
-
-            modelBuilder.Entity("Domain.Entity.WMS.Authentication.Permissions", b =>
+            modelBuilder.Entity("FBT.ShareModels.WMS.Batches", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -1533,18 +1833,26 @@ namespace Infrastructure.Migrations
                     b.Property<string>("CreateOperatorId")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<DateOnly?>("ExpirationDate")
+                        .HasColumnType("date");
 
                     b.Property<bool?>("IsDeleted")
                         .HasColumnType("bit");
 
-                    b.Property<string>("Name")
-                        .IsRequired()
+                    b.Property<string>("LotNo")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Status")
+                    b.Property<DateOnly?>("ManufacturingDate")
+                        .HasColumnType("date");
+
+                    b.Property<string>("ProductCode")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TenantId")
+                        .HasColumnType("int");
 
                     b.Property<DateTime?>("UpdateAt")
                         .HasColumnType("datetime2");
@@ -1554,182 +1862,16 @@ namespace Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Permissions", "wms", t =>
-                        {
-                            t.ExcludeFromMigrations();
-                        });
+                    b.ToTable("Batches", "wms");
                 });
 
-            modelBuilder.Entity("Domain.Entity.WMS.Authentication.PermissionsTenant", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime?>("CreateAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("CreateOperatorId")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Desciption")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool?>("IsDeleted")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Status")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("UpdateAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("UpdateOperatorId")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("PermissionsTenant", "wms", t =>
-                        {
-                            t.ExcludeFromMigrations();
-                        });
-                });
-
-            modelBuilder.Entity("Domain.Entity.WMS.Authentication.RefreshTokens", b =>
-                {
-                    b.Property<string>("RefreshToken")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<bool>("Activated")
-                        .HasColumnType("bit");
-
-                    b.Property<DateTime>("ExpirationTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Token")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("RefreshToken");
-
-                    b.ToTable("RefreshTokens", "wms", t =>
-                        {
-                            t.ExcludeFromMigrations();
-                        });
-                });
-
-            modelBuilder.Entity("Domain.Entity.WMS.Authentication.RoleToPermission", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime?>("CreateAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("CreateOperatorId")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool?>("IsDeleted")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("PermisionDescription")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("PermisionName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<Guid>("PermissionId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("RoleId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("RoleName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Status")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("UpdateAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("UpdateOperatorId")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("RoleToPermission", "wms", t =>
-                        {
-                            t.ExcludeFromMigrations();
-                        });
-                });
-
-            modelBuilder.Entity("Domain.Entity.WMS.Authentication.RoleToPermissionTenant", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime?>("CreateAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("CreateOperatorId")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool?>("IsDeleted")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("PermissionTenantDesciption")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<Guid>("PermissionTenantId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("PermissionTenantName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<Guid>("RoleId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("RoleName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Status")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("UpdateAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("UpdateOperatorId")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("RoleToPermissionTenant", "wms", t =>
-                        {
-                            t.ExcludeFromMigrations();
-                        });
-                });
-
-            modelBuilder.Entity("Domain.Entity.WMS.Bin", b =>
+            modelBuilder.Entity("FBT.ShareModels.WMS.Bin", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("BinCode")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime?>("CreateAt")
@@ -1741,14 +1883,20 @@ namespace Infrastructure.Migrations
                     b.Property<bool?>("IsDeleted")
                         .HasColumnType("bit");
 
+                    b.Property<string>("LocationCD")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<Guid>("LocationId")
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("LocationName")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Remarks")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Status")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
 
                     b.Property<DateTime?>("UpdateAt")
                         .HasColumnType("datetime2");
@@ -1758,13 +1906,10 @@ namespace Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Bins", "wms", t =>
-                        {
-                            t.ExcludeFromMigrations();
-                        });
+                    b.ToTable("Bins", "wms");
                 });
 
-            modelBuilder.Entity("Domain.Entity.WMS.Device", b =>
+            modelBuilder.Entity("FBT.ShareModels.WMS.Device", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -1795,14 +1940,13 @@ namespace Infrastructure.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Name")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("OS")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Status")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
 
                     b.Property<string>("Type")
                         .HasColumnType("nvarchar(max)");
@@ -1815,13 +1959,10 @@ namespace Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Devices", "wms", t =>
-                        {
-                            t.ExcludeFromMigrations();
-                        });
+                    b.ToTable("Devices", "wms");
                 });
 
-            modelBuilder.Entity("Domain.Entity.WMS.Location", b =>
+            modelBuilder.Entity("FBT.ShareModels.WMS.Location", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -1849,7 +1990,6 @@ namespace Infrastructure.Migrations
                         .HasColumnType("bit");
 
                     b.Property<string>("LocationCD")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("LocationName")
@@ -1861,11 +2001,10 @@ namespace Infrastructure.Migrations
                     b.Property<string>("Remarks")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Status")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
 
                     b.Property<string>("Type")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime?>("UpdateAt")
@@ -1876,21 +2015,92 @@ namespace Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Locations", "wms", t =>
-                        {
-                            t.ExcludeFromMigrations();
-                        });
+                    b.ToTable("Locations", "wms");
                 });
 
-            modelBuilder.Entity("Domain.Entity.WMS.ProductCategory", b =>
+            modelBuilder.Entity("FBT.ShareModels.WMS.LogTime", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("CategoryName")
-                        .IsRequired()
+                    b.Property<DateTime?>("CreatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<double?>("EslapseTime")
+                        .HasColumnType("float");
+
+                    b.Property<string>("LogName")
                         .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("LogTime", "wms");
+                });
+
+            modelBuilder.Entity("FBT.ShareModels.WMS.MstUserSetting", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Currency")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("MstUserSettings", "wms");
+                });
+
+            modelBuilder.Entity("FBT.ShareModels.WMS.NumberSequences", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("CreateAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreateOperatorId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("CurrentSequenceNo")
+                        .HasColumnType("int");
+
+                    b.Property<bool?>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("JournalType")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Prefix")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("SequenceLength")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("UpdateAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UpdateOperatorId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("NumberSequences", "wms");
+                });
+
+            modelBuilder.Entity("FBT.ShareModels.WMS.Permissions", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime?>("CreateAt")
                         .HasColumnType("datetime2");
@@ -1904,8 +2114,11 @@ namespace Infrastructure.Migrations
                     b.Property<bool?>("IsDeleted")
                         .HasColumnType("bit");
 
-                    b.Property<string>("Status")
+                    b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
 
                     b.Property<DateTime?>("UpdateAt")
                         .HasColumnType("datetime2");
@@ -1915,13 +2128,10 @@ namespace Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("ProductCategories", "wms", t =>
-                        {
-                            t.ExcludeFromMigrations();
-                        });
+                    b.ToTable("Permissions", "wms");
                 });
 
-            modelBuilder.Entity("Domain.Entity.WMS.Unit", b =>
+            modelBuilder.Entity("FBT.ShareModels.WMS.PermissionsTenant", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -1939,11 +2149,327 @@ namespace Infrastructure.Migrations
                     b.Property<bool?>("IsDeleted")
                         .HasColumnType("bit");
 
-                    b.Property<string>("Status")
+                    b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("UpdateAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UpdateOperatorId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("PermissionsTenant", "wms");
+                });
+
+            modelBuilder.Entity("FBT.ShareModels.WMS.RefreshTokens", b =>
+                {
+                    b.Property<string>("RefreshToken")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<bool?>("Activated")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime>("ExpirationTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Token")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("RefreshToken");
+
+                    b.ToTable("RefreshTokens", "wms");
+                });
+
+            modelBuilder.Entity("FBT.ShareModels.WMS.ReturnOrder", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("CreateAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreateOperatorId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool?>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("PersonInCharge")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Reason")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateOnly?>("ReturnDate")
+                        .HasColumnType("date");
+
+                    b.Property<string>("ReturnOrderNo")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateOnly?>("ShipDate")
+                        .HasColumnType("date");
+
+                    b.Property<string>("ShipTo")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ShipmentNo")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("UpdateAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UpdateOperatorId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ReturnOrders", "wms");
+                });
+
+            modelBuilder.Entity("FBT.ShareModels.WMS.ReturnOrderLine", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("CreateAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreateOperatorId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool?>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Location")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<double?>("Qty")
+                        .HasColumnType("float");
+
+                    b.Property<string>("ReturnOrderNo")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("UpdateAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UpdateOperatorId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ReturnOrderLines", "wms");
+                });
+
+            modelBuilder.Entity("FBT.ShareModels.WMS.RoleToPermission", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("CreateAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreateOperatorId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool?>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("PermisionDescription")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PermisionName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("PermissionId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("RoleId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("RoleName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("UpdateAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UpdateOperatorId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("RoleToPermission", "wms");
+                });
+
+            modelBuilder.Entity("FBT.ShareModels.WMS.RoleToPermissionTenant", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("CreateAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreateOperatorId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool?>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("PermissionTenantDesciption")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("PermissionTenantId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("PermissionTenantName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("RoleId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("RoleName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("UpdateAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UpdateOperatorId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("RoleToPermissionTenant", "wms");
+                });
+
+            modelBuilder.Entity("FBT.ShareModels.WMS.ShippingBox", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("BoxName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("BoxType")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("CreateAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreateOperatorId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<double?>("Height")
+                        .HasColumnType("float");
+
+                    b.Property<bool?>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<double?>("Length")
+                        .HasColumnType("float");
+
+                    b.Property<double?>("MaxWeight")
+                        .HasColumnType("float");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("UpdateAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UpdateOperatorId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<double?>("Width")
+                        .HasColumnType("float");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ShippingBoxes", "wms");
+                });
+
+            modelBuilder.Entity("FBT.ShareModels.WMS.ShippingCarrier", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("CreateAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreateOperatorId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool?>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("ShippingCarrierCode")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ShippingCarrierName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("UpdateAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UpdateOperatorId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ShippingCarriers", "wms");
+                });
+
+            modelBuilder.Entity("FBT.ShareModels.WMS.Unit", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime?>("CreateAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreateOperatorId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool?>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
 
                     b.Property<string>("UnitName")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime?>("UpdateAt")
@@ -1954,13 +2480,10 @@ namespace Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Units", "wms", t =>
-                        {
-                            t.ExcludeFromMigrations();
-                        });
+                    b.ToTable("Units", "wms");
                 });
 
-            modelBuilder.Entity("Domain.Entity.WMS.UserToTenant", b =>
+            modelBuilder.Entity("FBT.ShareModels.WMS.UserToTenant", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -1975,8 +2498,8 @@ namespace Infrastructure.Migrations
                     b.Property<bool?>("IsDeleted")
                         .HasColumnType("bit");
 
-                    b.Property<string>("Status")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
 
                     b.Property<int>("TenantId")
                         .HasColumnType("int");
@@ -1988,7 +2511,6 @@ namespace Infrastructure.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("UserId")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
@@ -1996,173 +2518,740 @@ namespace Infrastructure.Migrations
                     b.ToTable("UserToTenant", "wms");
                 });
 
-            modelBuilder.Entity("Domain.Entity.authp.Commons.AuthUser", b =>
+            modelBuilder.Entity("FBT.ShareModels.WMS.WarehousePickingLine", b =>
                 {
-                    b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<byte[]>("ConcurrencyToken")
-                        .HasColumnType("varbinary(max)");
+                    b.Property<double?>("ActualQty")
+                        .HasColumnType("float");
 
-                    b.Property<string>("Email")
+                    b.Property<string>("Bin")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool>("IsDisabled")
+                    b.Property<DateTime?>("CreateAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreateOperatorId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool?>("IsDeleted")
                         .HasColumnType("bit");
+
+                    b.Property<string>("Location")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("LotNo")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PickNo")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<double?>("PickQty")
+                        .HasColumnType("float");
+
+                    b.Property<string>("ProductCode")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<int>("UnitId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("UpdateAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UpdateOperatorId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("WarehousePickingLines", "wms");
+                });
+
+            modelBuilder.Entity("FBT.ShareModels.WMS.WarehousePickingList", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("CreateAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreateOperatorId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateOnly?>("EstimatedShipDate")
+                        .HasColumnType("date");
+
+                    b.Property<bool?>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Location")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PersonInCharge")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PickNo")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateOnly?>("PickedDate")
+                        .HasColumnType("date");
+
+                    b.Property<string>("Remarks")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("Status")
+                        .HasColumnType("int");
 
                     b.Property<int?>("TenantId")
                         .HasColumnType("int");
 
-                    b.Property<string>("UserName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("UserId");
-
-                    b.HasIndex("TenantId");
-
-                    b.ToTable("AuthUser", "authp", t =>
-                        {
-                            t.ExcludeFromMigrations();
-                        });
-                });
-
-            modelBuilder.Entity("Domain.Entity.authp.Commons.RefreshTokenAuth", b =>
-                {
-                    b.Property<string>("TokenValue")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<DateTime>("AddedDateUtc")
+                    b.Property<DateTime?>("UpdateAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<byte[]>("ConcurrencyToken")
-                        .HasColumnType("varbinary(max)");
-
-                    b.Property<bool>("IsInvalid")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("JwtId")
+                    b.Property<string>("UpdateOperatorId")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(max)");
+                    b.HasKey("Id");
 
-                    b.HasKey("TokenValue");
-
-                    b.ToTable("AuthUsers", "authp", t =>
-                        {
-                            t.ExcludeFromMigrations();
-                        });
+                    b.ToTable("WarehousePickingList", "wms");
                 });
 
-            modelBuilder.Entity("Domain.Entity.authp.Commons.RoleToPermissionAuth", b =>
+            modelBuilder.Entity("FBT.ShareModels.WMS.WarehousePickingStaging", b =>
                 {
-                    b.Property<string>("RoleName")
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<byte[]>("ConcurrencyToken")
-                        .HasColumnType("varbinary(max)");
+                    b.Property<double?>("ActualQty")
+                        .HasColumnType("float");
+
+                    b.Property<string>("Bin")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("CreateAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreateOperatorId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool?>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Location")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("LotNo")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PickNo")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<double?>("PickQty")
+                        .HasColumnType("float");
+
+                    b.Property<string>("ProductCode")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid?>("ShipmentLineId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Unit")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("UnitId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("UpdateAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UpdateOperatorId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("WarehousePickingStaging", "wms");
+                });
+
+            modelBuilder.Entity("FBT.ShareModels.WMS.WarehousePutAway", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("CreateAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreateOperatorId")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("PackedPermissionsInRole")
+                    b.Property<DateOnly?>("DocumentDate")
+                        .HasColumnType("date");
+
+                    b.Property<string>("DocumentNo")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<byte>("RoleType")
-                        .HasColumnType("tinyint");
+                    b.Property<bool?>("IsDeleted")
+                        .HasColumnType("bit");
 
-                    b.HasKey("RoleName");
+                    b.Property<string>("Location")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.ToTable("RoleToPermission", "authp", t =>
-                        {
-                            t.ExcludeFromMigrations();
-                        });
-                });
+                    b.Property<string>("PostedBy")
+                        .HasColumnType("nvarchar(max)");
 
-            modelBuilder.Entity("Domain.Entity.authp.Commons.RoleToPermissionsTenantAuth", b =>
-                {
-                    b.Property<string>("TenantRolesRoleName")
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<DateOnly?>("PostedDate")
+                        .HasColumnType("date");
 
-                    b.Property<byte[]>("ConcurrencyToken")
-                        .HasColumnType("varbinary(max)");
+                    b.Property<string>("PutAwayNo")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("TenantRolesRoleNameNavigationRoleName")
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<string>("ReceiptNo")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("TenantsTenantId")
+                    b.Property<int>("Status")
                         .HasColumnType("int");
 
-                    b.HasKey("TenantRolesRoleName");
-
-                    b.HasIndex("TenantRolesRoleNameNavigationRoleName");
-
-                    b.HasIndex("TenantsTenantId");
-
-                    b.ToTable("RoleToPermissionsTenant", "authp", t =>
-                        {
-                            t.ExcludeFromMigrations();
-                        });
-                });
-
-            modelBuilder.Entity("Domain.Entity.authp.Commons.TenantAuth", b =>
-                {
                     b.Property<int>("TenantId")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("TenantId"));
+                    b.Property<DateOnly?>("TransDate")
+                        .HasColumnType("date");
 
-                    b.Property<string>("DatabaseInfoName")
+                    b.Property<DateTime?>("UpdateAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UpdateOperatorId")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool?>("HasOwnDb")
-                        .HasColumnType("bit");
+                    b.HasKey("Id");
 
-                    b.Property<bool?>("IsHierarchical")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("ParentDataKey")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int?>("ParentTenantId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("TenantFullName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("TenantId");
-
-                    b.ToTable("Tenant", "authp", t =>
-                        {
-                            t.ExcludeFromMigrations();
-                        });
+                    b.ToTable("WarehousePutAways", "wms");
                 });
 
-            modelBuilder.Entity("Domain.Entity.authp.Commons.UserToRole", b =>
+            modelBuilder.Entity("FBT.ShareModels.WMS.WarehousePutAwayLine", b =>
                 {
-                    b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<byte[]>("ConcurrencyToken")
-                        .HasColumnType("varbinary(max)");
-
-                    b.Property<string>("RoleName")
+                    b.Property<string>("Bin")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("RoleNameNavigationRoleName")
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<DateTime?>("CreateAt")
+                        .HasColumnType("datetime2");
 
-                    b.HasKey("UserId");
+                    b.Property<string>("CreateOperatorId")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.HasIndex("RoleNameNavigationRoleName");
+                    b.Property<DateOnly?>("ExpirationDate")
+                        .HasColumnType("date");
 
-                    b.HasIndex("UserId");
+                    b.Property<bool?>("IsDeleted")
+                        .HasColumnType("bit");
 
-                    b.ToTable("UserToRole", "authp", t =>
-                        {
-                            t.ExcludeFromMigrations();
-                        });
+                    b.Property<double?>("JournalQty")
+                        .HasColumnType("float");
+
+                    b.Property<string>("LotNo")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ProductCode")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PutAwayNo")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TenantId")
+                        .HasColumnType("int");
+
+                    b.Property<double?>("TransQty")
+                        .HasColumnType("float");
+
+                    b.Property<int?>("UnitId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("UpdateAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UpdateOperatorId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("WarehousePutAwayLines", "wms");
+                });
+
+            modelBuilder.Entity("FBT.ShareModels.WMS.WarehousePutAwayStaging", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Bin")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("CreateAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreateOperatorId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateOnly?>("ExpiryDate")
+                        .HasColumnType("date");
+
+                    b.Property<bool?>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<double?>("JournalQty")
+                        .HasColumnType("float");
+
+                    b.Property<string>("LotNo")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ProductCode")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("PutAwayLineId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("PutAwayNo")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid?>("ReceiptLineId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int?>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<double?>("TransQty")
+                        .HasColumnType("float");
+
+                    b.Property<string>("Unit")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("UpdateAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UpdateOperatorId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("WarehousePutAwayStaging", "wms");
+                });
+
+            modelBuilder.Entity("FBT.ShareModels.WMS.WarehouseReceiptOrder", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("ArrivalType")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ConfirmedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateOnly?>("ConfirmedDate")
+                        .HasColumnType("date");
+
+                    b.Property<DateTime?>("CreateAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreateOperatorId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("DocumentNo")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateOnly?>("ExpectedDate")
+                        .HasColumnType("date");
+
+                    b.Property<bool?>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Location")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PersonInCharge")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PostedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateOnly?>("PostedDate")
+                        .HasColumnType("date");
+
+                    b.Property<string>("ReceiptNo")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("ScheduledArrivalNumber")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<string>("SupplierCode")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("SupplierId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TenantId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("UpdateAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UpdateOperatorId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("VendorCode")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("WarehouseReceiptOrder", "wms");
+                });
+
+            modelBuilder.Entity("FBT.ShareModels.WMS.WarehouseReceiptOrderLine", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Bin")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("CreateAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreateOperatorId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateOnly?>("ExpirationDate")
+                        .HasColumnType("date");
+
+                    b.Property<bool?>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("LotNo")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<double?>("OrderQty")
+                        .HasColumnType("float");
+
+                    b.Property<string>("ProductCode")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool?>("Putaway")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("ReceiptNo")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<double?>("TransQty")
+                        .HasColumnType("float");
+
+                    b.Property<int?>("UnitId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UnitName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("UpdateAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UpdateOperatorId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("WarehouseReceiptOrderLine", "wms");
+                });
+
+            modelBuilder.Entity("FBT.ShareModels.WMS.WarehouseReceiptStaging", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Bin")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("CreateAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreateOperatorId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateOnly?>("ExpirationDate")
+                        .HasColumnType("date");
+
+                    b.Property<bool?>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("LotNo")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<double?>("OrderQty")
+                        .HasColumnType("float");
+
+                    b.Property<string>("ProductCode")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("ReceiptLineId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("ReceiptNo")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<double?>("TransQty")
+                        .HasColumnType("float");
+
+                    b.Property<int>("UnitId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("UpdateAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UpdateOperatorId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("WarehouseReceiptStaging", "wms");
+                });
+
+            modelBuilder.Entity("FBT.ShareModels.WMS.WarehouseShipment", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Address")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("BinId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("CreateAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreateOperatorId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Email")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool?>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Location")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("LocationName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PersonInCharge")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PersonInChargeName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PickingNo")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateOnly?>("PlanShipDate")
+                        .HasColumnType("date");
+
+                    b.Property<string>("SalesNo")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ShipmentNo")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ShippingAddress")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ShippingCarrierCode")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Telephone")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("TenantId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("TenantName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("TrackingNo")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("UpdateAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UpdateOperatorId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("WarehouseShipments", "wms");
+                });
+
+            modelBuilder.Entity("FBT.ShareModels.WMS.WarehouseShipmentLine", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Bin")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("CreateAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreateOperatorId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool?>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Location")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateOnly?>("PackedDate")
+                        .HasColumnType("date");
+
+                    b.Property<double?>("PackedQty")
+                        .HasColumnType("float");
+
+                    b.Property<string>("ProductCode")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ShipmentNo")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<double?>("ShipmentQty")
+                        .HasColumnType("float");
+
+                    b.Property<int?>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("UnitId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("UpdateAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UpdateOperatorId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("WarehouseShipmentLines", "wms");
+                });
+
+            modelBuilder.Entity("FBT.ShareModels.WMS.WarehouseTran", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Bin")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("CreateAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreateOperatorId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateOnly?>("DatePhysical")
+                        .HasColumnType("date");
+
+                    b.Property<bool?>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Location")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("LotNo")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PackingNo")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ProductCode")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PutAwayNo")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<double>("Qty")
+                        .HasColumnType("float");
+
+                    b.Property<string>("Remarks")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("StatusIssue")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("StatusReceipt")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("TenantId")
+                        .HasColumnType("int");
+
+                    b.Property<Guid?>("TransId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("TransLineId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("TransNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("TransType")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("UpdateAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UpdateOperatorId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("WarehouseTrans", "wms");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -2189,10 +3278,7 @@ namespace Infrastructure.Migrations
                         .HasDatabaseName("RoleNameIndex")
                         .HasFilter("[NormalizedName] IS NOT NULL");
 
-                    b.ToTable("AspNetRoles", "wms", t =>
-                        {
-                            t.ExcludeFromMigrations();
-                        });
+                    b.ToTable("AspNetRoles", "wms");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -2217,10 +3303,7 @@ namespace Infrastructure.Migrations
 
                     b.HasIndex("RoleId");
 
-                    b.ToTable("AspNetRoleClaims", "wms", t =>
-                        {
-                            t.ExcludeFromMigrations();
-                        });
+                    b.ToTable("AspNetRoleClaims", "wms");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
@@ -2245,10 +3328,7 @@ namespace Infrastructure.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("AspNetUserClaims", "wms", t =>
-                        {
-                            t.ExcludeFromMigrations();
-                        });
+                    b.ToTable("AspNetUserClaims", "wms");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
@@ -2270,10 +3350,7 @@ namespace Infrastructure.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("AspNetUserLogins", "wms", t =>
-                        {
-                            t.ExcludeFromMigrations();
-                        });
+                    b.ToTable("AspNetUserLogins", "wms");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
@@ -2288,10 +3365,7 @@ namespace Infrastructure.Migrations
 
                     b.HasIndex("RoleId");
 
-                    b.ToTable("AspNetUserRoles", "wms", t =>
-                        {
-                            t.ExcludeFromMigrations();
-                        });
+                    b.ToTable("AspNetUserRoles", "wms");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
@@ -2310,33 +3384,30 @@ namespace Infrastructure.Migrations
 
                     b.HasKey("UserId", "LoginProvider", "Name");
 
-                    b.ToTable("AspNetUserTokens", "wms", t =>
-                        {
-                            t.ExcludeFromMigrations();
-                        });
+                    b.ToTable("AspNetUserTokens", "wms");
                 });
 
-            modelBuilder.Entity("Domain.Entity.Commons.Channel", b =>
+            modelBuilder.Entity("FBT.ShareModels.Entities.Channel", b =>
                 {
-                    b.HasOne("Domain.Entity.Commons.ChannelMaster", "ChannelMasterCodeNavigation")
-                        .WithMany("Channels")
-                        .HasForeignKey("ChannelMasterCodeNavigationChannelMasterCode");
+                    b.HasOne("FBT.ShareModels.Entities.ChannelMaster", "ChannelMaster")
+                        .WithMany()
+                        .HasForeignKey("ChannelMasterCode");
 
-                    b.Navigation("ChannelMasterCodeNavigation");
+                    b.Navigation("ChannelMaster");
                 });
 
-            modelBuilder.Entity("Domain.Entity.Commons.Order", b =>
+            modelBuilder.Entity("FBT.ShareModels.Entities.Order", b =>
                 {
-                    b.HasOne("Domain.Entity.Commons.Channel", "ChannelCodeNavigation")
-                        .WithMany("Orders")
-                        .HasForeignKey("ChannelCodeNavigationChannelCode");
+                    b.HasOne("FBT.ShareModels.Entities.Channel", "Channel")
+                        .WithMany()
+                        .HasForeignKey("ChannelCode");
 
-                    b.Navigation("ChannelCodeNavigation");
+                    b.Navigation("Channel");
                 });
 
-            modelBuilder.Entity("Domain.Entity.Commons.OrderItem", b =>
+            modelBuilder.Entity("FBT.ShareModels.Entities.OrderItem", b =>
                 {
-                    b.HasOne("Domain.Entity.Commons.Order", "OrderHeader")
+                    b.HasOne("FBT.ShareModels.Entities.Order", "OrderHeader")
                         .WithMany("OrderItems")
                         .HasForeignKey("OrderHeaderId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -2345,69 +3416,15 @@ namespace Infrastructure.Migrations
                     b.Navigation("OrderHeader");
                 });
 
-            modelBuilder.Entity("Domain.Entity.Commons.OrderReturnItem", b =>
+            modelBuilder.Entity("FBT.ShareModels.Entities.OrderReturnItem", b =>
                 {
-                    b.HasOne("Domain.Entity.Commons.Order", "OrderHeader")
+                    b.HasOne("FBT.ShareModels.Entities.Order", "OrderHeader")
                         .WithMany("OrderReturnItems")
                         .HasForeignKey("OrderHeaderId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("OrderHeader");
-                });
-
-            modelBuilder.Entity("Domain.Entity.Commons.ProductBundle", b =>
-                {
-                    b.HasOne("Domain.Entity.Commons.Product", "ParentProduct")
-                        .WithMany("ProductBundles")
-                        .HasForeignKey("ParentProductId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("ParentProduct");
-                });
-
-            modelBuilder.Entity("Domain.Entity.authp.Commons.AuthUser", b =>
-                {
-                    b.HasOne("Domain.Entity.authp.Commons.TenantAuth", "Tenant")
-                        .WithMany()
-                        .HasForeignKey("TenantId");
-
-                    b.Navigation("Tenant");
-                });
-
-            modelBuilder.Entity("Domain.Entity.authp.Commons.RoleToPermissionsTenantAuth", b =>
-                {
-                    b.HasOne("Domain.Entity.authp.Commons.RoleToPermissionAuth", "TenantRolesRoleNameNavigation")
-                        .WithMany("RoleToPermissionsTenants")
-                        .HasForeignKey("TenantRolesRoleNameNavigationRoleName");
-
-                    b.HasOne("Domain.Entity.authp.Commons.TenantAuth", "TenantsTenant")
-                        .WithMany()
-                        .HasForeignKey("TenantsTenantId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("TenantRolesRoleNameNavigation");
-
-                    b.Navigation("TenantsTenant");
-                });
-
-            modelBuilder.Entity("Domain.Entity.authp.Commons.UserToRole", b =>
-                {
-                    b.HasOne("Domain.Entity.authp.Commons.RoleToPermissionAuth", "RoleNameNavigation")
-                        .WithMany("UserToRoles")
-                        .HasForeignKey("RoleNameNavigationRoleName");
-
-                    b.HasOne("Domain.Entity.authp.Commons.AuthUser", "User")
-                        .WithMany("UserToRoles")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("RoleNameNavigation");
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -2421,7 +3438,7 @@ namespace Infrastructure.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
                 {
-                    b.HasOne("Domain.Entity.WMS.Authentication.ApplicationUser", null)
+                    b.HasOne("FBT.ShareModels.WMS.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -2430,7 +3447,7 @@ namespace Infrastructure.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
-                    b.HasOne("Domain.Entity.WMS.Authentication.ApplicationUser", null)
+                    b.HasOne("FBT.ShareModels.WMS.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -2445,7 +3462,7 @@ namespace Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Domain.Entity.WMS.Authentication.ApplicationUser", null)
+                    b.HasOne("FBT.ShareModels.WMS.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -2454,45 +3471,18 @@ namespace Infrastructure.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
                 {
-                    b.HasOne("Domain.Entity.WMS.Authentication.ApplicationUser", null)
+                    b.HasOne("FBT.ShareModels.WMS.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Domain.Entity.Commons.Channel", b =>
-                {
-                    b.Navigation("Orders");
-                });
-
-            modelBuilder.Entity("Domain.Entity.Commons.ChannelMaster", b =>
-                {
-                    b.Navigation("Channels");
-                });
-
-            modelBuilder.Entity("Domain.Entity.Commons.Order", b =>
+            modelBuilder.Entity("FBT.ShareModels.Entities.Order", b =>
                 {
                     b.Navigation("OrderItems");
 
                     b.Navigation("OrderReturnItems");
-                });
-
-            modelBuilder.Entity("Domain.Entity.Commons.Product", b =>
-                {
-                    b.Navigation("ProductBundles");
-                });
-
-            modelBuilder.Entity("Domain.Entity.authp.Commons.AuthUser", b =>
-                {
-                    b.Navigation("UserToRoles");
-                });
-
-            modelBuilder.Entity("Domain.Entity.authp.Commons.RoleToPermissionAuth", b =>
-                {
-                    b.Navigation("RoleToPermissionsTenants");
-
-                    b.Navigation("UserToRoles");
                 });
 #pragma warning restore 612, 618
         }

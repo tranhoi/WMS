@@ -31,48 +31,42 @@
   select* from WMS.Logtime order by createddate desc
   --truncate table Wms.[Logtime]
 
-  SELECT  creation_time 
-       ,last_execution_time
-       ,total_physical_reads
-       ,total_logical_reads 
-       ,total_logical_writes
-       , execution_count
-       , total_worker_time
-       , total_elapsed_time
-       , total_elapsed_time / execution_count avg_elapsed_time
-       ,SUBSTRING(st.text, (qs.statement_start_offset/2) + 1,
-        ((CASE statement_end_offset
-         WHEN -1 THEN DATALENGTH(st.text)
-         ELSE qs.statement_end_offset END
-           - qs.statement_start_offset)/2) + 1) AS statement_text
-FROM sys.dm_exec_query_stats AS qs
-CROSS APPLY sys.dm_exec_sql_text(qs.sql_handle) st
-ORDER BY total_elapsed_time / execution_count DESC;
+--chinh sau data type column
+--ALTER TABLE wms.WarehousePackingLines ADD ShipmentLineId uniqueidentifier;
+--ALTER TABLE dbo.WarehouseShipments ALTER COLUMN [PlanShipDate] date;
+
+select * from dbo.Products
+
+select * from wms.NumberSequences
+select * from wms.Locations
+select * from wms.Bins where LocationId='63BD1CD2-803D-44C1-815D-A19DF555E2E1'
+
+select * from wms.ShippingCarriers order by CreateAt desc
+select * from wms.ShippingBoxes order by CreateAt desc
+select * from wms.Units
+
+select * from dbo.Currencies
+select * from authp.Tenants
+select * from Suppliers
+select * from ProductCategories
+select * from Products
+select * from ProductJanCodes
   
- -- select _per.*
-	--	,_roleToPer.RoleId
-	--	,_roleToPer.RoleName
- -- from wms.[Permissions] _per
-	--left join wms.RoleToPermission _roleToPer on _roleToPer.PermissionId = _per.Id
+select * from wms.WarehouseShipments order by CreateAt desc
+select * from wms.WarehouseShipmentLines order by CreateAt desc
 
-  --insert into wms.[Permissions] 
-  --(Id,RoleId,RoleName,PermissionId,PermisionName,PermisionDescription)
-  --values
-  --( NEWID(),'4b128b49-96a9-4c52-a261-c812bbb43f33','Admin', 'FB3C3FD2-CA28-4F9F-AD5B-5BE51826BFA4','Insert','Allow add new data')
-  
-  --update wms.RoleToPermission set RoleName= 'Admin' where RoleId='7E9F080F-3CF3-4277-96AE-B476465FC257'
-  --truncate table wms.roletopermission
-  --SELECT *
-  --FROM RoleToPermissions
-  -- SELECT *
-  --FROM RoleToPermissionsTenant
+select * from wms.WarehousePickingList order by CreateAt desc
+select * from wms.WarehousePickingLines
 
-  --select * from Unit
-  --select * from Category
-  --select * from product
+--select * from wms.WarehousePackingList order by CreateAt desc
+--select * from wms.WarehousePackingLines order by CreateAt desc
 
-  --truncate table Wms.[Logtime]
-    --truncate table Wms.[refreshtokens]
-  --truncate table Category
-  --truncate table product
-  --Xb0zPmUsezyXb26jvz0YQETK87EB5LDFdpYPWI7FQeCtGxnQyqmXr3A7lyh24FXOnLZqDANDUcvhgWmwCGQKjg==
+select * from wms.WarehouseTrans where TransType =1 order by CreateAt desc
+
+--exec sp_packingListGetDataMaster --@PlanShipDateFrom='2024-10-16',@PlanShipDateTo='2024-10-19'
+
+--update Products set SupplierId =2
+
+
+--delete wms.WarehouseShipments where id='e06214b3-8087-ef11-9100-917c6e3f8094'
+--update wms.WarehouseShipmentLines set Status=5

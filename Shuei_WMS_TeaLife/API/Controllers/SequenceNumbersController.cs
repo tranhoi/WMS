@@ -1,11 +1,11 @@
 ﻿using API.Controllers.Base;
+using Application.Extentions;
 using Application.Services;
-using Application.Services.Base;
-using Domain.Entity.WMS;
+
 using Infrastructure.Repos;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using RestEase;
 
 namespace API.Controllers
 {
@@ -19,6 +19,19 @@ namespace API.Controllers
         public SequenceNumbersController(Repository repository = null) : base(repository.SNumberSequences)
         {
             _repository = repository;
+        }
+        [HttpGet(ApiRoutes.NumberSequences.GetNumberSequenceByType)]
+        public async Task<Result<NumberSequences>> GetNumberSequenceByType(string type)
+        {
+            var result = await _repository.SNumberSequences.GetNumberSequenceByType(type);
+            return result;
+        }
+
+        [HttpPost(ApiRoutes.NumberSequences.IncreaseNumberSequenceByType)]
+        public async Task<Result<bool>> IncreaseNumberSequenceByType([Path] string type)
+        {
+            var result = await _repository.SNumberSequences.IncreaseNumberSequenceByType(type);
+            return result;
         }
     }
 }

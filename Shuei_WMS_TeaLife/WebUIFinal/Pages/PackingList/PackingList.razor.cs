@@ -1,134 +1,69 @@
-﻿using Application.DTOs.Response.Account;
-using Radzen.Blazor;
-using Radzen;
-using WebUIFinal.Pages.Components;
-using Domain.Entity.WMS;
-using Domain.Enums;
-using Application.DTOs.Request.Account;
+﻿using Application.DTOs.Request.shipment;
 
 namespace WebUIFinal.Pages.PackingList
 {
     public partial class PackingList
     {
-        List<Location> _dataGrid = null;
-        RadzenDataGrid<Location> _profileGrid;
+        List<WarehousePackingListDto> _dataGrid = null;
+        RadzenDataGrid<WarehousePackingListDto> _profileGrid;
         IEnumerable<int> _pageSizeOptions = new int[] { 5, 10, 20, 30, 100, 200 };
         bool _showPagerSummary = true;
         string _pagingSummaryFormat = "Displaying page {0} of {1} <b>(total {2} records)</b>";
+        bool allowRowSelectOnRowClick = false;
 
-        PackingListSearchModel _searchModel =new PackingListSearchModel();
+        PackingListSearchRequestDto _searchModel = new PackingListSearchRequestDto();
+
+        IList<WarehousePackingListDto> _gridSelected = [];
+        bool _disable = false;
+
+        DateOnly _from, _to;
+        //DateOnly value = DateOnly.FromDateTime(DateTime.Now);
+
+        EnumShipmentOrderStatus _selectStatus;
+
+        List<Location> _locations = [];
+        Location _locationSelect;
+        List<Bin> _bins = [];
+        Bin _binSelect;
 
         protected override async Task OnInitializedAsync()
         {
             await base.OnInitializedAsync();
 
-            _pagingSummaryFormat = _localizer["DisplayPage"] + " {0} " + _localizer["Of"] + " {1} <b>(" + _localizer["Total"] + " {2} " + _localizer["Records"] + ")</b>";
+            _pagingSummaryFormat = _localizerCommon["DisplayPage"] + " {0} " + _localizerCommon["Of"] + " {1} <b>(" + _localizerCommon["Total"] + " {2} " + _localizerCommon["Records"] + ")</b>";
 
-            RefreshDataAsync();
-        }
+            _selectStatus = EnumShipmentOrderStatus.All;
 
-        async Task DeleteItemAsync(Location model)
-        {
-            try
-            {
-                var confirm = await _dialogService.Confirm($"{_localizer["Confirmation.Delete"]} {_localizer["Location"]}: {model.LocationName}?", $"{_localizer["Delete"]} {_localizer["Location"]}", new ConfirmOptions()
-                {
-                    OkButtonText = "Yes",
-                    CancelButtonText = "No",
-                    AutoFocusFirstElement = true,
-                });
-
-                if (confirm == null || confirm == false) return;
-
-                #region delete bin of location
-                var responseBins = await _binServices.GetByLocationId(model.Id);
-                if (!responseBins.Succeeded)
-                {
-                    _notificationService.Notify(new NotificationMessage()
-                    {
-                        Severity = NotificationSeverity.Error,
-                        Summary = "Error",
-                        Detail = responseBins.Messages.ToString(),
-                        Duration = 5000
-                    });
-
-                    return;
-                }
-                var responseDeleteBin = await _binServices.DeleteRangeAsync(responseBins.Data);
-                if (!responseDeleteBin.Succeeded)
-                {
-                    _notificationService.Notify(new NotificationMessage()
-                    {
-                        Severity = NotificationSeverity.Error,
-                        Summary = "Error",
-                        Detail = responseBins.Messages.ToString(),
-                        Duration = 5000
-                    });
-
-                    return;
-                }
-                #endregion
-
-                var res = await _locationServices.DeleteAsync(model);
-
-                if (res.Succeeded)
-                {
-                    _notificationService.Notify(new NotificationMessage()
-                    {
-                        Severity = NotificationSeverity.Success,
-                        Summary = "Success",
-                        Detail = $"Delete location {model.LocationName} successfully.",
-                        Duration = 5000
-                    });
-
-                    await RefreshDataAsync();
-                }
-                else
-                {
-                    _notificationService.Notify(new NotificationMessage()
-                    {
-                        Severity = NotificationSeverity.Error,
-                        Summary = "Error",
-                        Detail = res.Messages.ToString(),
-                        Duration = 5000
-                    });
-                }
-            }
-            catch (Exception ex)
+            var locationResponse = await _locationServices.GetAllAsync();
+            if (!locationResponse.Succeeded)
             {
                 _notificationService.Notify(new NotificationMessage()
                 {
                     Severity = NotificationSeverity.Error,
-                    Summary = "Error",
-                    Detail = ex.Message,
+                    Summary = "Get location error",
+                    Detail = locationResponse.Messages.FirstOrDefault(),
                     Duration = 5000
                 });
-
                 return;
             }
+            _locations = locationResponse.Data.ToList();
+
+            RefreshDataAsync(new PackingListSearchRequestDto());
         }
 
-        async Task EditItemAsync(string id)
+        async Task OpenAsync(WarehousePackingListDto model)
         {
-            _navigation.NavigateTo($"/addlocation/{_localizer["Detail.Edit"]} {_localizer["Location"]}|{id}");
+            var m = model;
+
+            _MasterTransferToDetails.TransferToPackingDetail = model;
+            _navigation.NavigateTo("/packinglistDetail");
         }
 
-        async Task AddNewItemAsync()
-        {
-            _navigation.NavigateTo($"/addlocation/{_localizer["Detail.Create"]} {_localizer["Location"]}");
-        }
-
-        async Task ViewItemAsync(string id)
-        {
-
-            _navigation.NavigateTo($"/addlocation/{_localizer["Detail.View"]} {_localizer["Location"]}|{id}");
-        }
-
-        async Task RefreshDataAsync()
+        async Task RefreshDataAsync(PackingListSearchRequestDto model)
         {
             try
             {
-                var res = await _locationServices.GetAllAsync();
+                var res = await _packingListServices.GetDataMasterAsync(model);
 
                 if (!res.Succeeded)
                 {
@@ -136,13 +71,14 @@ namespace WebUIFinal.Pages.PackingList
                     {
                         Severity = NotificationSeverity.Error,
                         Summary = "Error",
-                        Detail = res.Messages.ToString(),
+                        Detail = res.Messages.FirstOrDefault(),
+                        Duration = 5000
                     });
                     return;
                 }
 
                 _dataGrid = null;
-                _dataGrid = new List<Location>();
+                _dataGrid = new List<WarehousePackingListDto>();
                 _dataGrid = res.Data.ToList();
 
                 //await _profileGrid.RefreshDataAsync();
@@ -163,18 +99,59 @@ namespace WebUIFinal.Pages.PackingList
             }
         }
 
-        async void Submit(PackingListSearchModel arg)
+        async Task ClearFilter()
         {
-            var confirm = await _dialogService.Confirm($"Do you want to change password?", "Change password", new ConfirmOptions()
+            _binSelect = null;
+            _locationSelect = null;
+            _selectStatus = EnumShipmentOrderStatus.All;
+            _searchModel = null;
+            _searchModel = new PackingListSearchRequestDto();
+            RefreshDataAsync(_searchModel);
+        }
+
+        async void Submit(PackingListSearchRequestDto arg)
+        {
+            var r = _gridSelected;
+            //var m = _searchModel;
+            arg.DeliveryLocation = _locationSelect?.LocationName;
+            arg.OutgoingBin = _binSelect?.BinCode;
+            arg.ScheduledShipDateFrom = _from.ToString("yyyy-MM-dd") == "0001-01-01" ? null : _from.ToString("yyyy-MM-dd");
+            arg.ScheduledShipDateTo = _to.ToString("yyyy-MM-dd") == "0001-01-01" ? null : _to.ToString("yyyy-MM-dd");
+            arg.Status = _selectStatus;
+            RefreshDataAsync(arg);
+        }
+
+        async Task GetBin()
+        {
+            if (_locationSelect == null) return;
+            var binResponse = await _binServices.GetByLocationId(_locationSelect.Id);
+
+            if (!binResponse.Succeeded)
             {
-                OkButtonText = "Yes",
-                CancelButtonText = "No",
-                AutoFocusFirstElement = true,
-            });
+                _notificationService.Notify(new NotificationMessage()
+                {
+                    Severity = NotificationSeverity.Error,
+                    Summary = "Get bin error",
+                    Detail = binResponse.Messages.FirstOrDefault(),
+                    Duration = 5000
+                });
+                return;
+            }
+            _bins = binResponse.Data.ToList();
+        }
 
-            if (confirm == null || confirm == false) return;
+        private List<EnumDisplay<EnumShipmentOrderStatus>> GetDisplayStatus()
+        {
+            return Enum.GetValues(typeof(EnumShipmentOrderStatus)).Cast<EnumShipmentOrderStatus>().Select(_ => new EnumDisplay<EnumShipmentOrderStatus>
+            {
+                Value = _,
+                DisplayValue = GetValueLocalizedStatus(_)
+            }).ToList();
+        }
 
-
+        private string GetValueLocalizedStatus(EnumShipmentOrderStatus enumStatus)
+        {
+            return _localizerEnum[enumStatus.ToString()];
         }
     }
 }

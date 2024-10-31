@@ -1,6 +1,6 @@
 ﻿using Radzen;
 using Radzen.Blazor;
-using VendorEntity = Domain.Entity.Commons.Vendor;
+using VendorEntity = FBT.ShareModels.Entities.Vendor;
 
 namespace WebUIFinal.Pages.Vendor
 {

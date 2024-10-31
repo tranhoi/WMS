@@ -1,15 +1,9 @@
 ﻿using Application.DTOs;
-using Application.DTOs.Request;
 using Application.DTOs.Request.Account;
 using Application.DTOs.Response;
 using Application.DTOs.Response.Account;
 using Application.Extentions;
 using RestEase;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Application.Services.Authen.UI
 {

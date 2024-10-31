@@ -1,8 +1,8 @@
 ﻿using Application.Extentions;
 using Application.Models;
 using Application.Services;
-using Domain.Entity.Commons;
-using Domain.Entity.WMS;
+
+
 using Infrastructure.Data;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
@@ -99,6 +99,12 @@ namespace Infrastructure.Repos
         {
             try
             {
+                var existCD = await dbContext.Devices.Where(x => x.Name == model.Name).FirstOrDefaultAsync();
+                if (existCD != null)
+                {
+                    return await Result<Device>.FailAsync($"Device name: {model.Name} is already created");
+                }
+
                 await dbContext.Devices.AddAsync(model);
                 await dbContext.SaveChangesAsync();
                 return await Result<Device>.SuccessAsync(model);

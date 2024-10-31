@@ -1,5 +1,5 @@
-﻿using Domain.Enums;
-using Domain.Entity.WMS;
+﻿
+
 using Microsoft.AspNetCore.Components;
 using Radzen;
 
@@ -21,7 +21,9 @@ namespace WebUIFinal.Pages.ProductCategoryPage
         {
             await base.OnInitializedAsync();
 
+            if (Title.Contains(_localizerCommon["Detail.Create"])) _visibleBtnSubmit = false;
 
+            _selectStatus = EnumStatus.Activated;
             await RefreshDataAsync();
         }
         async Task RefreshDataAsync()
@@ -32,12 +34,6 @@ namespace WebUIFinal.Pages.ProductCategoryPage
 
                 if (Title.Contains("|"))
                 {
-                    if (Title.Contains(_localizerCommon["Detail.View"]))
-                    {
-                        _visibleBtnSubmit = false;
-                        _disable = true;
-                    }
-
                     var arr = Title.Split('|');
                     Title = arr[0];
                     _id = arr[1];
@@ -132,11 +128,11 @@ namespace WebUIFinal.Pages.ProductCategoryPage
             }
         }
 
-        async Task DeleteItemAsync(ProductCategory ProductCategory)
+        async Task DeleteItemAsync(ProductCategory model)
         {
             try
             {
-                var confirm = await _dialogService.Confirm($"{_localizerCommon["Confirmation.Delete"]}: {ProductCategory.CategoryName}?", $"{_localizerCommon["Delete"]} {_localizerCommon["Product Category"]}", new ConfirmOptions()
+                var confirm = await _dialogService.Confirm($"{_localizerCommon["Confirmation.Delete"]} {_localizer["Product Category"]}: {model.CategoryName}?", $"{_localizerCommon["Delete"]} {_localizer["Product Category"]}", new ConfirmOptions()
                 {
                     OkButtonText = "Yes",
                     CancelButtonText = "No",
@@ -145,7 +141,7 @@ namespace WebUIFinal.Pages.ProductCategoryPage
 
                 if (confirm == null || confirm == false) return;
 
-                var res = await _productCategoryServices.DeleteAsync(ProductCategory);
+                var res = await _productCategoryServices.DeleteAsync(model);
 
                 if (res.Succeeded)
                 {
@@ -153,7 +149,7 @@ namespace WebUIFinal.Pages.ProductCategoryPage
                     {
                         Severity = NotificationSeverity.Success,
                         Summary = "Success",
-                        Detail = $"Delete ProductCategory {ProductCategory.CategoryName} successfully.",
+                        Detail = res.Messages.FirstOrDefault(),
                         Duration = 5000
                     });
 
@@ -169,6 +165,8 @@ namespace WebUIFinal.Pages.ProductCategoryPage
                         Duration = 5000
                     });
                 }
+
+                await RefreshDataAsync();
             }
             catch (Exception ex)
             {
@@ -176,7 +174,7 @@ namespace WebUIFinal.Pages.ProductCategoryPage
                 {
                     Severity = NotificationSeverity.Error,
                     Summary = "Error",
-                    Detail = $"Failed to delete ProductCategory {ProductCategory.CategoryName}.",
+                    Detail = ex.Message,
                     Duration = 5000
                 });
 

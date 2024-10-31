@@ -176,7 +176,7 @@
     <comment>Save</comment>
   </data>
   <data name="Delete" xml:space="preserve">
-    <value>無効にする</value>
+    <value> 削除</value>
     <comment>Delete</comment>
   </data>
   <data name="User.Print" xml:space="preserve">
@@ -395,9 +395,6 @@
   </data>
   <data name="Product.BackProductList" xml:space="preserve">
     <value>商品一覧</value>
-  </data>
-  <data name="Product.SelectSupplierCode" xml:space="preserve">
-    <value>仕入先</value>
   </data>
   <data name="Edit" xml:space="preserve">
     <value>編集</value>
@@ -618,13 +615,73 @@
   <data name="Product image" xml:space="preserve">
     <value>商品画像</value>
   </data>
-  <data name="aaaaaaaaaaaaaaaaaaaaaaaaa" xml:space="preserve">
-    <value>bbb</value>
-  </data>
   <data name="Permission information" xml:space="preserve">
     <value>新規情報</value>
   </data>
   <data name="Nav.Issue.ShippingBox" xml:space="preserve">
-    <value>配送ボックス</value>
+    <value>配送箱</value>
+  </data>
+  <data name="Clear Filter" xml:space="preserve">
+    <value>フィルターをクリア</value>
+  </data>
+  <data name="Clear" xml:space="preserve">
+    <value>クリア</value>
+  </data>
+  <data name="Yes" xml:space="preserve">
+    <value>はい</value>
+  </data>
+  <data name="No" xml:space="preserve">
+    <value>いいえ</value>
+  </data>
+  <data name="Success" xml:space="preserve">
+    <value>成功</value>
+  </data>
+  <data name="Error" xml:space="preserve">
+    <value>エラー</value>
+  </data>
+  <data name="Nav.Issue.ShippingCarrier" xml:space="preserve">
+    <value>配送業者</value>
+  </data>
+  <data name="Manager" xml:space="preserve">
+    <value>マネージャー</value>
+  </data>
+  <data name="Confirm" xml:space="preserve">
+    <value>確認する</value>
+  </data>
+  <data name="Product.SelectSupplierCode" xml:space="preserve">
+    <value>仕入先</value>
+  </data>
+  <data name="Supplier" xml:space="preserve">
+    <value>仕入先</value>
+  </data>
+  <data name="Warning" xml:space="preserve">
+    <value>警告</value>
+  </data>
+  <data name="Print" xml:space="preserve">
+    <value>印刷</value>
+  </data>
+  <data name="On" xml:space="preserve">
+    <value>の上</value>
+  </data>
+  <data name="Off" xml:space="preserve">
+    <value>オフ</value>
+  </data>
+  <data name="Require.Bin" xml:space="preserve">
+    <value>棚番号必須です</value>
+  </data>
+  <data name="Require.LotNo" xml:space="preserve">
+    <value>ロットNo.必須です</value>
+  </data>
+  <data name="Require.ProductCode" xml:space="preserve">
+    <value>商品コード必須です.</value>
+  </data>
+  <data name="Require.OrderQty" xml:space="preserve">
+    <value>入庫指示数必須です</value>
+  </data>
+  <data name="Nav.Dashboard" xml:space="preserve">
+    <value>ダッシュボード</value>
+  </data>
+  <data name="Nav.ReceiptPlan" xml:space="preserve">
+    <value>入荷予定</value>
   </data>
 </root>

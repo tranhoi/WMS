@@ -118,31 +118,78 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="ShippingBoxeslist" xml:space="preserve">
-    <value />
+    <value>配送箱一覧</value>
   </data>
-  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
-  <data name="BoxName" type="System.Resources.ResXNullRef, System.Windows.Forms">
-    <value />
+  <data name="BoxName" xml:space="preserve">
+    <value>箱の名前</value>
   </data>
   <data name="BoxType" xml:space="preserve">
-    <value />
+    <value>箱タイプ</value>
   </data>
   <data name="Length" xml:space="preserve">
-    <value />
+    <value>長</value>
   </data>
   <data name="MaxWeight" xml:space="preserve">
-    <value />
+    <value>最大重量</value>
   </data>
   <data name="BackToShippingBoxList" xml:space="preserve">
-    <value />
+    <value>配送箱一覧に戻る</value>
   </data>
   <data name="ShippingBoxInformation" xml:space="preserve">
-    <value />
+    <value>配送箱情報</value>
   </data>
   <data name="SelectBoxStatus" xml:space="preserve">
-    <value />
+    <value>ステータス</value>
   </data>
   <data name="AddNew" xml:space="preserve">
+    <value>新規追加</value>
+  </data>
+  <data name="EditShippingBox" xml:space="preserve">
+    <value />
+  </data>
+  <data name="CreateShippingBox" xml:space="preserve">
+    <value />
+  </data>
+  <data name="ShippingBoxDetail" xml:space="preserve">
+    <value />
+  </data>
+  <data name="DoYouWantToCreateANewShippingBox" xml:space="preserve">
+    <value />
+  </data>
+  <data name="DoYouWantToUpdateShippingBox" xml:space="preserve">
+    <value />
+  </data>
+  <data name="UpdateShippingBox" xml:space="preserve">
+    <value />
+  </data>
+  <data name="ShippingBoxIsNotExisted" xml:space="preserve">
+    <value />
+  </data>
+  <data name="SuccessfullyCreatedShippingBox" xml:space="preserve">
+    <value />
+  </data>
+  <data name="FailedToCreateShippingBox" xml:space="preserve">
+    <value />
+  </data>
+  <data name="SuccessfullyEditedShippingBox" xml:space="preserve">
+    <value />
+  </data>
+  <data name="FailedToEditShippingBox" xml:space="preserve">
+    <value />
+  </data>
+  <data name="AreYouSureYouWantToDeleteShippingBox" xml:space="preserve">
+    <value />
+  </data>
+  <data name="DeleteShippingBox" xml:space="preserve">
+    <value />
+  </data>
+  <data name="BoxNameIsExisted" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Activated" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Inactivated" xml:space="preserve">
     <value />
   </data>
 </root>

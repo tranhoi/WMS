@@ -1,9 +1,8 @@
 ﻿@page "/detailnumbersequence/{Title}"
 
 @using Application.Extentions
-@using Domain.Enums;
 @using Microsoft.AspNetCore.Authorization
-@using NumberSequenceEntity = Domain.Entity.WMS.NumberSequences;
+@using NumberSequenceEntity = FBT.ShareModels.WMS.NumberSequences;
 @inject IStringLocalizer<CommonResources> _localizerCommon
 @inject IStringLocalizer<NumberSequenceResources> _localizer
 
@@ -14,7 +13,7 @@
 }
 else
 {
-    <RadzenRow>
+    <RadzenRow Gap="2rem" Class="rz-p-0 rz-p-lg-2">
         <RadzenColumn Size="12" SizeSM="6">
             <RadzenText TextStyle="TextStyle.Body1"><strong>@Title</strong></RadzenText>
         </RadzenColumn>
@@ -29,11 +28,11 @@ else
         }
     </RadzenRow>
     <RadzenTemplateForm Data="@_model" Submit="@((NumberSequenceEntity args) => { Submit(args); })">
-        <RadzenRow Gap="2rem" class="rz-p-0 rz-p-lg-4">
+        <RadzenRow Gap="2rem" Class="rz-p-0 rz-p-lg-2">
             <RadzenColumn Size="12" SizeMD="12">
                 <RadzenFieldset Text="@_localizerCommon["Information"]" Disabled="@isDisabled">
                     <RadzenStack Gap="5px">
-                        <RadzenRow AlignItems="AlignItems.Center" class="mt-4">
+                        <RadzenRow AlignItems="AlignItems.Center">
                             <RadzenColumn SizeXS="12" SizeSM="6">
                                 <RadzenFormField Text="@_localizer["Journal Type"]" Variant="Variant.Outlined" Style="display:flex; flex-direction:column; align-items:stretch; width:100%">
                                     <RadzenDropDown @bind-Value="_model.JournalType"

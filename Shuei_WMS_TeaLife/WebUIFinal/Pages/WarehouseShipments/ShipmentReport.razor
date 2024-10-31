@@ -1,0 +1,69 @@
+﻿@page "/order-summary"
+@using System.Collections.Generic
+
+<PageTitle>Order Summary</PageTitle>
+
+<div class="container">
+    <!-- Logo Section -->
+    <div style="display: flex; align-items: center; justify-content: space-between;">
+        <div>
+            <img src="logo-url.png" alt="Logo" width="100" />
+            <h3>TeaLife</h3>
+        </div>
+        <div style="text-align: right;">
+            <h4>KOKORO CARE PACKAGES</h4>
+            <p>Order #21613</p>
+            <p>July 6, 2024</p>
+        </div>
+    </div>
+
+    <!-- Customer Information -->
+    <div>
+        <p><strong>Customer Name:</strong> Your Name Here</p>
+        <p><strong>Address:</strong> Your Address Here</p>
+    </div>
+
+    <!-- Items Section -->
+    <RadzenDataGrid @ref="grid" Data="@orderItems" TItem="OrderItem">
+        <Columns>
+            <RadzenDataGridColumn TItem="OrderItem" Property="Name" Title="Items" />
+            <RadzenDataGridColumn TItem="OrderItem" Property="Quantity" Title="Quantity" />
+        </Columns>
+    </RadzenDataGrid>
+
+    <!-- Footer Message Section -->
+    <div style="margin-top: 20px; padding: 10px; border: 1px solid #ccc;">
+        <p>Thank you for being a part of our Kokoro Community. Enjoy your gift from Japan!</p>
+        <p>Find recipes and inspiration at <a href="https://www.kokorocares.com/blogs/recipes">www.kokorocares.com/blogs/recipes</a></p>
+        <p>We rely on word of mouth. If you like what we do, please leave us a review, share or tell a friend!</p>
+    </div>
+
+    <!-- Company Info and QR Section -->
+    <div style="margin-top: 20px;">
+        <p>Kokoro Care Packages</p>
+        <p>Email: info@kokorocares.com</p>
+        <p>Website: <a href="https://kokorocares.com">kokorocares.com</a></p>
+        <img src="qr-code-url.png" alt="QR Code" width="100" />
+    </div>
+</div>
+
+@code {
+    private RadzenDataGrid<OrderItem> grid;
+    // Define the order item class
+    public class OrderItem
+    {
+        public string Name { get; set; }
+        public int Quantity { get; set; }
+    }
+
+    // Sample data
+    List<OrderItem> orderItems = new List<OrderItem>
+    {
+        new OrderItem { Name = "Katsuobushi (Dried Skipjack Tuna/Bonito Flakes)", Quantity = 1 },
+        new OrderItem { Name = "Okonomiyaki Mix Made with Rice Flour (Vegan and Gluten-Free)", Quantity = 2 },
+        new OrderItem { Name = "Shio Koji (Salted Rice Malt)", Quantity = 1 },
+        new OrderItem { Name = "Sansho Chirimen (White Fish with Japanese Peppercorn)", Quantity = 1 },
+        new OrderItem { Name = "Gomaae (Sesame Seasoning)", Quantity = 1 },
+        new OrderItem { Name = "Organic Rooibos Tea Blend (Caffeine-free)", Quantity = 6 }
+    };
+}

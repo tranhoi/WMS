@@ -1,5 +1,4 @@
-﻿using Domain.Entity.WMS.Authentication;
-using Magicodes.ExporterAndImporter.Core;
+﻿using Magicodes.ExporterAndImporter.Core;
 
 namespace Application.DTOs
 {

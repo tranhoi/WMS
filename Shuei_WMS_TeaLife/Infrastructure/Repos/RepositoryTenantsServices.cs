@@ -1,17 +1,9 @@
-﻿using Domain.Enums;
-using Application.Extentions;
+﻿using Application.Extentions;
 using Application.Services;
-using Domain.Entity.authp.Commons;
-using Domain.Entity.Commons;
 using Infrastructure.Data;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using RestEase;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Infrastructure.Repos
 {

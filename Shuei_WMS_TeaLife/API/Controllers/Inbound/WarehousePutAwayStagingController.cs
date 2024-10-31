@@ -1,8 +1,8 @@
 ﻿using API.Controllers.Base;
 using Application.Extentions;
 using Application.Services.Inbound;
-using Domain.Entity.Commons;
-using Domain.Entity.WMS.Inbound;
+
+
 using Infrastructure.Repos;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -27,6 +27,11 @@ namespace API.Controllers.Inbound
         public async Task<Result<List<WarehousePutAwayStaging>>> GetByMasterCodeAsync([Path] string putAwayNo)
         {
             return await _repository.SWarehousePutAwayStagings.GetByMasterCodeAsync(putAwayNo);
+        }
+        [HttpGet(ApiRoutes.WarehousePutAwayStaging.GetByPutAwayLineIdAsync)]
+        public async Task<Result<List<WarehousePutAwayStaging>>> GetByPutAwayLineIdAsync([Path] Guid putAwayLineId)
+        {
+            return await _repository.SWarehousePutAwayStagings.GetByPutAwayLineIdAsync(putAwayLineId);
         }
     }
 }

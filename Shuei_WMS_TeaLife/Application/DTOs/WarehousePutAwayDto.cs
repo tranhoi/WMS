@@ -1,5 +1,5 @@
-﻿using Domain.Entity.WMS;
-using Domain.Enums;
+﻿
+
 
 namespace Application.DTOs
 {
@@ -8,7 +8,7 @@ namespace Application.DTOs
         public Guid Id { get; set; }
 
         public string PutAwayNo { get; set; } = string.Empty;
-        public string ReceiptNo { get; set; }
+        public string ReceiptNo { get; set; } = string.Empty;
 
         public string? Description { get; set; }
 
@@ -26,8 +26,8 @@ namespace Application.DTOs
 
         public string? PostedBy { get; set; }
 
-        IEnumerable<WarehousePutAwayLineDto> warehousePutAwayLines { get; set; }
-        public IEnumerable<WarehousePutAwayLineDto> WarehousePutAwayLines { get; set; }
-        public EnumStatus Status { get; set; }
+        public List<WarehousePutAwayLineDto> WarehousePutAwayLines { get; set; }
+        
+        public EnumPutAwayStatus Status { get; set; } = EnumPutAwayStatus.PutAway;
     }
 }

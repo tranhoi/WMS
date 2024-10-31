@@ -1,9 +1,9 @@
-﻿using Domain.Enums;
+﻿
 using Application.Extentions;
 using Application.Services;
 using Application.Services.Base;
-using Domain.Entity.Commons;
-using Domain.Entity.WMS;
+
+
 using Infrastructure.Data;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
@@ -14,9 +14,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using Microsoft.AspNetCore.Identity;
+using Application.DTOs;
+
 namespace Infrastructure.Repos
 {
-    public class RepositoryUserToTenantServices(ApplicationDbContext dbContext, IHttpContextAccessor contextAccessor) : IUserToTenant
+    public class RepositoryUserToTenantServices(ApplicationDbContext dbContext, IHttpContextAccessor contextAccessor, UserManager<ApplicationUser> userManager) : IUserToTenant
     {
         public async Task<Result<UserToTenant>> AddRangeAsync([Body] List<UserToTenant> model)
         {
@@ -134,5 +137,7 @@ namespace Infrastructure.Repos
                 return await Result<List<UserToTenant>>.FailAsync($"{ex.Message}{Environment.NewLine}{ex.InnerException}");
             }
         }
+
+        public Task<List<UserDto>> GetUsersAsync() => userManager.Users.Select(x => new UserDto(x)).ToListAsync();
     }
 }

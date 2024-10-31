@@ -1,7 +1,9 @@
 ﻿using API.Controllers.Base;
+using Application.DTOs;
 using Application.Extentions;
 using Application.Services;
-using Domain.Entity.WMS;
+
+
 using Infrastructure.Repos;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -27,5 +29,8 @@ namespace API.Controllers
         {
             return await _repository.SUserToTenant.GetByUserIdAsync(userId);    
         }
+
+        [HttpGet(ApiRoutes.UserToTenant.GetUsersAsync)]
+        public async Task<List<UserDto>> GetUsersAsync() => await _repository.SUserToTenant.GetUsersAsync();
     }
 }

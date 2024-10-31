@@ -65,7 +65,7 @@ namespace WebUIFinal.Pages.Components
 
             if (Title.Contains(_localizer["Detail.Edit"]))
             {
-                var confirm = await _dialogService.Confirm(_localizer["Confirmation.Update"] + _localizer["Role"] +  $": { arg.Name} ", _localizer["Update"] + " " + _localizer["Role"], new ConfirmOptions()
+                var confirm = await _dialogService.Confirm(_localizer["Confirmation.Update"] + _localizer["Role"] + $": {arg.Name} ", _localizer["Update"] + " " + _localizer["Role"], new ConfirmOptions()
                 {
                     OkButtonText = "Yes",
                     CancelButtonText = "No",
@@ -117,6 +117,7 @@ namespace WebUIFinal.Pages.Components
             });
 
             _dialogService.Close("Success");
+
         }
     }
 }

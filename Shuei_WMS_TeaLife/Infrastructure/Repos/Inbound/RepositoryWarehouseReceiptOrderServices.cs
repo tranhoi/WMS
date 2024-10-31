@@ -3,15 +3,18 @@ using Application.Extentions;
 using Application.Services;
 using Application.Services.Inbound;
 using DocumentFormat.OpenXml.Drawing;
-using Domain.Entity.WMS;
-using Domain.Enums;
+using FBT.ShareModels.WMS;
 using Infrastructure.Data;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using MoreLinq;
+using Radzen;
 using RestEase;
 using System.Linq.Dynamic.Core;
-using WarehouseReceiptOrder = Domain.Entity.WMS.Inbound.WarehouseReceiptOrder;
-using WarehouseReceiptOrderLine = Domain.Entity.WMS.Inbound.WarehouseReceiptOrderLine;
+using static Application.Extentions.ApiRoutes;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
+using WarehouseReceiptOrder = FBT.ShareModels.WMS.WarehouseReceiptOrder;
+using WarehouseReceiptOrderLine = FBT.ShareModels.WMS.WarehouseReceiptOrderLine;
 
 namespace Infrastructure.Repos
 {
@@ -21,6 +24,7 @@ namespace Infrastructure.Repos
         private readonly IHttpContextAccessor _contextAccessor;
         private readonly INumberSequences _numberSequences;
         private readonly IWarehouseTran _warehouseTranService;
+        private readonly DateTime now = DateTime.Now;
 
         public RepositoryWarehouseReceiptOrderServices(ApplicationDbContext dbContext, IHttpContextAccessor contextAccessor, INumberSequences numberSequences, IWarehouseTran warehouseTranService = null)
         {
@@ -69,15 +73,22 @@ namespace Infrastructure.Repos
 
         public async Task<Result<WarehouseReceiptOrder>> DeleteAsync([Body] WarehouseReceiptOrder model)
         {
-            try
+            if (model.Status != EnumReceiptOrderStatus.Completed)
             {
-                _dbContext.WarehouseReceiptOrders.Remove(model);
-                await _dbContext.SaveChangesAsync();
-                return await Result<WarehouseReceiptOrder>.SuccessAsync(model);
-            }
-            catch (Exception ex)
+                try
+                {
+                    _dbContext.WarehouseReceiptOrders.Remove(model);
+                    await _dbContext.SaveChangesAsync();
+                    return await Result<WarehouseReceiptOrder>.SuccessAsync(model);
+                }
+                catch (Exception ex)
+                {
+                    return await Result<WarehouseReceiptOrder>.FailAsync($"{ex.Message}{Environment.NewLine}{ex.InnerException}");
+                }
+            } 
+            else
             {
-                return await Result<WarehouseReceiptOrder>.FailAsync($"{ex.Message}{Environment.NewLine}{ex.InnerException}");
+                return await Result<WarehouseReceiptOrder>.FailAsync($"This receipt cannot be deleted as its closed");
             }
         }
 
@@ -177,6 +188,8 @@ namespace Infrastructure.Repos
                     PersonInCharge = request.PersonInCharge,
                     ConfirmedBy = request.ConfirmedBy,
                     ConfirmedDate = request.ConfirmedDate,
+                    Status = EnumReceiptOrderStatus.Draft,
+                    CreateAt = now,
                 };
 
                 foreach (var item in request.WarehouseReceiptOrderLines)
@@ -200,11 +213,13 @@ namespace Infrastructure.Repos
                     LotNo = _.LotNo,
                     ExpirationDate = _.ExpirationDate,
                     Putaway = _.Putaway,
-                    UnitId = _.UnitId
+                    UnitId = _.UnitId,
+                    CreateAt = now,
                 });
                 await _dbContext.WarehouseReceiptOrderLines.AddRangeAsync(receiptOrderLines);
 
                 await _dbContext.SaveChangesAsync();
+                request.ReceiptNo = receiptIndex;
 
                 return await Result<WarehouseReceiptOrderDto>.SuccessAsync(request);
             }
@@ -216,36 +231,17 @@ namespace Infrastructure.Repos
 
         public async Task<Result<WarehouseReceiptOrderDto>> UpdateWarehouseReceiptOrder([Body] WarehouseReceiptOrderDto request)
         {
+            using var transaction = _dbContext.Database.BeginTransaction();
+
             try
             {
-                var receipt = await _dbContext.WarehouseReceiptOrders.Select(_ => new { _.Status, _.ReceiptNo }).FirstOrDefaultAsync(_ => _.ReceiptNo == request.ReceiptNo);
-                if (receipt.Status == EnumReceiptStatus.Open)
+                var receipt = await _dbContext.WarehouseReceiptOrders.Select(_ => new { _.Status, _.ReceiptNo }).AsNoTracking().FirstOrDefaultAsync(_ => _.ReceiptNo == request.ReceiptNo);
+                if (receipt == null)
                 {
-                    var warehouseTranPayload = request.WarehouseReceiptOrderLines.Select(_ => new WarehouseTran
-                    {
-                        TransType = EnumWarehouseTransType.Receipt,
-                        TransNumber = request.ReceiptNo,
-                        StatusReceipt = EnumStatusReceipt.Ordered,
-                        TransId = request.Id,
-                        TransLineId = _.Id,
-                        DatePhysical = DateOnly.FromDateTime(DateTime.Now),
-                        ProductCode = _.ProductCode
-                    }).ToList();
-
-                    await _dbContext.WarehouseReceiptOrders.Where(_ => _.Id == request.Id).ExecuteUpdateAsync(_ => _.SetProperty(r => r.Status, request.Status));
-                    await _warehouseTranService.AddRangeAsync(warehouseTranPayload);
-                    await _dbContext.SaveChangesAsync();
-
-                    var model = await _dbContext.WarehouseReceiptOrders.FirstOrDefaultAsync(_ => _.Id == request.Id);
-
-                    if (model == null)
-                    {
-                        return await Result<WarehouseReceiptOrderDto>.FailAsync("This receipt does not exist");
-                    }
-
-                    return await Result<WarehouseReceiptOrderDto>.SuccessAsync(request);
+                    return await Result<WarehouseReceiptOrderDto>.FailAsync("This receipt does not exist");
                 }
-                else if (receipt.Status == EnumReceiptStatus.Draft)
+
+                if (receipt.Status == EnumReceiptOrderStatus.Draft)
                 {
                     var model = new WarehouseReceiptOrder
                     {
@@ -260,7 +256,8 @@ namespace Infrastructure.Repos
                         PersonInCharge = request.PersonInCharge,
                         ConfirmedBy = request.ConfirmedBy,
                         ConfirmedDate = request.ConfirmedDate,
-                        Status = request.Status
+                        Status = EnumReceiptOrderStatus.Draft,
+                        UpdateAt = now
                     };
 
                     var receiptOrderLines = request.WarehouseReceiptOrderLines.Select(_ => new WarehouseReceiptOrderLine
@@ -275,23 +272,35 @@ namespace Infrastructure.Repos
                         LotNo = _.LotNo,
                         ExpirationDate = _.ExpirationDate,
                         Putaway = _.Putaway,
-                        UnitId = _.UnitId
-                    });
+                        UnitId = _.UnitId,
+                        UpdateAt = now
+                    }).ToList();
 
+                    var receiptLines = await _dbContext.WarehouseReceiptOrderLines.Where(_ => _.ReceiptNo == request.ReceiptNo).ToListAsync();
+                    var deletedReceiptLines = receiptLines.Except(receiptOrderLines, new ReceiptLineComparer());
+                    var createR = receiptOrderLines.Except(receiptLines, new ReceiptLineComparer());
+                    var updateR = receiptLines.Where(x => receiptOrderLines.Select(xx => xx.Id).Contains(x.Id));
+
+                    _dbContext.WarehouseReceiptOrderLines.RemoveRange(deletedReceiptLines);
                     _dbContext.WarehouseReceiptOrders.Update(model);
-                    _dbContext.WarehouseReceiptOrderLines.UpdateRange(receiptOrderLines);
+                    _dbContext.WarehouseReceiptOrderLines.UpdateRange(updateR);
+                    if (createR.Count() > 0) _dbContext.WarehouseReceiptOrderLines.AddRange(createR);
 
                     await _dbContext.SaveChangesAsync();
+
+                    transaction.Commit();
 
                     return await Result<WarehouseReceiptOrderDto>.SuccessAsync(request);
                 }
                 else 
                 {
-                    return await Result<WarehouseReceiptOrderDto>.FailAsync("This receipt cannot be updated as it's closed");
+                    transaction.Rollback();
+                    return await Result<WarehouseReceiptOrderDto>.FailAsync("This receipt cannot be updated as it's Draft Status");
                 }
             }
             catch (Exception ex)
             {
+                transaction.Rollback();
                 return await Result<WarehouseReceiptOrderDto>.FailAsync($"{ex.Message}{Environment.NewLine}{ex.InnerException}");
             }
         }
@@ -304,7 +313,7 @@ namespace Infrastructure.Repos
                 from receipts in _dbContext.WarehouseReceiptOrders
                 join receiptLines in (from receiptLines in _dbContext.WarehouseReceiptOrderLines.Where(r => r.ReceiptNo == receiptNo && r.IsDeleted != true)
                                     join products in _dbContext.Products.Where(p => p.IsDeleted != true) on receiptLines.ProductCode equals products.ProductCode into productReceiptLines
-                                    from products in productReceiptLines.DefaultIfEmpty()
+                                    from products in productReceiptLines
                                     select new WarehouseReceiptOrderLineDto
                                     {
                                         Id = receiptLines.Id,
@@ -320,6 +329,7 @@ namespace Infrastructure.Repos
                                         UnitId = products.UnitId,
                                         ProductName = products.ProductName,
                                         StockAvailableQuantity = products.StockAvailableQuanitty,
+                                        ArrivalNo = receiptLines.ArrivalNo,
                                     }) 
                 on receipts.ReceiptNo equals receiptLines.ReceiptNo into receiptOrderLines
                 select new WarehouseReceiptOrderDto
@@ -337,7 +347,7 @@ namespace Infrastructure.Repos
                     ConfirmedDate = receipts.ConfirmedDate,
                     IsDeleted = receipts.IsDeleted,
                     Status = receipts.Status,
-                    WarehouseReceiptOrderLines = receiptOrderLines,
+                    WarehouseReceiptOrderLines = receiptOrderLines.ToList(),
                 }).FirstOrDefaultAsync(_ => _.ReceiptNo == receiptNo && _.IsDeleted != true);
 
                 if (receipt != null)
@@ -365,9 +375,13 @@ namespace Infrastructure.Repos
                 from location in locationReceipts.DefaultIfEmpty()
                 join tenant in _dbContext.TenantAuth on receipts.TenantId equals tenant.TenantId into tenantReceipts
                 from tenant in tenantReceipts.DefaultIfEmpty()
+                join supplier in _dbContext.Suppliers on receipts.SupplierId equals supplier.Id into supplierReceipts
+                from supplier in supplierReceipts.DefaultIfEmpty()
+                join person in _dbContext.Users on receipts.PersonInCharge equals person.Id into personReceipts
+                from person in personReceipts.DefaultIfEmpty()
                 join receiptLines in (from receiptLines in _dbContext.WarehouseReceiptOrderLines.Where(r => r.IsDeleted != true)
                                       join products in _dbContext.Products.Where(p => p.IsDeleted != true) on receiptLines.ProductCode equals products.ProductCode into productReceiptLines
-                                      from products in productReceiptLines.DefaultIfEmpty()
+                                      from products in productReceiptLines
                                       select new WarehouseReceiptOrderLineDto
                                       {
                                           Id = receiptLines.Id,
@@ -401,7 +415,9 @@ namespace Infrastructure.Repos
                     Status = receipts.Status,
                     LocationName = location.LocationName,
                     TenantFullName = tenant.TenantFullName,
-                    WarehouseReceiptOrderLines = receiptOrderLines,
+                    WarehouseReceiptOrderLines = receiptOrderLines.ToList(),
+                    SupplierName = supplier.SupplierName,
+                    PersonInChargeName = person.FullName
                 }).ToListAsync();
 
                 if (receipt != null)
@@ -468,8 +484,9 @@ namespace Infrastructure.Repos
                     ExpirationDate = _.ExpirationDate,
                     Putaway = _.Putaway,
                     UnitId = _.UnitId,
+                    UpdateAt = now
                 });
-                receiptDto.WarehouseReceiptOrderLines = receiptLinesDto;
+                receiptDto.WarehouseReceiptOrderLines = receiptLinesDto.ToList();
                 _dbContext.WarehouseReceiptOrderLines.UpdateRange(receiptOrderLines);
                 await _dbContext.SaveChangesAsync();
 
@@ -479,6 +496,160 @@ namespace Infrastructure.Repos
             {
                 return await Result<WarehouseReceiptOrderDto>.FailAsync($"{ex.Message}{Environment.NewLine}{ex.InnerException}");
             }
+        }
+        public async Task<Result<WarehouseReceiptOrderDto>> CreateLineFromArrivalNo(WarehouseReceiptOrderDto receiptDto)
+        {
+            try
+            {
+                var arrivalNo = receiptDto.ScheduledArrivalNumber;
+
+                var arrivalInstructions = await _dbContext.ArrivalInstructions.Where(_ => _.ScheduledArrivalNumber == arrivalNo).ToListAsync();
+                if (arrivalInstructions.Count == 0)
+                {
+                    return await Result<WarehouseReceiptOrderDto>.FailAsync("NoArrivalData");
+                }
+                var receiptLines = receiptDto.WarehouseReceiptOrderLines.Where(_ => _.ArrivalNo == arrivalNo);
+                if (receiptLines.Count() > 0)
+                {
+                    return await Result<WarehouseReceiptOrderDto>.FailAsync("ArrivalDataExist");
+                }
+
+                receiptDto.TenantId = arrivalInstructions.FirstOrDefault().CompanyId;
+                receiptDto.SupplierId = arrivalInstructions.FirstOrDefault().SupplierId;
+                receiptDto.ScheduledArrivalNumber = arrivalInstructions.FirstOrDefault().ScheduledArrivalNumber;
+                var receiptLinesDto = (
+                from arrivalInstruction in arrivalInstructions
+                join product in _dbContext.Products on arrivalInstruction.ProductCode equals product.ProductCode into products
+                from product in products
+                join unit in _dbContext.Units on product.UnitId equals unit.Id into units
+                from unit in units.DefaultIfEmpty()
+                select new WarehouseReceiptOrderLineDto
+                {
+                    Id = Guid.NewGuid(),
+                    ReceiptNo = String.IsNullOrEmpty(receiptDto.ReceiptNo) ? "" : receiptDto.ReceiptNo,
+                    ProductCode = arrivalInstruction.ProductCode,
+                    UnitName = unit.UnitName,
+                    OrderQty = arrivalInstruction.Quantity,
+                    UnitId = product.UnitId,
+                    ProductName = product.ProductName,
+                    StockAvailableQuantity = product.StockAvailableQuanitty,
+                    ArrivalNo = arrivalNo,
+                });
+
+                var receiptOrderLines = receiptLinesDto.Select(_ => new WarehouseReceiptOrderLine
+                {
+                    Id = _.Id,
+                    ReceiptNo = _.ReceiptNo,
+                    ProductCode = _.ProductCode,
+                    UnitName = _.UnitName,
+                    OrderQty = _.OrderQty,
+                    UnitId = _.UnitId,
+                    ArrivalNo = _.ArrivalNo,
+                    CreateAt = now
+                });
+
+
+                receiptDto.WarehouseReceiptOrderLines.AddRange(receiptLinesDto.ToList());
+                if (!String.IsNullOrEmpty(receiptDto.ReceiptNo))
+                { 
+                    _dbContext.WarehouseReceiptOrderLines.AddRange(receiptOrderLines);
+                    await _dbContext.SaveChangesAsync();
+                }
+                return await Result<WarehouseReceiptOrderDto>.SuccessAsync(receiptDto);
+            }
+            catch (Exception ex)
+            {
+                return await Result<WarehouseReceiptOrderDto>.FailAsync($"{ex.Message}{Environment.NewLine}{ex.InnerException}");
+            }
+        }
+        public async Task<Result<WarehouseReceiptOrderDto>> AdjustActionReceiptOrder([Body] WarehouseReceiptOrderDto request)
+        {
+            //using var transaction = await _dbContext.Database.BeginTransactionAsync();
+
+            try
+            {
+                var receipt = await _dbContext.WarehouseReceiptOrders.Select(_ => new { _.Status, _.ReceiptNo }).FirstOrDefaultAsync(_ => _.ReceiptNo == request.ReceiptNo);
+                if (receipt == null)
+                {
+                    return await Result<WarehouseReceiptOrderDto>.FailAsync("Confirmation.NoReceipt");
+                }
+                var receiptLines = _dbContext.WarehouseReceiptOrderLines.Where(_ => _.ReceiptNo == request.ReceiptNo).ToList();
+                if (receiptLines.Count == 0)
+                {
+                    return await Result<WarehouseReceiptOrderDto>.FailAsync("Confirmation.NoProduct");
+                }
+                if (request.Status == EnumReceiptOrderStatus.Open)
+                {
+                    var warehouseTranPayload = request.WarehouseReceiptOrderLines.Select(_ => new FBT.ShareModels.WMS.WarehouseTran
+                    {
+                        TransType = EnumWarehouseTransType.Receipt,
+                        TransNumber = request.ReceiptNo,
+                        StatusReceipt = EnumStatusReceipt.Ordered,
+                        TransId = request.Id,
+                        TransLineId = _.Id,
+                        DatePhysical = null,
+                        ProductCode = _.ProductCode,
+                        Qty = _.OrderQty ?? 0,
+                        TenantId = request.TenantId,
+                        Location = request.Location,
+                        Bin = _.Bin,
+                        CreateAt = DateTime.Now,
+                    }).ToList();
+                    
+                    _dbContext.WarehouseReceiptOrders.Where(_ => _.Id == request.Id).ExecuteUpdate(_ => _.SetProperty(r => r.Status, EnumReceiptOrderStatus.Open));
+                    _dbContext.WarehouseTrans.AddRange(warehouseTranPayload);
+                }
+
+                if (request.Status == EnumReceiptOrderStatus.Received)
+                {
+                    var orderLines = request.WarehouseReceiptOrderLines.Where(x => x.TransQty > 0);
+                    if (orderLines.Count() == 0)
+                    {
+                        
+                        return await Result<WarehouseReceiptOrderDto>.FailAsync("Confirmation.NoProductQty");
+                    }
+                    var warehouseTrans = await _dbContext.WarehouseTrans.Where(_ => _.TransNumber == request.ReceiptNo).AsNoTracking().ToListAsync();
+                    foreach (var trans in warehouseTrans)
+                    {
+                        var receiptLine = receiptLines.Where(_ => _.Id == trans.TransLineId && _.ReceiptNo == trans.TransNumber).FirstOrDefault();
+                        trans.StatusReceipt = EnumStatusReceipt.Received;
+                        trans.DatePhysical = DateOnly.FromDateTime(DateTime.Now);
+                        trans.Bin = receiptLine.Bin;
+                        trans.LotNo = receiptLine.LotNo;
+                        trans.Qty = receiptLine.TransQty ?? 0;
+                        trans.UpdateAt = DateTime.Now;
+                    }
+                   
+                    _dbContext.WarehouseReceiptOrders.Where(_ => _.Id == request.Id).ExecuteUpdate(_ => _.SetProperty(r => r.Status, EnumReceiptOrderStatus.Received));
+                    _dbContext.WarehouseTrans.UpdateRange(warehouseTrans);
+                }
+
+                if (request.Status == EnumReceiptOrderStatus.OnPutaway)
+                {
+                    _dbContext.WarehouseReceiptOrders.Where(_ => _.Id == request.Id).ExecuteUpdate(_ => _.SetProperty(r => r.Status, EnumReceiptOrderStatus.OnPutaway));
+                }
+
+                await _dbContext.SaveChangesAsync();
+
+                return await Result<WarehouseReceiptOrderDto>.SuccessAsync(request);
+            }
+            catch (Exception ex)
+            {
+                return await Result<WarehouseReceiptOrderDto>.FailAsync(ex.ToString());
+            }
+        }
+    }
+
+    public class ReceiptLineComparer : IEqualityComparer<WarehouseReceiptOrderLine>
+    {
+        public bool Equals(WarehouseReceiptOrderLine x, WarehouseReceiptOrderLine y)
+        {
+            return x.Id == y.Id;
+        }
+
+        public int GetHashCode(WarehouseReceiptOrderLine obj)
+        {
+            return obj.Id.GetHashCode();
         }
     }
 }

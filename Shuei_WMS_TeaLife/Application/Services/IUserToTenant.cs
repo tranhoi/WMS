@@ -1,6 +1,6 @@
-﻿using Application.Extentions;
+﻿using Application.DTOs;
+using Application.Extentions;
 using Application.Services.Base;
-using Domain.Entity.WMS;
 using RestEase;
 using System;
 using System.Collections.Generic;
@@ -15,5 +15,7 @@ namespace Application.Services
     {
         [Get(ApiRoutes.UserToTenant.GetByUserId)]
         Task<Result<List<UserToTenant>>> GetByUserIdAsync([Path]string userId);
+        [Get(ApiRoutes.UserToTenant.GetUsersAsync)]
+        Task<List<UserDto>> GetUsersAsync();
     }
 }

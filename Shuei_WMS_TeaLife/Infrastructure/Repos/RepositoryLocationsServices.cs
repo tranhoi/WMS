@@ -1,9 +1,9 @@
-﻿using Domain.Enums;
+﻿
 using Application.Extentions;
 using Application.Models;
 using Application.Services;
-using Domain.Entity.Commons;
-using Domain.Entity.WMS;
+
+
 using Infrastructure.Data;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
@@ -14,6 +14,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
 
 namespace Infrastructure.Repos
 {
@@ -62,7 +63,7 @@ namespace Infrastructure.Repos
         {
             try
             {
-                return await Result<List<Location>>.SuccessAsync(await dbContext.Locations.ToListAsync(),$"Successfull.");
+                return await Result<List<Location>>.SuccessAsync(await dbContext.Locations.ToListAsync(), $"Successfull.");
             }
             catch (Exception ex)
             {
@@ -88,9 +89,21 @@ namespace Infrastructure.Repos
         {
             try
             {
+                var existCD = await dbContext.Locations.Where(x => x.LocationCD == model.LocationCD).FirstOrDefaultAsync();
+                if (existCD != null)
+                {
+                    return await Result<Location>.FailAsync($"Location CD: {model.LocationCD} is already created");
+                }
+
+                var existName = await dbContext.Locations.Where(x => x.LocationName == model.LocationName).FirstOrDefaultAsync();
+                if (existName != null)
+                {
+                    return await Result<Location>.FailAsync($"Location name: {model.LocationName} is already created");
+                }
+
                 await dbContext.Locations.AddAsync(model);
                 await dbContext.SaveChangesAsync();
-                return await Result<Location>.SuccessAsync(model,$"Insert location {model.LocationName} sucessfull.");
+                return await Result<Location>.SuccessAsync(model, $"Insert location {model.LocationName} sucessfull.");
             }
             catch (Exception ex)
             {
@@ -115,7 +128,7 @@ namespace Infrastructure.Repos
             {
                 var dataUpdate = dbContext.Locations.Update(model);
                 await dbContext.SaveChangesAsync();
-                return await Result<Location>.SuccessAsync(model,$"Update location {model.LocationName} successfull");
+                return await Result<Location>.SuccessAsync(model, $"Update location {model.LocationName} successfull");
             }
             catch (Exception ex)
             {

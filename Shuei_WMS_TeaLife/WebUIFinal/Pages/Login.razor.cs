@@ -1,8 +1,8 @@
 ﻿using Application.DTOs.Request.Account;
 using Application.DTOs.Response;
 using Application.Extentions;
-using Domain.Entity.Commons;
-using Domain.Entity.WMS.Authentication;
+
+
 using Microsoft.AspNetCore.Authorization;
 using Newtonsoft.Json;
 using Radzen;
@@ -35,11 +35,6 @@ namespace WebUIFinal.Pages
             Console.WriteLine($"Username: {arg.EmailAddress} and password: {arg.Password}");
             try
             {
-                //var result = await _authenServices.LoginAccountAsync(new LoginRequestDTO()
-                //{
-                //    EmailAddress = arg.EmailAddress,
-                //    Password = arg.Password
-                //}); 
                 var result = await _authenServices.LoginAccountAsync(arg);
 
                 //Fail
@@ -96,7 +91,7 @@ namespace WebUIFinal.Pages
                 if (GlobalVariable.UserAuthorizationInfo.Roles.FirstOrDefault().Name == ConstantExtention.Roles.WarehouseAdmin)
                     _navigation.NavigateTo("/userlist");
                 else if (GlobalVariable.UserAuthorizationInfo.Roles.FirstOrDefault().Name == ConstantExtention.Roles.WarehouseStaff)
-                    _navigation.NavigateTo("/warehouse-receiptlist");
+                    _navigation.NavigateTo("/");
                 else 
                     _navigation.NavigateTo("/numbersequence");
             }

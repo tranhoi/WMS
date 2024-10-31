@@ -1,15 +1,19 @@
-﻿using Application.Extentions;
+﻿using Application.DTOs.Request.Picking;
+using Application.DTOs;
+using Application.Extentions;
 using Application.Services.Outbound;
-using Domain.Entity.WMS.Outbound;
+
 using Infrastructure.Data;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using RestEase;
+using Microsoft.Extensions.Logging;
 
 namespace Infrastructure.Repos.Outbound
 {
     public class RepositoryWarehousePickingLineServices(ApplicationDbContext dbContext, IHttpContextAccessor contextAccessor) : IWarehousePickingLine
     {
+        private readonly ILogger<RepositoryWarehousePickingLineServices> logger;
         public async Task<Result<WarehousePickingLine>> AddRangeAsync([Body] List<WarehousePickingLine> model)
         {
             try
@@ -122,6 +126,128 @@ namespace Infrastructure.Repos.Outbound
             catch (Exception ex)
             {
                 return await Result<List<WarehousePickingLine>>.FailAsync($"{ex.Message}{Environment.NewLine}{ex.InnerException}");
+            }
+        }
+        
+        public async Task<Result<List<WarehousePickingLineDTO>>> GetPickingLineDTOAsync([Path] string pickNo)
+        {
+            try
+            {
+                var pickingLines = await dbContext.WarehousePickingLines
+                                  .Where(x => x.PickNo == pickNo)
+                                  .ToListAsync();
+                var pickingLineDTOs = new List<WarehousePickingLineDTO>();
+
+                foreach (var pickingLine in pickingLines)
+                {
+                    var product = dbContext.Products.FirstOrDefault(p => p.ProductCode == pickingLine.ProductCode);
+                    var unit = dbContext.Units.FirstOrDefault(p => p.Id == pickingLine.UnitId);
+                    var dto = new WarehousePickingLineDTO()
+                    {
+                        Id = pickingLine.Id,
+                        PickNo = pickingLine.PickNo,
+                        ProductCode = pickingLine.ProductCode,
+                        ProductName = product != null ? product.ProductName : "",
+                        Unit = unit != null ? unit.UnitName : "",
+                        Bin = pickingLine.Bin != null ? pickingLine.Bin : "",
+                        InstructionsNumber = 10,
+                        PickQty = pickingLine.PickQty,
+                        ActualQty = pickingLine.ActualQty,
+                        Remaining = pickingLine.PickQty - pickingLine.ActualQty,
+                    };
+                    pickingLineDTOs.Add(dto);
+                }
+                return await Result<List<WarehousePickingLineDTO>>.SuccessAsync(pickingLineDTOs.ToList());
+            }
+            catch (Exception ex)
+            {
+                return await Result<List<WarehousePickingLineDTO>>.FailAsync($"{ex.Message}{Environment.NewLine}{ex.InnerException}");
+            }
+        }
+
+        public async Task<Result<List<WarehousePickingShipmentDTO>>> GetShipmentsByPickAsync([Path] string pickingNo)
+        {
+            // Validate input data
+            if (string.IsNullOrWhiteSpace(pickingNo))
+            {
+                return await Result<List<WarehousePickingShipmentDTO>>.FailAsync("Picking number cannot be null or empty.");
+            }
+
+            try
+            {
+                // Retrieve the list of shipments
+                var shipments = await dbContext.WarehouseShipments
+                    .Where(x => x.PickingNo == pickingNo)
+                    .ToListAsync();
+
+                var pickingShipmentDTOs = new List<WarehousePickingShipmentDTO>();
+
+                foreach (var shipment in shipments)
+                {
+                    var shipmentLines = await dbContext.WarehouseShipmentLines
+                            .Where(x => x.ShipmentNo == shipment.ShipmentNo)
+                            .ToListAsync();
+
+                    double totalQuantity = 0;
+
+                    foreach (var shipmentLine in shipmentLines)
+                    {
+                        if (shipmentLine.ShipmentQty != null && shipmentLine.ShipmentQty > 0)
+                        {
+                            totalQuantity += shipmentLine.ShipmentQty.Value;
+                        }
+                    }
+
+                    var tenant = dbContext.TenantAuth.FirstOrDefault(x => x.TenantId == shipment.TenantId);
+                    //var order = dbContext.Orders.FirstOrDefault(x => x.OrderId == shipment.SalesNo);
+                    var pickingShipmentDTO = new WarehousePickingShipmentDTO()
+                    {
+                        OrderNo = shipment.SalesNo,
+                        ShipmentNo = shipment.ShipmentNo,
+                        TotalQuantity = totalQuantity,
+                        TenantFullName = tenant.TenantFullName,
+                        OrderDeliveryCompany = shipment.ShippingCarrierCode,
+                        //OrderDate = order?.OrderDate.HasValue == true ? DateOnly.FromDateTime(order.OrderDate.Value) : (DateOnly?)null,
+                        OrderDate = null,
+                        PlanShipDate = shipment.PlanShipDate
+                    };
+
+                    pickingShipmentDTOs.Add(pickingShipmentDTO);
+                }
+
+                // Return success result after processing all shipments
+                return await Result<List<WarehousePickingShipmentDTO>>.SuccessAsync(pickingShipmentDTOs);
+            }
+            catch (Exception ex)
+            {
+                // Log the error (assuming you have a logger)
+                logger.LogError(ex, "An error occurred while fetching shipments for picking number: {PickingNo}", pickingNo);
+                return await Result<List<WarehousePickingShipmentDTO>>.FailAsync($"Error fetching shipments: {ex.Message}");
+            }
+        }
+        public async Task<Result> UpdateWarehousePickingLinesAsync(List<WarehousePickingLineDTO> models)
+        {
+            try
+            {
+                foreach (var model in models)
+                {
+                    var result = await dbContext.WarehousePickingLines
+                        .FirstOrDefaultAsync(x => x.Id == model.Id);
+
+                    if (result != null)
+                    {
+                        result.ActualQty = model.ActualQty;
+                        dbContext.WarehousePickingLines.Update(result);
+                    }
+                }
+
+                await dbContext.SaveChangesAsync();
+
+                return await Result.SuccessAsync();
+            }
+            catch (Exception ex)
+            {
+                return await Result.FailAsync($"{ex.Message}{Environment.NewLine}{ex.InnerException}");
             }
         }
     }

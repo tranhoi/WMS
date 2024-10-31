@@ -1,6 +1,7 @@
 ﻿using Radzen;
 using Radzen.Blazor;
-using ShippingCarrierEntity = Domain.Entity.WMS.Outbound.ShippingCarrier;
+using WebUIFinal.Core;
+using ShippingCarrierEntity = FBT.ShareModels.WMS.ShippingCarrier;
 
 namespace WebUIFinal.Pages.ShippingCarrier
 {
@@ -11,10 +12,11 @@ namespace WebUIFinal.Pages.ShippingCarrier
 
         IEnumerable<int> _pageSizeOptions = new int[] { 5, 10, 20, 30, 100, 200 };
         bool _showPagerSummary = true;
-        string _pagingSummaryFormat = "Displaying page {0} of {1} <b>(total {2} records)</b>";
+        
 
         protected override async Task OnInitializedAsync()
         {
+            Constants.PagingSummaryFormat = _localizerCommon["DisplayPage"] + " {0} " + _localizerCommon["Of"] + " {1} <b>(" + _localizerCommon["Total"] + " {2} " + _localizerCommon["Records"] + ")</b>";
             await base.OnInitializedAsync();
             RefreshDataAsync();
         }
@@ -23,11 +25,11 @@ namespace WebUIFinal.Pages.ShippingCarrier
         {
             try
             {
-                var confirm = await _dialogService.Confirm($"Are you sure you want to delete this: {model.ShippingCarrierName}?", "Delete", new ConfirmOptions()
+                var confirm = await _dialogService.Confirm($"{_localizerCommon["Confirmation.Delete"]} {_localizer["ShippingCarrier"]}:{model.Id}?", $"{_localizerCommon["Delete"]} {_localizer["ShippingCarrier"]}", new ConfirmOptions()
                 {
-                    OkButtonText = "Yes",
-                    CancelButtonText = "No",
-                    AutoFocusFirstElement = true,
+                    OkButtonText = _localizerCommon["Yes"],
+                    CancelButtonText = _localizerCommon["No"],
+                    AutoFocusFirstElement = true, 
                 });
 
                 if (confirm == null || confirm == false) return;
@@ -39,8 +41,8 @@ namespace WebUIFinal.Pages.ShippingCarrier
                     _notificationService.Notify(new NotificationMessage()
                     {
                         Severity = NotificationSeverity.Success,
-                        Summary = "Success",
-                        Detail = $"Delete {model.ShippingCarrierName} successfully.",
+                        Summary = _localizerCommon["Success"],
+                        Detail = _localizerCommon["Delete"] + $" {model.ShippingCarrierName} " + _localizerCommon["Success"],
                         Duration = 5000
                     });
 
@@ -72,17 +74,17 @@ namespace WebUIFinal.Pages.ShippingCarrier
 
         async Task ViewItemAsync(ShippingCarrierEntity model)
         {
-            _navigation.NavigateTo($"/detailshippingcarrier/Detail Shipping Carrier|{model.Id}");
+            _navigation.NavigateTo($"/detailshippingcarrier/{_localizerCommon["Detail.View"]} {_localizer["ShippingCarrier"]}|{model.Id}");
         }
 
         async Task EditItemAsync(ShippingCarrierEntity model)
         {
-            _navigation.NavigateTo($"/detailshippingcarrier/Edit Shipping Carrier|{model.Id}");
+            _navigation.NavigateTo($"/detailshippingcarrier/{_localizerCommon["Detail.Edit"]} {_localizer["ShippingCarrier"]}|{model.Id}");
         }
 
         async Task AddNewItemAsync()
         {
-            _navigation.NavigateTo("/detailshippingcarrier/Create Shipping Carrier");
+            _navigation.NavigateTo($"/detailshippingcarrier/{_localizerCommon["Detail.Create"]} {_localizer["ShippingCarrier"]}");
         }
 
         async void RefreshDataAsync()

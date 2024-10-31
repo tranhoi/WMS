@@ -2,7 +2,7 @@
 using Application.DTOs;
 using Application.Extentions;
 using Application.Services.Inbound;
-using Domain.Entity.WMS.Inbound;
+
 using Infrastructure.Repos;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -29,5 +29,14 @@ namespace API.Controllers.Inbound
 
         [HttpPost(ApiRoutes.WarehousePutAway.InsertWarehousePutAwayOrder)]
         public async Task<Result<IEnumerable<WarehousePutAwayDto>>> InsertWarehousePutAwayOrder([Body] IEnumerable<WarehousePutAwayDto> request) => await _repository.SWarehousePutAways.InsertWarehousePutAwayOrder(request);
+
+        [HttpGet(ApiRoutes.WarehousePutAway.GetPutAwayAsync)]
+        public async Task<Result<WarehousePutAwayDto>> GetPutAwayAsync(string PutAwayNo) => await _repository.SWarehousePutAways.GetPutAwayAsync(PutAwayNo);
+
+        [HttpPost(ApiRoutes.WarehousePutAway.SyncHTData)]
+        public async Task<Result<WarehousePutAwayDto>> SyncHTData([Body]WarehousePutAwayDto putAwayDto) => await _repository.SWarehousePutAways.SyncHTData(putAwayDto);
+
+        [HttpPost(ApiRoutes.WarehousePutAway.AdjustActionPutAway)]
+        public async Task<Result<WarehousePutAwayDto>> AdjustActionPutAway([Body] WarehousePutAwayDto request) => await _repository.SWarehousePutAways.AdjustActionPutAway(request);
     }
 }

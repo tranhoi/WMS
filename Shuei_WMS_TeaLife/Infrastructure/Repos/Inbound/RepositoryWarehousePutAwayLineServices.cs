@@ -1,9 +1,9 @@
 ﻿using Application.DTOs;
 using Application.Extentions;
 using Application.Services.Inbound;
-using Domain.Entity.Common;
-using Domain.Entity.Commons;
-using Domain.Entity.WMS.Inbound;
+
+
+
 using Infrastructure.Data;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
@@ -132,23 +132,28 @@ namespace Infrastructure.Repos
         {
             try
             {
-                var dataInfo = await dbContext.WarehousePutAwayLines.FindAsync(id);
+                var dataInfo = dbContext.WarehousePutAwayLines.Where(x => x.Id == id)
+                    .Join(dbContext.Products,  x => x.ProductCode, y => y.ProductCode, (x, y) => new
+                        {
+                            putAway = x,
+                            product = y
+                        }).FirstOrDefault();
                 if (dataInfo == null) return null;
 
                 List<LabelInfoDto> res = new List<LabelInfoDto>();
-
+                
                 res.Add(new LabelInfoDto()
                 {
                     Title = "Put Away",
-                    QrValue = GlobalVariable.GenerateQRCode($"{dataInfo.ProductCode}:JANCode:{dataInfo.LotNo}"),
+                    QrValue = GlobalVariable.GenerateQRCode($"{dataInfo.putAway.ProductCode}:JANCode:{dataInfo.putAway.LotNo}"),
                     Title1 = "Product Code:",
-                    Content1 = dataInfo.ProductCode,
+                    Content1 = dataInfo.putAway.ProductCode,
                     Title2 = "JAN Code:",
-                    Content2 = "",
+                    Content2 = dataInfo.product.JanCode,
                     Title3 = "LOT:",
-                    Content3 = dataInfo.LotNo,
+                    Content3 = dataInfo.putAway.LotNo,
                     Title4 = "ExpiryDate",
-                    Content4 = ""
+                    Content4 = dataInfo.putAway.ExpirationDate == default ? "" : dataInfo.putAway.ExpirationDate.Value.ToString("dd/MM/yyyy")
                 });
 
                 return res;
@@ -197,4 +202,5 @@ namespace Infrastructure.Repos
             }
         }
     }
+
 }

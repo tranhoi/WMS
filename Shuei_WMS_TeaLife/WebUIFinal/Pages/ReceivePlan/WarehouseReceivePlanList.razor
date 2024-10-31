@@ -1,0 +1,155 @@
+@page "/receiveplan"
+@using Microsoft.AspNetCore.Authorization
+@using WebUIFinal.Core
+@using WebUIFinal
+@using FBT.ShareModels.Entities
+@inject IStringLocalizer<ReceivePlanResources> _localizer;
+@attribute [Authorize]
+
+<style>
+    .register-button {
+        background-color: #8A42F3; /* Purple color */
+        color: white;
+        font-size: 16px;
+        font-weight: bold;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+    }
+
+    .rz-grid-table thead th > div:not(.rz-cell-filter) {
+        background-color: #CC686F !important;
+    }
+
+    .rz-panel {
+        margin-right: 18px;
+        margin-left: 18px;
+    }
+</style>
+
+@if (_dataGrid == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <RadzenTemplateForm Data="@_searchModel" Submit="@((ReceivePlanSearchModel args) => { OnSearch(args); })">
+        <RadzenRow Gap="2rem" class="rz-p-0 rz-p-lg-4">
+            <RadzenColumn Size="12" SizeMD="12">
+                <RadzenFieldset Text="@_localizer["ReceivePlanList"]">
+                    <RadzenStack Gap="5px">
+                        <RadzenRow AlignItems="AlignItems.Center">
+                            @* <RadzenColumn SizeXS="12" SizeSM="4">
+                                <RadzenFormField Text="@_localizer["ArrivalNo"]" Variant="Variant.Outlined" Style="width:100%">
+                                    <RadzenTextBox Name="planNo" @bind-Value="@_searchModel.ScheduledArrivalNumber" Placeholder="@_localizer["ArrivalNo"].Value" />
+                                </RadzenFormField>
+                            </RadzenColumn> *@
+                            @* <RadzenColumn SizeXS="12" SizeSM="4">
+                                <RadzenFormField Text="@_localizer["Tenant"]" Variant="Variant.Outlined" Style="width:100%">
+                                    <RadzenDropDown @bind-Value="@_searchModel.Location" Data="@locations" Name="_dropDownSelectLocation"
+                                                    TextProperty="LocationName" Placeholder="@_localizer["Select"]"
+                                                    ValueProperty="Id" AllowClear=true Chips=true />
+                                </RadzenFormField>
+                            </RadzenColumn> *@
+                            <RadzenColumn SizeXS="12" SizeSM="4">
+                                <RadzenFormField Text="@_localizer["Supplier"]" Variant="Variant.Outlined" Style="width: 100%;">
+                                    <RadzenDropDown @bind-Value="@_searchModel.SupplierId" Data="@suppliers" Name="_dropDownSelectLocation"
+                                                    TextProperty="SupplierName" Placeholder="@_localizer["Select"]"
+                                                    ValueProperty="Id" AllowClear=true Chips=true />
+                                </RadzenFormField>
+                            </RadzenColumn>
+                        </RadzenRow>
+                        <RadzenRow AlignItems="AlignItems.Center">
+                            <RadzenColumn SizeXS="12" SizeSM="4">
+                                <RadzenFormField Text="@_localizer["ProductCode"]" Variant="Variant.Outlined" Style="width:100%">
+                                    <RadzenTextBox Name="ProductCode" @bind-Value="@_searchModel.ProductCode" Placeholder="@_localizer["ProductCode"]" />
+                                </RadzenFormField>
+                            </RadzenColumn>
+                            <RadzenColumn SizeXS="12" SizeSM="2">
+                                <RadzenFormField Text="@_localizer["ReceiveDate"]" Variant="Variant.Outlined" Style="width: 100%;">
+                                    <RadzenDatePicker @bind-Value="@_searchModel.ReceiveDateFrom" Placeholder="@_localizer["ReceiveDate"]" />
+                                </RadzenFormField>
+                            </RadzenColumn>
+                            <RadzenColumn SizeXS="12" SizeSM="2">
+                                <RadzenFormField Text="~" Variant="Variant.Outlined" Style="width: 100%;">
+                                    <RadzenDatePicker @bind-Value="@_searchModel.ReceiveDateTo" Placeholder="@_localizer["ReceiveDate"]" />
+                                </RadzenFormField>
+                            </RadzenColumn>
+                            <RadzenColumn SizeXS="12" SizeSM="4">
+                                <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.Center" AlignItems="AlignItems.Center" Gap="1rem" Wrap="FlexWrap.Wrap" class="rz-mt-2">
+                                    <RadzenButton Variant="Variant.Flat" Text="@_localizer["Search"]" Icon="search" ButtonType="ButtonType.Submit" Size="ButtonSize.Large" />
+                                    <RadzenButton Variant="Variant.Flat" Text="@_localizer["ClearFilter"]" Icon="clear" ButtonType="ButtonType.Button" Size="ButtonSize.Large" ButtonStyle="ButtonStyle.Base" Click="Clear" />
+                                </RadzenStack>
+                            </RadzenColumn>
+                        </RadzenRow>
+                    </RadzenStack>
+                </RadzenFieldset>
+            </RadzenColumn>
+        </RadzenRow>
+    </RadzenTemplateForm>
+    <RadzenRow Gap="2rem" Class="rz-p-0 rz-p-lg-4">
+        <RadzenColumn SizeXS="12" SizeMD="12">
+            <RadzenStack>
+                <RadzenFieldset Text="@_localizer["ReceivePlanList"]">
+                    <RadzenDataGrid @ref="_receivePlanGrid" AllowFiltering="true" AllowPaging="true" PageSize="5" AllowSorting="true"
+                                    Data="@_filteredReceivePlanItems" TItem="ArrivalInstruction">
+                        <Columns>
+                           @*  <RadzenDataGridColumn Width="200" TItem="ArrivalInstruction" Property="CompanyId" Title="@_localizer["Tenant"]" TextAlign="TextAlign.Center" /> *@
+                            <RadzenDataGridColumn Width="200" TItem="ArrivalInstruction" Property="SupplierName" Title="@_localizer["SupplierName"]" TextAlign="TextAlign.Center" />
+                            <RadzenDataGridColumn Width="150" TItem="ArrivalInstruction" Property="ScheduledArrivalDate" Title="@_localizer["ScheduledArrivalDate"]" TextAlign="TextAlign.Center" />
+                            <RadzenDataGridColumn Width="150" TItem="ArrivalInstruction" Property="ProductCode" Title="@_localizer["ProductCode"]" TextAlign="TextAlign.Center" />
+                            <RadzenDataGridColumn Width="150" TItem="ArrivalInstruction " Property="ScheduledArrivalNumber" Title="@_localizer["ScheduledArrivalNumber"]" TextAlign="TextAlign.Center" />
+                        </Columns>
+                    </RadzenDataGrid>
+                </RadzenFieldset>
+            </RadzenStack>
+        </RadzenColumn>
+    </RadzenRow>
+}
+@code {
+    public class ReceivePlanSearchModel
+    {
+       
+        public int? SupplierId { get; set; }
+        public string? ProductCode { get; set; }
+        public DateTime? ReceiveDateFrom { get; set; }
+        public DateTime? ReceiveDateTo { get; set; }
+        public DateTime? OrderDate { get; set; }
+    }
+
+    private ReceivePlanSearchModel _searchModel = new ReceivePlanSearchModel();
+    private List<ArrivalInstruction> _filteredReceivePlanItems = new List<ArrivalInstruction>();
+    private List<string> _locations = new List<string>(); // Populate with actual locations
+
+    private void OnSearch(ReceivePlanSearchModel args)
+    {
+        _filteredReceivePlanItems = _dataGrid;
+
+        
+        if (args.SupplierId.HasValue)
+        {
+            _filteredReceivePlanItems = _filteredReceivePlanItems.Where(_ => _.SupplierId != null && _.SupplierId.ToString().Contains(args.SupplierId.ToString(), StringComparison.OrdinalIgnoreCase)).ToList();
+        }
+        if (!string.IsNullOrEmpty(args.ProductCode))
+        {
+            _filteredReceivePlanItems = _filteredReceivePlanItems.Where(_ => _.ProductCode != null && _.ProductCode.Contains(args.ProductCode, StringComparison.OrdinalIgnoreCase)).ToList();
+        }
+        if (args.ReceiveDateFrom.HasValue)
+        {
+            _filteredReceivePlanItems = _filteredReceivePlanItems.Where(_ => _.OrderDate <= args.ReceiveDateFrom.Value).ToList();
+        }
+        if (args.ReceiveDateTo.HasValue)
+        {
+             // Convert DateOnly to DateTime
+            _filteredReceivePlanItems = _filteredReceivePlanItems.Where(_ => _.OrderDate <= args.ReceiveDateTo.Value).ToList();
+        }
+        
+    }
+
+    private void Clear()
+    {
+        _searchModel = new ReceivePlanSearchModel();
+        _filteredReceivePlanItems = _dataGrid;
+    }
+} 

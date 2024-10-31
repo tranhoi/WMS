@@ -1,6 +1,5 @@
 ﻿using Application.Extentions;
 using Application.Services.Base;
-using Domain.Entity.WMS.Outbound;
 using RestEase;
 
 namespace Application.Services.Outbound

@@ -1,6 +1,6 @@
 ﻿using Radzen;
 using Radzen.Blazor;
-using DeviceModel = Domain.Entity.WMS.Device;
+using DeviceModel = FBT.ShareModels.WMS.Device;
 
 namespace WebUIFinal.Pages.Device
 {

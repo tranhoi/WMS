@@ -1,11 +1,5 @@
-﻿using Application.DTOs.Request.Account;
-using Domain.Enums;
-using Microsoft.AspNetCore.Components;
-using Radzen.Blazor;
-using Radzen;
+﻿using Microsoft.AspNetCore.Components;
 using Application.DTOs.Response.Account;
-using Domain.Entity.WMS.Authentication;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace WebUIFinal.Pages.Components
 {
@@ -31,13 +25,18 @@ namespace WebUIFinal.Pages.Components
         {
             try
             {
+                if (Title.Contains($"{_localizer["Detail.Create"]}"))
+                {
+                    _visibleBtnSubmit = false;                    
+                }
+
                 if (Title.Contains("|"))
                 {
-                    if (Title.Contains($"{_localizer["Detail.View"]}"))
-                    {
-                        _visibleBtnSubmit = false;
-                        _disable = true;
-                    }
+                    //if (Title.Contains($"{_localizer["Detail.Create"]}"))
+                    //{
+                    //    _visibleBtnSubmit = false;
+                    //    _disable = true;
+                    //}
 
                     var arr = Title.Split('|');
                     Title = arr[0];
@@ -162,6 +161,56 @@ namespace WebUIFinal.Pages.Components
             });
 
             _dialogService.Close("Success");
+        }
+
+        async Task DeleteItemAsync(PermissionsListResponseDTO model)
+        {
+            try
+            {
+                var confirm = await _dialogService.Confirm(_localizer["Confirmation.Delete"] + _localizer["Permission.Name"] + $": {model.Name}?", _localizer["Delete"] + " " + _localizer["Permission.Name"], new ConfirmOptions()
+                {
+                    OkButtonText = "Yes",
+                    CancelButtonText = "No",
+                    AutoFocusFirstElement = true,
+                });
+
+                if (confirm == null || confirm == false) return;
+
+                var res = await _permissionsServices.DeleteAsync(model);
+
+                if (res.Succeeded)
+                {
+                    _notificationService.Notify(new NotificationMessage()
+                    {
+                        Severity = NotificationSeverity.Success,
+                        Summary = "Success",
+                        Detail = $"Delete permission {model.Name} successfully.",
+                        Duration = 5000
+                    });
+                }
+                else
+                {
+                    _notificationService.Notify(new NotificationMessage()
+                    {
+                        Severity = NotificationSeverity.Error,
+                        Summary = "Error",
+                        Detail = res.Messages.ToString(),
+                        Duration = 5000
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+                _notificationService.Notify(new NotificationMessage()
+                {
+                    Severity = NotificationSeverity.Error,
+                    Summary = "Error",
+                    Detail = ex.Message,
+                    Duration = 5000
+                });
+
+                return;
+            }
         }
     }
 }

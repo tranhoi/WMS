@@ -6,8 +6,8 @@ using Application.Services.Authen;
 using Azure;
 using ClosedXML.Excel;
 using DocumentFormat.OpenXml.Spreadsheet;
-using Domain.Entity.Commons;
-using Domain.Entity.WMS.Authentication;
+
+
 using Infrastructure.Data;
 using Mapster;
 using Microsoft.AspNetCore.Identity;
@@ -33,7 +33,7 @@ using DocumentFormat.OpenXml.Office2010.Excel;
 using Application.Models;
 using Microsoft.Data.SqlClient;
 using Dapper;
-using Domain.Enums;
+
 using Application;
 
 namespace Infrastructure.Repos
@@ -115,7 +115,7 @@ namespace Infrastructure.Repos
             var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config["Jwt:Key"]!));
             var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
 
-            var expiryToken = DateTime.Now.AddSeconds(double.TryParse(config["Jwt:JwtExpiryTimeToken"], out double value) ? value : 10);
+            var expiryToken = DateTime.UtcNow.AddSeconds(double.TryParse(config["Jwt:JwtExpiryTimeToken"], out double value) ? value : 10);
 
             #region add claim
             //user info
@@ -140,7 +140,7 @@ namespace Infrastructure.Repos
             #endregion
 
             var token = new JwtSecurityToken(
-                issuer: config["JWT:Issuer"],
+                issuer: config["JWT:Issuer"],                
                 audience: config["JWT:Audience"],
                 expires: expiryToken,
                 claims: userClaims,
@@ -255,6 +255,12 @@ namespace Infrastructure.Repos
                     {
                         Flag = false,
                         Message = "Sorry, user is already created."
+                    };
+                if (await userManager.FindByEmailAsync(model.Email) != null)
+                    return new GeneralResponse()
+                    {
+                        Flag = false,
+                        Message = "Sorry, email is already created."
                     };
 
                 var user = new ApplicationUser()
@@ -419,7 +425,7 @@ namespace Infrastructure.Repos
                     Flag = false,
                     Message = "Email not found",
                 };
-                await dbContext.LogTimes.AddAsync(new Domain.Entity.WMS.LogTime()
+                await dbContext.LogTimes.AddAsync(new FBT.ShareModels.WMS.LogTime()
                 {
                     LogName = $"userManager.FindByNameAsync({model.EmailAddress})",
                     EslapseTime = (DateTime.Now - startTime).TotalMilliseconds,
@@ -431,7 +437,7 @@ namespace Infrastructure.Repos
                 SignInResult result = null;
 
                 result = await signInManager.CheckPasswordSignInAsync(user, model.Password, false);
-                dbContext.LogTimes.Add(new Domain.Entity.WMS.LogTime()
+                dbContext.LogTimes.Add(new FBT.ShareModels.WMS.LogTime()
                 {
                     LogName = $"await signInManager.CheckPasswordSignInAsync(user, model.Password, false)",
                     EslapseTime = (DateTime.Now - startTime).TotalMilliseconds,
@@ -448,7 +454,7 @@ namespace Infrastructure.Repos
                 var jwtToken = await GenerateToken(user);
                 string token = new JwtSecurityTokenHandler().WriteToken(jwtToken);
                 string refreshToken = GenerateRefreshToken();
-                dbContext.LogTimes.Add(new Domain.Entity.WMS.LogTime()
+                dbContext.LogTimes.Add(new FBT.ShareModels.WMS.LogTime()
                 {
                     LogName = $"await GenerateToken(user)|",
                     EslapseTime = (DateTime.Now - startTime).TotalMilliseconds,
@@ -470,7 +476,7 @@ namespace Infrastructure.Repos
 
                 var saveResult = await SaveRefreshTokenAsync(user.Id, token, refreshToken, expiryRefreshToken);
 
-                dbContext.LogTimes.Add(new Domain.Entity.WMS.LogTime()
+                dbContext.LogTimes.Add(new FBT.ShareModels.WMS.LogTime()
                 {
                     LogName = $"await SaveRefreshTokenAsync(user.Id, token, refreshToken, expiryRefreshToken)",
                     EslapseTime = (DateTime.Now - startTime).TotalMilliseconds,
@@ -991,29 +997,6 @@ namespace Infrastructure.Repos
         {
             return await ExportReceipt();
         }
-
-        private async Task ExportPdf()
-        {
-            var exporter = new PdfExporter();
-            var result = await exporter.ExportListByTemplate("test.pdf", new List<Student>()
-            {
-                new Student
-                {
-                    Name = "MR.A",
-                    Age = 18
-                },
-                new Student
-                {
-                    Name = "MR.B",
-                    Age = 19
-                },
-                new Student
-                {
-                    Name = "MR.B",
-                    Age = 20
-                }
-            });
-        }
         public async Task<string> ExportReceipt()
         {
             var tplPath = Path.Combine(Directory.GetCurrentDirectory(), "LableTemplate",
@@ -1024,11 +1007,47 @@ namespace Infrastructure.Repos
             //此处使用默认模板导出
             var exportPath = Path.Combine(Directory.GetCurrentDirectory(), "ExportFile",
                 $"test.pdf");
-            var result = await exporter.ExportByTemplate(exportPath,
-                new ReceiptInfo
-                {
 
-                }, tpl);
+            //var result = await exporter.ExportByTemplate("test.pdf",
+            //   new ReceiptInfoTest
+            //   {
+            //       Amount = 22939.43M,
+            //       Grade = "2019秋",
+            //       IdNo = "43062619890622xxxx",
+            //       Name = "张三",
+            //       Payee = "湖南心莱信息科技有限公司",
+            //       PaymentMethod = "微信支付",
+            //       Profession = "运动训练",
+            //       Remark = "学费",
+            //       TradeStatus = "已完成",
+            //       TradeTime = DateTime.Now,
+            //       UppercaseAmount = "贰万贰仟玖佰叁拾玖圆肆角叁分",
+            //       Code = "19071800001"
+            //   }, tpl);
+
+            var input = new BatchReceiptInfoDto
+            {
+                Payee = "湖南心莱信息科技有限公司",
+                ReceiptInfoInputs = new List<ReceiptInfoTest>()
+            };
+
+            for (var i = 0; i < 20; i++)
+                input.ReceiptInfoInputs.Add(new ReceiptInfoTest
+                {
+                    Amount = 22939.43M,
+                    Grade = "2019秋",
+                    IdNo = "43062619890622xxxx",
+                    Name = "张三",
+                    PaymentMethod = "微信支付",
+                    Profession = "运动训练",
+                    Remark = "学费",
+                    TradeStatus = "已完成",
+                    TradeTime = DateTime.Now,
+                    UppercaseAmount = "贰万贰仟玖佰叁拾玖圆肆角叁分",
+                    Code = "1907180000" + i
+                });
+            //此处使用默认模板导出
+            var result = await exporter.ExportByTemplate("test.pdf", input, tpl);
 
             var exBase64 = File.ReadAllBytes(exportPath);
 

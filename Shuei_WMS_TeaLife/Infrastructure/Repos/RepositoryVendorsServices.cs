@@ -1,7 +1,7 @@
-﻿using Domain.Enums;
+﻿
 using Application.Extentions;
 using Application.Services;
-using Domain.Entity.Commons;
+
 using Infrastructure.Data;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
@@ -93,6 +93,18 @@ namespace Infrastructure.Repos
         {
             try
             {
+                var existCD = await dbContext.Vendors.Where(x => x.VendorCode == model.VendorCode).FirstOrDefaultAsync();
+                if (existCD != null)
+                {
+                    return await Result<Vendor>.FailAsync($"Vendor code: {model.VendorCode} is already created");
+                }
+
+                var existName = await dbContext.Vendors.Where(x => x.VendorName == model.VendorName).FirstOrDefaultAsync();
+                if (existName != null)
+                {
+                    return await Result<Vendor>.FailAsync($"Vendor name: {model.VendorName} is already created");
+                }
+
                 await dbContext.Vendors.AddAsync(model);
                 await dbContext.SaveChangesAsync();
                 return await Result<Vendor>.SuccessAsync(model);

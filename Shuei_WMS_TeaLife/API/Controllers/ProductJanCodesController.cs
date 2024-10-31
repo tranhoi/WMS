@@ -1,7 +1,7 @@
 ﻿using API.Controllers.Base;
 using Application.Extentions;
 using Application.Services;
-using Domain.Entity.Commons;
+
 using Infrastructure.Repos;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

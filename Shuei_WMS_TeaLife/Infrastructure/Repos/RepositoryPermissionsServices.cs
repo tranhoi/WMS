@@ -1,10 +1,10 @@
 ﻿using Application.DTOs.Response.Account;
-using Domain.Enums;
+
 using Application.Extentions;
 using Application.Models;
 using Application.Services.Authen;
 using Dapper;
-using Domain.Entity.WMS.Authentication;
+
 using Infrastructure.Data;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Data.SqlClient;
@@ -300,6 +300,12 @@ namespace Infrastructure.Repos
         {
             try
             {
+                var existCD = await dbContext.Permissions.Where(x => x.Name == model.Name).FirstOrDefaultAsync();
+                if (existCD != null)
+                {
+                    return await Result<Permissions>.FailAsync($"Permission name: {model.Name} is already created");
+                }
+
                 await dbContext.Permissions.AddAsync(model);
                 await dbContext.SaveChangesAsync();
                 return await Result<Permissions>.SuccessAsync(model);

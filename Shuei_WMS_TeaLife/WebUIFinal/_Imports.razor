@@ -6,7 +6,6 @@
 @using Application.Services.Inbound
 @using Application.Services.Outbound
 @using Application.Services.Suppliers
-@using Application.Services.Inbound
 @using Microsoft.AspNetCore.Components.Authorization
 @using Microsoft.AspNetCore.Components.Forms
 @using Microsoft.AspNetCore.Components.Routing
@@ -15,15 +14,18 @@
 @using Microsoft.AspNetCore.Components.WebAssembly.Http
 @using Microsoft.JSInterop
 @using WebUIFinal
+@using WebUIFinal.Core
 @using WebUIFinal.Layout
 @using Radzen
 @using Radzen.Blazor
 @using Microsoft.Extensions.Localization
+@* @using BlazorBootstrap; *@
 
 @* @inject IStringLocalizer<CommonResources> _localizer *@
 
 
 @inject IJSRuntime _jsRuntime
+@inject MasterTransferToDetails _MasterTransferToDetails
 
 @*NotificationService*@
 @inject NotificationService _notificationService
@@ -51,6 +53,7 @@
 @inject IBins _binServices
 @inject IWarehousePutAway _warehousePutAwayServices
 @inject IWarehousePutAwayLine _warehousePutAwayLineServices
+@inject IWarehousePutAwayStaging _warehousePutAwayStagingServices
 @inject IProductCategory _productCategoryServices
 
 @inject INumberSequences _numberSequenceServices
@@ -59,8 +62,17 @@
 @inject IBatches _batchServices
 @inject IWarehouseReceiptOrder _warehouseReceiptOrderService
 @inject IWarehouseReceiptOrderLine _warehouseReceiptOrderLineService
+@inject IArrivalInstructions _warehouseReceivePlan
 
 @inject ICurrency _currencyServices
 @inject IShippingBox _shippingBoxServices
-
 @inject IShippingCarrier _shippingCarrierServices
+@inject IWarehousePickingList _warehousePickingListServices
+@inject IWarehousePickingLine _warehousePickingLineServices
+@inject IPackingList _packingListServices
+
+@inject IWarehouseShipment _warehouseShipmentServices
+@inject ICategories _categoriesService
+
+@inject IInventTransfer _inventTransferServices
+@inject IInventTransferLines _inventTransferLineServices

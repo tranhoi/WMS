@@ -1,8 +1,8 @@
 ﻿using API.Controllers.Base;
 using Application.Extentions;
 using Application.Services.Inbound;
-using Domain.Entity.Commons;
-using Domain.Entity.WMS.Inbound;
+
+
 using Infrastructure.Repos;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;

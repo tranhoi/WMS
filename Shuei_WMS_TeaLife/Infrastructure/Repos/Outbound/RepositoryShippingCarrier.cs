@@ -1,6 +1,6 @@
 ﻿using Application.Extentions;
 using Application.Services.Outbound;
-using Domain.Entity.WMS.Outbound;
+
 using Infrastructure.Data;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
@@ -90,6 +90,9 @@ namespace Infrastructure.Repos.Outbound
         {
             try
             {
+                //check required
+                if (await CheckExistShippingCarrier(model))
+                    return await Result<ShippingCarrier>.FailAsync($"ShippingCarrierCodeIsExisted");
                 await dbContext.ShippingCarriers.AddAsync(model);
                 await dbContext.SaveChangesAsync();
                 return await Result<ShippingCarrier>.SuccessAsync(model);
@@ -104,6 +107,9 @@ namespace Infrastructure.Repos.Outbound
         {
             try
             {
+                //check required
+                if (await CheckExistShippingCarrier(model))
+                    return await Result<ShippingCarrier>.FailAsync($"ShippingCarrierCodeIsExisted");
                 dbContext.ShippingCarriers.Update(model);
                 await dbContext.SaveChangesAsync();
                 return await Result<ShippingCarrier>.SuccessAsync(model);
@@ -112,6 +118,11 @@ namespace Infrastructure.Repos.Outbound
             {
                 return await Result<ShippingCarrier>.FailAsync($"{ex.Message}{Environment.NewLine}{ex.InnerException}");
             }
+        }
+
+        private async Task<bool> CheckExistShippingCarrier(ShippingCarrier shippingCarrier)
+        {
+            return await dbContext.ShippingCarriers.AnyAsync(x => x.Id != shippingCarrier.Id && x.ShippingCarrierCode.ToLower() == shippingCarrier.ShippingCarrierCode.ToLower());
         }
     }
 }

@@ -1,6 +1,6 @@
 ﻿using Radzen;
 using Radzen.Blazor;
-using NumberSequenceModel = Domain.Entity.WMS.NumberSequences;
+using NumberSequenceModel = FBT.ShareModels.WMS.NumberSequences;
 
 namespace WebUIFinal.Pages.NumberSequence
 {

@@ -1,14 +1,16 @@
 ﻿using Application.Extentions;
 using Application.Services.Outbound;
-using Domain.Entity.WMS.Outbound;
+
 using Infrastructure.Data;
+using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Localization;
 using RestEase;
 
 namespace Infrastructure.Repos.Outbound
 {
-    public class RepositoryShippingBox(ApplicationDbContext dbContext, IHttpContextAccessor contextAccessor) :IShippingBox
+    public class RepositoryShippingBox(ApplicationDbContext dbContext, IHttpContextAccessor contextAccessor) : IShippingBox
     {
         public async Task<Result<ShippingBox>> AddRangeAsync([Body] List<ShippingBox> model)
         {
@@ -89,6 +91,9 @@ namespace Infrastructure.Repos.Outbound
         {
             try
             {
+                //check required
+                if (await CheckExistShippingBox(model))
+                    return await Result<ShippingBox>.FailAsync($"BoxNameIsExisted");
                 await dbContext.ShippingBoxes.AddAsync(model);
                 await dbContext.SaveChangesAsync();
                 return await Result<ShippingBox>.SuccessAsync(model);
@@ -103,6 +108,9 @@ namespace Infrastructure.Repos.Outbound
         {
             try
             {
+                //check required
+                if (await CheckExistShippingBox(model))
+                    return await Result<ShippingBox>.FailAsync($"BoxNameIsExisted");
                 dbContext.ShippingBoxes.Update(model);
                 await dbContext.SaveChangesAsync();
                 return await Result<ShippingBox>.SuccessAsync(model);
@@ -111,6 +119,11 @@ namespace Infrastructure.Repos.Outbound
             {
                 return await Result<ShippingBox>.FailAsync($"{ex.Message}{Environment.NewLine}{ex.InnerException}");
             }
+        }
+
+        private async Task<bool> CheckExistShippingBox(ShippingBox shippingBox)
+        {
+            return await dbContext.ShippingBoxes.AnyAsync(x => x.Id != shippingBox.Id && x.BoxName.ToLower() == shippingBox.BoxName.ToLower());
         }
     }
 }

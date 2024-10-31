@@ -2,15 +2,13 @@
 using Application.Extentions;
 using Blazored.LocalStorage;
 using Blazored.SessionStorage;
-using Domain.Entity.WMS.Authentication;
+
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
 using Newtonsoft.Json.Linq;
+using System.IdentityModel.Tokens.Jwt;
 using System.Linq.Dynamic.Core.Tokenizer;
 using System.Security.Claims;
-using System.Security.Claims;
-using System.Text.Json;
-using static Application.Extentions.ApiRoutes;
 
 
 namespace Application.Services.Authen.UI
@@ -30,6 +28,14 @@ namespace Application.Services.Authen.UI
             _httpClient = httpClient;
             _localStorage = localStorage;
             _sessionStorage = sessionStorage;
+        }
+
+        private bool IsTokenExpired(string token)
+        {
+            var handler = new JwtSecurityTokenHandler();
+            var jwtToken = handler.ReadJwtToken(token);
+
+            return jwtToken.ValidTo < DateTime.UtcNow;
         }
 
         /// <summary>

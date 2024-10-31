@@ -52,12 +52,14 @@ namespace Infrastructure.IoC.DependencyInjection
             services.AddScoped<IWarehousePickingList,RepositoryWarehousePickingListServices>();
             services.AddScoped<IWarehousePickingLine, RepositoryWarehousePickingLineServices>();
             services.AddScoped<IWarehousePickingStaging, RepositoryWarehousePickingStagingServices>();
-            services.AddScoped<IWarehousePackingList, RepositoryWarehousePackingListServices>();
-            services.AddScoped<IWarehousePackingLine, RepositoryWarehousePackingLineServices>();
             services.AddScoped<IWarehouseShipment, RepositoryWarehouseShipment>();
             services.AddScoped<IWarehouseShipmentLine, RepositoryWarehouseShipmentLine>();
             services.AddScoped<IShippingBox, RepositoryShippingBox>();
             services.AddScoped<IShippingCarrier, RepositoryShippingCarrier>();
+            services.AddScoped<IPackingList,RepositoryPackingListServices>();
+            services.AddScoped<ICategories, RepositoryCategoryServices>();
+            services.AddScoped<IInventTransfer, RepositoryInventTransferService>();
+            services.AddScoped<IInventTransferLines, RepositoryInventTransferLineService>();
 
             services.AddScoped<Repository>();
         }

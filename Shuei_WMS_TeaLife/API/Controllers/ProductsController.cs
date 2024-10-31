@@ -3,7 +3,7 @@ using Application.DTOs.Request.Products;
 using Application.DTOs.Response.Product;
 using Application.Extentions;
 using Application.Services;
-using Domain.Entity.Commons;
+
 using Infrastructure.Repos;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -34,6 +34,9 @@ namespace API.Controllers
 
         [HttpGet(ApiRoutes.Product.GetByProductCodeAsync)]
         public async Task<Result<ProductDto>> GetByProductCodeAsync(string code) => await _repository.SProducts.GetByProductCodeAsync(code);
+
+        [HttpGet(ApiRoutes.Product.SearchByProductCodeAsync)]
+        public async Task<Result<IEnumerable<ProductDto>>> SearchByProductCodeAsync(string code) => await _repository.SProducts.SearchByProductCodeAsync(code);
 
         //[HttpGet(ApiRoutes.Product.GetByProductCodeAsync)]
         //public async Task<Result<ProductDto>> GetByProductCodeAsync([Path] string code) => await _repository.SProducts.GetByProductCodeAsync(code);

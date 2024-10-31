@@ -1,8 +1,8 @@
-﻿using Domain.Enums;
+﻿
 using Microsoft.AspNetCore.Components;
 using Radzen;
 using WebUIFinal.Core;
-using VendorEntity = Domain.Entity.Commons.Vendor;
+using VendorEntity = FBT.ShareModels.Entities.Vendor;
 
 namespace WebUIFinal.Pages.Vendor
 {

@@ -1,16 +1,6 @@
-﻿using Application.Models;
-using Domain.Entity.authp.Commons;
-using Domain.Entity.Common;
-using Domain.Entity.Commons;
-using Domain.Entity.WMS;
-using Domain.Entity.WMS.Authentication;
-using Domain.Entity.WMS.Inbound;
-using Domain.Entity.WMS.Outbound;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Identity.Client;
 
 namespace Infrastructure.Data
 {
@@ -18,7 +8,7 @@ namespace Infrastructure.Data
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> option) : base(option)
         {
-
+           
         }
 
         public string GetConnectionString()
@@ -32,7 +22,7 @@ namespace Infrastructure.Data
         public DbSet<ApiCode> ApiCodes { get; set; }
         public DbSet<Channel> Channels { get; set; }
         public DbSet<ChannelMaster> ChannelMasters { get; set; }
-        public DbSet<Company> Companys { get; set; }
+        public DbSet<CompanyTenant> Companys { get; set; }
         public DbSet<CountryMaster> CountryMasters { get; set; }
         public DbSet<Currency> Currencies { get; set; }
         public DbSet<CurrencyPairSetting> CurrencyPairSettings { get; set; }
@@ -46,7 +36,7 @@ namespace Infrastructure.Data
         public DbSet<ProductStatus> ProductStatuses { get; set; }
         public DbSet<ProductStock> ProductStocks { get; set; }
 
-        public DbSet<SalesDatum> SalesDatums { get; set; }
+        public DbSet<SalesData> SalesDatas { get; set; }
         public DbSet<ShippingCountry> ShippingCountries { get; set; }
         public DbSet<SystemClassCompany> SystemClassCompanies { get; set; }
         public DbSet<UserSetting> UserSettings { get; set; }
@@ -68,6 +58,7 @@ namespace Infrastructure.Data
 
         #region WMS
         public DbSet<MstUserSetting> MstUserSettings { get; set; }
+        public DbSet<ApplicationUser> ApplicationUsers { get; set; }
         public DbSet<RefreshTokens> RefreshTokens { get; set; }
         public DbSet<Permissions> Permissions { get; set; }
         public DbSet<PermissionsTenant> PermissionsTenants { get; set; }
@@ -90,14 +81,14 @@ namespace Infrastructure.Data
         public DbSet<NumberSequences> SequencesNumber { get; set; }
         public DbSet<Batches> Batches { get; set; }
         public DbSet<LogTime> LogTimes { get; set; }
+        public DbSet<InventTransfer>  InventTransfers { get; set; }
+        public DbSet<InventTransferLine>  InventTransferLines { get; set; }
 
         #region Outbound
         public DbSet<ReturnOrder> ReturnOrders { get; set; }
         public DbSet<ReturnOrderLine> ReturnOrderLines { get; set; }
         public DbSet<ShippingBox> ShippingBoxes { get; set; }
         public DbSet<ShippingCarrier> ShippingCarriers { get; set; }
-        public DbSet<WarehousePackingLine> WarehousePackingLines { get; set; }
-        public DbSet<WarehousePackingList> WarehousePackingLists { get; set; }
         public DbSet<WarehousePickingLine> WarehousePickingLines { get; set; }
         public DbSet<WarehousePickingList> WarehousePickingLists { get; set; }
         public DbSet<WarehousePickingStaging> WarehousePickingStagings { get; set; }
@@ -121,144 +112,43 @@ namespace Infrastructure.Data
             //modelBuilder.Entity<PermissionsListModel>().ToTable("PermissionsListModels", "dbo", x => x.ExcludeFromMigrations());//ko cho migration cac bang hien co cua FBT_DEV
 
             modelBuilder.Entity<TenantAuth>()
-               .ToTable("Tenants", "authp", x => x.ExcludeFromMigrations());
+               .ToTable("Tenants", "authp");
             #endregion
 
-            #region WMS migration
-            //   modelBuilder.Entity<MstUserSetting>()
-            //   .ToTable("MstUserSetting", "wms");
-            //   modelBuilder.Entity<RefreshTokens>()
-            //    .ToTable("RefreshTokens", "wms");
-            //   modelBuilder.Entity<Permissions>()
-            //     .ToTable("Permissions", "wms");
-            //   modelBuilder.Entity<PermissionsTenant>()
-            //    .ToTable("PermissionsTenant", "wms");
-            //   modelBuilder.Entity<RoleToPermission>()
-            //     .ToTable("RoleToPermission", "wms");
-            //   modelBuilder.Entity<RoleToPermissionTenant>()
-            //    .ToTable("RoleToPermissionTenant", "wms");
+            foreach (var item in modelBuilder.Model.GetEntityTypes())
+            {
+                if (item.Name.Contains("RoleToPermissionTenant"))
+                {
+                    var a = item.Name;
+                }
 
-            //   modelBuilder.Entity<Location>()
-            //    .ToTable("Locations", "wms");
-            //   modelBuilder.Entity<Device>()
-            //    .ToTable("Devices", "wms");
-            //   modelBuilder.Entity<Bin>().ToTable("Bins", "wms");
+                if (!string.IsNullOrEmpty(item.ClrType.Namespace))
+                {
+                    if (item.ClrType.Namespace.Contains("WMS"))
+                    {
+                        item.SetSchema("wms");
+                        continue;
+                    }
+                }
+            }
 
-            //   modelBuilder.Entity<Unit>()
-            //    .ToTable("Units", "wms");
-
-
-            //   modelBuilder.Entity<UserToTenant>()
-            //    .ToTable("UserToTenant", "wms");
-
-
-            //   modelBuilder.Entity<WarehouseTran>()
-            //   .ToTable("WarehouseTrans", "wms");
-
-            //   modelBuilder.Entity<WarehousePutAway>()
-            //   .ToTable("WarehousePutAways", "wms");
-
-            //   modelBuilder.Entity<WarehousePutAwayLine>()
-            //   .ToTable("WarehousePutAwayLines", "wms");
-
-            //   modelBuilder.Entity<WarehousePutAwayStaging>()
-            //   .ToTable("WarehousePutAwayStaging", "wms");
-
-            //   modelBuilder.Entity<WarehouseReceiptOrder>()
-            //   .ToTable("WarehouseReceiptOrder", "wms");
-
-            //   modelBuilder.Entity<WarehouseReceiptOrderLine>()
-            //   .ToTable("WarehouseReceiptOrderLine", "wms");
-
-            //   modelBuilder.Entity<WarehouseReceiptStaging>()
-            //   .ToTable("WarehouseReceiptStaging", "wms");
-
-            //   modelBuilder.Entity<NumberSequences>()
-            //   .ToTable("NumberSequences", "wms");
-
-            //   modelBuilder.Entity<Batches>()
-            //   .ToTable("Batches", "wms");
-
-
-            //   modelBuilder.Entity<ReturnOrder>()
-            //   .ToTable("ReturnOrders", "wms");
-
-            //   modelBuilder.Entity<ReturnOrderLine>()
-            //.ToTable("ReturnOrderLines", "wms");
-
-            //   modelBuilder.Entity<ShippingBox>()
-            //.ToTable("ShippingBoxes", "wms");
-
-            //   modelBuilder.Entity<ShippingCarrier>()
-            //.ToTable("ShippingCarriers", "wms");
-
-            //   modelBuilder.Entity<WarehousePackingLine>()
-            //.ToTable("WarehousePackingLines", "wms");
-
-            //   modelBuilder.Entity<WarehousePackingList>()
-            //.ToTable("WarehousePackingList", "wms");
-
-            //   modelBuilder.Entity<WarehousePickingLine>()
-            //.ToTable("WarehousePickingLines", "wms");
-
-            //   modelBuilder.Entity<WarehousePickingList>()
-            //.ToTable("WarehousePickingList", "wms");
-
-            //   modelBuilder.Entity<WarehousePickingStaging>()
-            //.ToTable("WarehousePickingStaging", "wms");
-
-            //   modelBuilder.Entity<WarehouseShipment>()
-            //.ToTable("WarehouseShipments", "wms");
-
-            //   modelBuilder.Entity<WarehouseShipmentLine>()
-            //.ToTable("WarehouseShipmentLines", "wms");
-
-            #endregion
-
-            #region WMS don't migration
-            modelBuilder.Entity<MstUserSetting>().ToTable("MstUserSetting", "wms", x => x.ExcludeFromMigrations());
-            modelBuilder.Entity<RefreshTokens>().ToTable("RefreshTokens", "wms", x => x.ExcludeFromMigrations());
-            modelBuilder.Entity<Permissions>().ToTable("Permissions", "wms", x => x.ExcludeFromMigrations());
-            modelBuilder.Entity<PermissionsTenant>().ToTable("PermissionsTenant", "wms", x => x.ExcludeFromMigrations());
-            modelBuilder.Entity<RoleToPermission>().ToTable("RoleToPermission", "wms", x => x.ExcludeFromMigrations());
-            modelBuilder.Entity<RoleToPermissionTenant>().ToTable("RoleToPermissionTenant", "wms", x => x.ExcludeFromMigrations());
-            modelBuilder.Entity<Location>().ToTable("Locations", "wms", x => x.ExcludeFromMigrations());
-            modelBuilder.Entity<Device>().ToTable("Devices", "wms", x => x.ExcludeFromMigrations());
-            modelBuilder.Entity<Bin>().ToTable("Bins", "wms", x => x.ExcludeFromMigrations());
-            modelBuilder.Entity<Unit>().ToTable("Units", "wms", x => x.ExcludeFromMigrations());
-            modelBuilder.Entity<UserToTenant>().ToTable("UserToTenant", "wms", x => x.ExcludeFromMigrations());
-            modelBuilder.Entity<WarehouseTran>().ToTable("WarehouseTrans", "wms", x => x.ExcludeFromMigrations());
-            modelBuilder.Entity<WarehousePutAway>().ToTable("WarehousePutAways", "wms", x => x.ExcludeFromMigrations());
-            modelBuilder.Entity<WarehousePutAwayLine>().ToTable("WarehousePutAwayLines", "wms", x => x.ExcludeFromMigrations());
-            modelBuilder.Entity<WarehousePutAwayStaging>().ToTable("WarehousePutAwayStaging", "wms", x => x.ExcludeFromMigrations());
-            modelBuilder.Entity<WarehouseReceiptOrder>().ToTable("WarehouseReceiptOrder", "wms", x => x.ExcludeFromMigrations());
-            modelBuilder.Entity<WarehouseReceiptOrderLine>().ToTable("WarehouseReceiptOrderLine", "wms", x => x.ExcludeFromMigrations());
-            modelBuilder.Entity<WarehouseReceiptStaging>().ToTable("WarehouseReceiptStaging", "wms", x => x.ExcludeFromMigrations());
-            modelBuilder.Entity<NumberSequences>().ToTable("NumberSequences", "wms", x => x.ExcludeFromMigrations());
-            modelBuilder.Entity<Batches>().ToTable("Batches", "wms", x => x.ExcludeFromMigrations());
-            modelBuilder.Entity<ReturnOrder>().ToTable("ReturnOrders", "wms", x => x.ExcludeFromMigrations());
-            modelBuilder.Entity<ReturnOrderLine>().ToTable("ReturnOrderLines", "wms", x => x.ExcludeFromMigrations());
-            modelBuilder.Entity<ShippingBox>().ToTable("ShippingBoxes", "wms", x => x.ExcludeFromMigrations());
-            modelBuilder.Entity<ShippingCarrier>().ToTable("ShippingCarriers", "wms", x => x.ExcludeFromMigrations());
-            modelBuilder.Entity<WarehousePackingLine>().ToTable("WarehousePackingLines", "wms", x => x.ExcludeFromMigrations());
-            modelBuilder.Entity<WarehousePackingList>().ToTable("WarehousePackingList", "wms", x => x.ExcludeFromMigrations());
-            modelBuilder.Entity<WarehousePickingLine>().ToTable("WarehousePickingLines", "wms", x => x.ExcludeFromMigrations());
-            modelBuilder.Entity<WarehousePickingList>().ToTable("WarehousePickingList", "wms", x => x.ExcludeFromMigrations());
-            modelBuilder.Entity<WarehousePickingStaging>().ToTable("WarehousePickingStaging", "wms", x => x.ExcludeFromMigrations());
-            modelBuilder.Entity<WarehouseShipment>().ToTable("WarehouseShipments", "wms", x => x.ExcludeFromMigrations());
-            modelBuilder.Entity<WarehouseShipmentLine>().ToTable("WarehouseShipmentLines", "wms", x => x.ExcludeFromMigrations());
-
-            modelBuilder.Entity<LogTime>().ToTable("LogTime", "wms", x => x.ExcludeFromMigrations());
-            #endregion
             //override lai cac bang identity
-            modelBuilder.Entity<IdentityRoleClaim<string>>().ToTable("AspNetRoleClaims", "wms", x => x.ExcludeFromMigrations());
-            modelBuilder.Entity<IdentityRole>().ToTable("AspNetRoles", "wms", x => x.ExcludeFromMigrations());
-            modelBuilder.Entity<IdentityUserClaim<string>>().ToTable("AspNetUserClaims", "wms", x => x.ExcludeFromMigrations());
-            modelBuilder.Entity<IdentityUserLogin<string>>().ToTable("AspNetUserLogins", "wms", x => x.ExcludeFromMigrations());
-            modelBuilder.Entity<IdentityUserRole<string>>().ToTable("AspNetUserRoles", "wms", x => x.ExcludeFromMigrations());
-            modelBuilder.Entity<IdentityUserToken<string>>().ToTable("AspNetUserTokens", "wms", x => x.ExcludeFromMigrations());
-            
-            modelBuilder.Entity<ApplicationUser>().ToTable("AspNetUsers", "wms", x => x.ExcludeFromMigrations());
+            //modelBuilder.Entity<IdentityRoleClaim<string>>().ToTable("AspNetRoleClaims", "wms", x => x.ExcludeFromMigrations());
+            //modelBuilder.Entity<IdentityRole>().ToTable("AspNetRoles", "wms", x => x.ExcludeFromMigrations());
+            //modelBuilder.Entity<IdentityUserClaim<string>>().ToTable("AspNetUserClaims", "wms", x => x.ExcludeFromMigrations());
+            //modelBuilder.Entity<IdentityUserLogin<string>>().ToTable("AspNetUserLogins", "wms", x => x.ExcludeFromMigrations());
+            //modelBuilder.Entity<IdentityUserRole<string>>().ToTable("AspNetUserRoles", "wms", x => x.ExcludeFromMigrations());
+            //modelBuilder.Entity<IdentityUserToken<string>>().ToTable("AspNetUserTokens", "wms", x => x.ExcludeFromMigrations());
+
+            //modelBuilder.Entity<ApplicationUser>().ToTable("AspNetUsers", "wms", x => x.ExcludeFromMigrations());
+
+            modelBuilder.Entity<ApplicationUser>().ToTable("AspNetUsers", "wms");
+            modelBuilder.Entity<IdentityRoleClaim<string>>().ToTable("AspNetRoleClaims", "wms");
+            modelBuilder.Entity<IdentityRole>().ToTable("AspNetRoles", "wms");
+            modelBuilder.Entity<IdentityUserClaim<string>>().ToTable("AspNetUserClaims", "wms");
+            modelBuilder.Entity<IdentityUserLogin<string>>().ToTable("AspNetUserLogins", "wms");
+            modelBuilder.Entity<IdentityUserRole<string>>().ToTable("AspNetUserRoles", "wms");
+            modelBuilder.Entity<IdentityUserToken<string>>().ToTable("AspNetUserTokens", "wms");
 
             // Ghi đè bảng __EFMigrationsHistory
             //modelBuilder.HasAnnotation("Relational:Schema", "wms", x => x.ExcludeFromMigrations());  // Đặt schema tùy chỉnh

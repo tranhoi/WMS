@@ -1,7 +1,7 @@
 ﻿using Application.Extentions;
 using Application.Services.Inbound;
-using Domain.Entity.Common;
-using Domain.Entity.Commons;
+
+
 using Infrastructure.Data;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;

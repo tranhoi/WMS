@@ -1,8 +1,8 @@
 ﻿using Application.DTOs;
 using Application.Extentions;
 using Application.Services.Base;
-using Domain.Entity.Commons;
-using Domain.Entity.WMS;
+
+
 using RestEase;
 using System;
 using System.Collections.Generic;

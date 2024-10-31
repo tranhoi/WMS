@@ -39,15 +39,15 @@ namespace Application.Services.Authen.UI
             {
                 try
                 {
-                    var result = await _authService.RefreshTokenAsync();
-                    if (result != null && result.Flag == true)
-                    {                        
-                        args.Request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", result.Token);                        
-                    }
-                    else
-                    {
-                        throw new UnauthorizedAccessException(result?.Message);
-                    }
+                    //var result = await _authService.RefreshTokenAsync();
+                    //if (result != null && result.Flag == true)
+                    //{                        
+                    //    args.Request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", result.Token);                        
+                    //}
+                    //else
+                    //{
+                    //    throw new UnauthorizedAccessException(result?.Message);
+                    //}
                 }
                 catch (Exception ex)
                 {                    
@@ -67,7 +67,7 @@ namespace Application.Services.Authen.UI
 
         public void RegisterEvent()
         {
-            _httpInterceptor.BeforeSendAsync += InterceptBeforeHttpAsync;
+            //_httpInterceptor.BeforeSendAsync += InterceptBeforeHttpAsync;
             //_httpInterceptor.AfterSendAsync += _httpInterceptor_AfterSendAsync;
         }
 

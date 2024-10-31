@@ -3,23 +3,11 @@ using Application.DTOs.Request.Account;
 using Application.DTOs.Response;
 using Application.DTOs.Response.Account;
 using Application.Extentions;
-using Azure.Core;
 using Blazored.LocalStorage;
 using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
 using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Dynamic.Core.Tokenizer;
-using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
-using System.Reflection;
-using System.Reflection.Metadata.Ecma335;
-using System.Text;
-using System.Threading.Tasks;
-using static Application.Extentions.ConstantExtention;
 
 namespace Application.Services.Authen.UI
 {
@@ -240,7 +228,7 @@ namespace Application.Services.Authen.UI
 
             //Set local storage
             await _authStateProvider.CacheAuthTokensAsync(loginResponse.Token, loginResponse.RefreshToken, string.Empty);
-            // ((ApiAuthenticationStateProvider)_authStateProvider).MarkUserAsAuthenticated();
+            ((ApiAuthenticationStateProvider)_authStateProvider).MarkUserAsAuthenticated();
             //Gán token này mặc đinh vào header của tất cả các request của httpClient có tên là Bearer
             _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", loginResponse.Token);
 

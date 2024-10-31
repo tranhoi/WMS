@@ -1,7 +1,7 @@
 ﻿using Radzen;
 using Radzen.Blazor;
 using SupplierTenantDTOEntity = Application.DTOs.SupplierTenantDTO;
-using SupplierEntity = Domain.Entity.Commons.Supplier;
+using SupplierEntity = FBT.ShareModels.Entities.Supplier;
 
 namespace WebUIFinal.Pages.Supplier
 {

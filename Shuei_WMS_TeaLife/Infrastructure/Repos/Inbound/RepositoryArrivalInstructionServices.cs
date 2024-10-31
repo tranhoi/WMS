@@ -1,7 +1,8 @@
-﻿using Domain.Enums;
+﻿
+using Application.DTOs;
 using Application.Extentions;
 using Application.Services.Inbound;
-using Domain.Entity.Commons;
+
 using Infrastructure.Data;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
@@ -79,6 +80,7 @@ namespace Infrastructure.Repos
                 return await Result<List<ArrivalInstruction>>.FailAsync($"{ex.Message}{Environment.NewLine}{ex.InnerException}");
             }
         }
+       
 
         public async Task<Result<ArrivalInstruction>> GetByIdAsync([Path] int id)
         {

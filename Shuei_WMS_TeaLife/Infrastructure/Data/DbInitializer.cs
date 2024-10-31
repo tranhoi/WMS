@@ -1,6 +1,6 @@
 ﻿using Application.Extentions;
-using Domain.Entity.Commons;
-using Domain.Enums;
+
+
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System.Reflection.Metadata;
@@ -77,23 +77,28 @@ namespace Infrastructure.Data
             //}
 
             // Check if there are any products already present
-            //if (!context.Roles.Any())
-            //{
-            //    await context.Roles.AddAsync(new Microsoft.AspNetCore.Identity.IdentityRole()
-            //    {
-            //        Name = ConstantExtention.Roles.WarehouseAdmin,
-            //        NormalizedName = ConstantExtention.Roles.WarehouseAdmin.ToUpper()
-            //    });
-            //    await context.Roles.AddAsync(new Microsoft.AspNetCore.Identity.IdentityRole()
-            //    {
-            //        Name = ConstantExtention.Roles.WarehouseStaff,
-            //        NormalizedName = ConstantExtention.Roles.WarehouseStaff.ToUpper()
-            //    });
-            //}
+            if (!context.Roles.Any())
+            {
+                await context.Roles.AddAsync(new Microsoft.AspNetCore.Identity.IdentityRole()
+                {
+                    Name = ConstantExtention.Roles.WarehouseAdmin,
+                    NormalizedName = ConstantExtention.Roles.WarehouseAdmin.ToUpper()
+                });
+                await context.Roles.AddAsync(new Microsoft.AspNetCore.Identity.IdentityRole()
+                {
+                    Name = ConstantExtention.Roles.WarehouseStaff,
+                    NormalizedName = ConstantExtention.Roles.WarehouseStaff.ToUpper()
+                });
+                await context.Roles.AddAsync(new Microsoft.AspNetCore.Identity.IdentityRole()
+                {
+                    Name = ConstantExtention.Roles.WarehouseSystem,
+                    NormalizedName = ConstantExtention.Roles.WarehouseSystem.ToUpper()
+                });
+            }
 
             //if (!context.Permissions.Any())
             //{
-            //    await context.Permissions.AddAsync(new Domain.Entity.WMS.Authentication.Permissions()
+            //    await context.Permissions.AddAsync(new FBT.ShareModels.WMS.Authentication.Permissions()
             //    {
             //        Id = Guid.NewGuid(),
             //        Name = "Insert",
@@ -101,7 +106,7 @@ namespace Infrastructure.Data
             //        CreateAt = DateTime.Now,
             //    });
 
-            //    await context.Permissions.AddAsync(new Domain.Entity.WMS.Authentication.Permissions()
+            //    await context.Permissions.AddAsync(new FBT.ShareModels.WMS.Authentication.Permissions()
             //    {
             //        Id = Guid.NewGuid(),
             //        Name = "Update",
@@ -109,7 +114,7 @@ namespace Infrastructure.Data
             //        CreateAt = DateTime.Now,
             //    });
 
-            //    await context.Permissions.AddAsync(new Domain.Entity.WMS.Authentication.Permissions()
+            //    await context.Permissions.AddAsync(new FBT.ShareModels.WMS.Authentication.Permissions()
             //    {
             //        Id = Guid.NewGuid(),
             //        Name = "Delete",
@@ -157,15 +162,15 @@ namespace Infrastructure.Data
 
             if (!context.Units.Any())
             {
-                await context.Units.AddAsync(new Domain.Entity.WMS.Unit()
+                await context.Units.AddAsync(new FBT.ShareModels.WMS.Unit()
                 {
-                    UnitName="Box",
-                    Description="BOX",
-                    Status= EnumStatus.Activated,
-                    CreateAt=DateTime.Now,
-                    IsDeleted=false,
+                    UnitName = "Box",
+                    Description = "BOX",
+                    Status = EnumStatus.Activated,
+                    CreateAt = DateTime.Now,
+                    IsDeleted = false,
                 });
-                await context.Units.AddAsync(new Domain.Entity.WMS.Unit()
+                await context.Units.AddAsync(new FBT.ShareModels.WMS.Unit()
                 {
                     UnitName = "Pcs",
                     Description = "PCS",
@@ -173,7 +178,7 @@ namespace Infrastructure.Data
                     CreateAt = DateTime.Now,
                     IsDeleted = false,
                 });
-                await context.Units.AddAsync(new Domain.Entity.WMS.Unit()
+                await context.Units.AddAsync(new FBT.ShareModels.WMS.Unit()
                 {
                     UnitName = "Pallet",
                     Description = "PALLET",
@@ -185,21 +190,63 @@ namespace Infrastructure.Data
 
             if (!context.ProductCategories.Any())
             {
-                await context.ProductCategories.AddAsync(new Domain.Entity.WMS.ProductCategory()
+                await context.ProductCategories.AddAsync(new FBT.ShareModels.Entities.ProductCategory()
                 {
-                    CategoryName="Category 1",
-                    Description="Test",
-                    Status= EnumStatus.Activated,
+                    CategoryName = "Category 1",
+                    Description = "Test",
+                    Status = EnumStatus.Activated,
                     CreateAt = DateTime.Now,
                     IsDeleted = false,
                 });
-                await context.ProductCategories.AddAsync(new Domain.Entity.WMS.ProductCategory()
+                await context.ProductCategories.AddAsync(new FBT.ShareModels.Entities.ProductCategory()
                 {
                     CategoryName = "Category 2",
                     Description = "Test",
                     Status = EnumStatus.Activated,
                     CreateAt = DateTime.Now,
                     IsDeleted = false,
+                });
+            }
+
+            if (!context.Currencies.Any())
+            {
+                await context.Currencies.AddAsync(new FBT.ShareModels.Entities.Currency()
+                {
+                    CurrencyCode = "JPY",
+                    Country = "Japan",
+                    Description = "Japan Yen",
+                    CreateAt = DateTime.Now,
+                    IsDeleted = false,
+                });
+                await context.Currencies.AddAsync(new FBT.ShareModels.Entities.Currency()
+                {
+                    CurrencyCode = "USD",
+                    Country = "United States",
+                    Description = "United States Dollar",
+                    CreateAt = DateTime.Now,
+                    IsDeleted = false,
+                });
+            }
+
+            if (!context.TenantAuth.Any())
+            {
+                await context.TenantAuth.AddAsync(new FBT.ShareModels.TenantAuth()
+                {
+                    //TenantId=1,
+                    ParentTenantId = 1,
+                    ParentDataKey = "1",
+                    TenantFullName = "Tealine",
+                    IsHierarchical = true,
+                    HasOwnDb = false,
+                });
+                await context.TenantAuth.AddAsync(new FBT.ShareModels.TenantAuth()
+                {
+                    //TenantId = 2,
+                    ParentTenantId = 1,
+                    ParentDataKey = "1",
+                    TenantFullName = "Tealine | KOKORO",
+                    IsHierarchical = true,
+                    HasOwnDb = false,
                 });
             }
 

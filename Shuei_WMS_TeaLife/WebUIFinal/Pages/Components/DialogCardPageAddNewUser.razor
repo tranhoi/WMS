@@ -1,25 +1,23 @@
 ﻿@page "/adduser/{Title}"
 @using Application.DTOs.Request.Account
 @using Application.DTOs.Response.Account
-@using Domain.Enums
-@using Domain.Entity.authp.Commons
 @using Microsoft.AspNetCore.Authorization
 @inject IStringLocalizer<CommonResources> _localizer
 
 @attribute [Authorize]
-@if (_roles.Count <= 0 || _model == null || _tenantList.Count <= 0)
+@if (_roles.Count <= 0 || _model == null)
 {
     <p><em>@_localizer["Loading"]...</em></p>
 }
 else
 {
-    <RadzenRow>
+    <RadzenRow Gap="2rem" Class="rz-p-0 rz-p-lg-2">
         <RadzenColumn Size="12" SizeSM="12">
             <RadzenLink Text="@_localizer["Detail.BackToList"]" Path="/userlist" Icon="arrow_back_ios" Style="margin-bottom: 1rem;" />
         </RadzenColumn>
     </RadzenRow>
     <RadzenTabs />
-    <RadzenRow>
+   @*  <RadzenRow>
         <RadzenColumn Size="12" SizeSM="6">
             <RadzenText TextStyle="TextStyle.Body1"><strong>@Title</strong></RadzenText>
         </RadzenColumn>
@@ -31,13 +29,28 @@ else
                               Text="Print label 1" Icon="print" ButtonStyle="ButtonStyle.Success" Visible="false" />
             </RadzenStack>
         </RadzenColumn>
+    </RadzenRow> *@
+    <RadzenRow Gap="2rem" Class="rz-p-0 rz-p-lg-2">
+        <RadzenColumn Size="12" SizeSM="6">
+            <RadzenText TextStyle="TextStyle.Body1"><strong>@Title</strong></RadzenText>
+        </RadzenColumn>
+        <RadzenColumn Size="12" SizeSM="6">
+            <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.End" AlignItems="AlignItems.Center" Gap="10px" class="mb-2">
+                <RadzenButton Click=@(args => PrintLable()) Variant="Variant.Flat" Shade="Shade.Dark"
+                              Text="@_localizer["PrintLabel"]" Icon="print" ButtonStyle="ButtonStyle.Success" Visible="@_visibleBtnSubmit"/>
+                <RadzenButton Click=@(args => DeleteItemAsync(_model)) Variant="Variant.Flat" Shade="Shade.Dark"
+                              Text="@_localizer["Delete"]" Icon="delete" ButtonStyle="ButtonStyle.Danger" Visible="@_visibleBtnSubmit" />
+                <RadzenButton Click=@(args => PrintLable1()) Variant="Variant.Flat" Shade="Shade.Dark"
+                              Text="Print label 1" Icon="print" ButtonStyle="ButtonStyle.Success" Visible="false" />
+            </RadzenStack>
+        </RadzenColumn>
     </RadzenRow>
     <RadzenTemplateForm Data="@_model" Submit="@((CreateAccountRequestDTO args) => { Submit(args); })">
-        <RadzenRow Gap="2rem" class="rz-p-0 rz-p-lg-4">
+        <RadzenRow Gap="2rem" Class="rz-p-0 rz-p-lg-2">
             <RadzenColumn Size="12" SizeMD="12">
                 <RadzenFieldset Text="@_localizer["UesrDetail.Information"]" Disabled="@_disable">
                     <RadzenStack Gap="5px">
-                        <RadzenRow AlignItems="AlignItems.Center" class="mt-4">
+                        <RadzenRow AlignItems="AlignItems.Center">
                             <RadzenColumn SizeXS="12" SizeSM="6">
                                 <RadzenFormField Text="@_localizer["UserName"]" Variant="Variant.Outlined" Style="display:flex;flex-direction:column;align-items:stretch;width:100%">
                                     <RadzenTextBox Name="_txtUserName" @bind-Value="@_model.UserName" Placeholder="Typing..." />
@@ -99,7 +112,7 @@ else
                 </RadzenFieldset>
             </RadzenColumn>
         </RadzenRow>
-        @*  <RadzenRow Gap="2rem" class="rz-p-0 rz-p-lg-4">
+        @*  <RadzenRow Gap="2rem" Class="rz-p-0 rz-p-lg-2">
     <RadzenColumn Size="12" SizeMD="12">
     @if (_tenantList.Count > 0)
     {
@@ -137,7 +150,8 @@ else
     </RadzenColumn>
     </RadzenRow> *@
         <RadzenStack Orientation="Radzen.Orientation.Horizontal" JustifyContent="Radzen.JustifyContent.Center" Gap="1rem" Class="rz-mt-8 rz-mb-4">
-            <RadzenButton ButtonType="Radzen.ButtonType.Submit" Size="ButtonSize.Large" Icon="save" Text="@_localizer["Save"]" Visible="@_visibleBtnSubmit" />
+            <RadzenButton Click=@(_ => _navigation.NavigateTo("/userlist")) Style="background-color:cadetblue" Size="ButtonSize.Large" Icon="cancel" Text="@_localizer["Cancel"]" />
+            <RadzenButton ButtonType="Radzen.ButtonType.Submit" Size="ButtonSize.Large" Icon="save" Text="@_localizer["Save"]" Visible="true" />
         </RadzenStack>
     </RadzenTemplateForm>
 }

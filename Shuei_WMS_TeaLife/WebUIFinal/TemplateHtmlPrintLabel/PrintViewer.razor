@@ -1,6 +1,7 @@
-﻿@layout PrintLayout
+﻿@page "/printlabel"
+@layout PrintLayout
 
-@if (LabelPrintModel.Count <= 0 || LabelPrintModel == null)
+@if (LabelPrintModel == null || LabelPrintModel.Count <= 0)
 {
     <h3 class="w-100 text-center">Please wait...</h3>
 }
@@ -37,6 +38,7 @@ else
         }
     </div>
 }
+
 <script>
     function printLabel() {
         window.print();

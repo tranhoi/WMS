@@ -1,6 +1,6 @@
 ﻿using Radzen;
 using Radzen.Blazor;
-using BatchModel = Domain.Entity.WMS.Batches;
+using BatchModel = FBT.ShareModels.WMS.Batches;
 
 namespace WebUIFinal.Pages.Batch
 {

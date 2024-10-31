@@ -1,10 +1,10 @@
 ﻿using Application.DTOs.Response.Account;
-using Domain.Enums;
+
 using Microsoft.AspNetCore.Components;
 using Radzen;
 using System.Security.Cryptography;
 using WebUIFinal.Core;
-using DeviceEntity = Domain.Entity.WMS.Device;
+using DeviceEntity = FBT.ShareModels.WMS.Device;
 
 namespace WebUIFinal.Pages.Device
 {
@@ -13,6 +13,7 @@ namespace WebUIFinal.Pages.Device
         [Parameter] public string Title { get; set; }
         public Guid? Id { get; set; }
 
+        bool _visibleBtnSubmit = true;
         private bool isDisabled = false;
         private DeviceEntity _model = new DeviceEntity();
         private EnumStatus selectStatus;
@@ -22,6 +23,10 @@ namespace WebUIFinal.Pages.Device
 
         protected override async Task OnInitializedAsync()
         {
+            selectStatus = EnumStatus.Activated;
+
+            if (Title.Contains(_localizerCommon["Detail.Create"])) _visibleBtnSubmit = false;
+
             await RefreshDataAsync();
             await GetUsersWithRole();
             await base.OnInitializedAsync();
@@ -32,7 +37,6 @@ namespace WebUIFinal.Pages.Device
             {
                 if (Title.Contains("|"))
                 {
-                    if (Title.Contains(_localizerCommon["Detail.View"])) isDisabled = true;
                     var arr = Title.Split('|');
                     Title = arr[0];
                     Id = Guid.Parse(arr[1]);
@@ -91,8 +95,8 @@ namespace WebUIFinal.Pages.Device
         {
             var confirm = await _dialogService.Confirm($"{_localizerCommon["Confirmation.Save"]}: {arg.Name}?", _localizerCommon["Save"], new ConfirmOptions()
             {
-                OkButtonText = "Yes",
-                CancelButtonText = "No",
+                OkButtonText = _localizerCommon["Yes"],
+                CancelButtonText = _localizerCommon["No"],
                 AutoFocusFirstElement = true,
             });
 
@@ -108,12 +112,10 @@ namespace WebUIFinal.Pages.Device
                     _notificationService.Notify(new NotificationMessage()
                     {
                         Severity = NotificationSeverity.Success,
-                        Summary = "Success",
-                        Detail = "Successfully created",
+                        Summary = _localizerCommon["Success"],
+                        Detail = _localizerCommon["Success"] + _localizerCommon["Create"],
                         Duration = 5000
                     });
-
-                    _navigation.NavigateTo("/devicelist", true);
                 }
                 else
                 {
@@ -121,7 +123,7 @@ namespace WebUIFinal.Pages.Device
                     {
                         Severity = NotificationSeverity.Error,
                         Summary = "Error",
-                        Detail = "Failed to create",
+                        Detail = res.Messages.FirstOrDefault(),
                         Duration = 5000
                     });
                 }
@@ -138,8 +140,6 @@ namespace WebUIFinal.Pages.Device
                         Detail = "Successfully edited",
                         Duration = 5000
                     });
-
-                    _navigation.NavigateTo("/devicelist", true);
                 }
                 else
                 {
@@ -147,17 +147,17 @@ namespace WebUIFinal.Pages.Device
                     {
                         Severity = NotificationSeverity.Error,
                         Summary = "Error",
-                        Detail = "Failed to edit",
+                        Detail = res.Messages.FirstOrDefault(),
                         Duration = 5000
                     });
                 }
             }
         }
-        async Task DeleteItemAsync(DeviceEntity _device)
+        async Task DeleteItemAsync(DeviceEntity model)
         {
             try
             {
-                var confirm = await _dialogService.Confirm($"{_localizerCommon["Confirmation.Delete"]}: {_device.Name}?", _localizerCommon["Delete"], new ConfirmOptions()
+                var confirm = await _dialogService.Confirm($"{_localizerCommon["Confirmation.Delete"]} {_localizer["Device"]}: {model.Name}?", $"{_localizerCommon["Delete"]} {_localizer["Device"]}", new ConfirmOptions()
                 {
                     OkButtonText = "Yes",
                     CancelButtonText = "No",
@@ -166,7 +166,7 @@ namespace WebUIFinal.Pages.Device
 
                 if (confirm == null || confirm == false) return;
 
-                var res = await _deviceServices.DeleteAsync(_device);
+                var res = await _deviceServices.DeleteAsync(model);
 
                 if (res.Succeeded)
                 {
@@ -174,12 +174,11 @@ namespace WebUIFinal.Pages.Device
                     {
                         Severity = NotificationSeverity.Success,
                         Summary = "Success",
-                        Detail = $"Delete {_device.Name} successfully.",
+                        Detail = $"Delete{model.Name} successfully.",
                         Duration = 5000
                     });
 
-                    _navigation.NavigateTo("/devicelist", true);
-                    StateHasChanged();
+                    RefreshDataAsync();
                 }
                 else
                 {
@@ -187,7 +186,7 @@ namespace WebUIFinal.Pages.Device
                     {
                         Severity = NotificationSeverity.Error,
                         Summary = "Error",
-                        Detail = $"Failed to delete {_device.Name}.",
+                        Detail = res.Messages.ToString(),
                         Duration = 5000
                     });
                 }
@@ -198,9 +197,11 @@ namespace WebUIFinal.Pages.Device
                 {
                     Severity = NotificationSeverity.Error,
                     Summary = "Error",
-                    Detail = $"Failed to delete {_device.Name}.",
+                    Detail = ex.Message,
                     Duration = 5000
                 });
+
+                return;
             }
         }
     }

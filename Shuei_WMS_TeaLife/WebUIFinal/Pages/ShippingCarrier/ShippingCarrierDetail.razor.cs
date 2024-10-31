@@ -1,11 +1,5 @@
-
-﻿using Application.DTOs.Response.Account;
-using Domain.Enums;
-using Domain.Entity.authp.Commons;
 using Microsoft.AspNetCore.Components;
-using Radzen;
-using WebUIFinal.Core;
-using ShippingCarrierEntity = Domain.Entity.WMS.Outbound.ShippingCarrier;
+using ShippingCarrierEntity = FBT.ShareModels.WMS.ShippingCarrier;
 
 namespace WebUIFinal.Pages.ShippingCarrier
 {
@@ -15,6 +9,7 @@ namespace WebUIFinal.Pages.ShippingCarrier
         public Guid? Id { get; set; }
 
         private bool isDisabled = false;
+        private EnumStatus selectStatus;
         private ShippingCarrierEntity _model = new ShippingCarrierEntity();
 
         // Enum values for warehouse transaction types
@@ -23,6 +18,9 @@ namespace WebUIFinal.Pages.ShippingCarrier
         protected override async Task OnInitializedAsync()
         {
             await base.OnInitializedAsync();
+
+            selectStatus = EnumStatus.Activated;
+
             await RefreshDataAsync();
             StateHasChanged();
         }
@@ -33,7 +31,7 @@ namespace WebUIFinal.Pages.ShippingCarrier
             {
                 if (Title.Contains("|"))
                 {
-                    if (Title.Contains("Detail")) isDisabled = true;
+                    if (Title.Contains(_localizerCommon["Detail.View"])) isDisabled = true;
                     var arr = Title.Split('|');
                     Title = arr[0];
                     Id = Guid.Parse(arr[1]);
@@ -43,6 +41,7 @@ namespace WebUIFinal.Pages.ShippingCarrier
                     if (res.Succeeded)
                     {
                         _model = res.Data;
+                        selectStatus = _model.Status;
                     }
                 }
                 StateHasChanged();
@@ -62,18 +61,18 @@ namespace WebUIFinal.Pages.ShippingCarrier
         }
         async Task Submit(ShippingCarrierEntity arg)
         {
-            var confirm = await _dialogService.Confirm($"Do you want to save: {arg.ShippingCarrierName}?", "shipping carrier", new ConfirmOptions()
+            var confirm = await _dialogService.Confirm($"{_localizerCommon["Confirmation.Save"]}: {arg.ShippingCarrierName}?", _localizerCommon["Save"], new ConfirmOptions()
             {
-                OkButtonText = "Yes",
-                CancelButtonText = "No",
+                OkButtonText = _localizerCommon["Yes"],
+                CancelButtonText = _localizerCommon["No"],
                 AutoFocusFirstElement = true,
             });
 
             if (confirm == null || confirm == false) return;
 
-            // arg.Status = selectStatus.ToString();
+            arg.Status = selectStatus;
 
-            if (Title.Contains("Create"))//Add
+            if (Title.Contains(_localizerCommon["Detail.Create"]))
             {
                 var res = await _shippingCarrierServices.InsertAsync(_model);
                 if (res.Succeeded)
@@ -81,8 +80,8 @@ namespace WebUIFinal.Pages.ShippingCarrier
                     _notificationService.Notify(new NotificationMessage()
                     {
                         Severity = NotificationSeverity.Success,
-                        Summary = "Success",
-                        Detail = "Sucessfully created shipping carrier",
+                        Summary = _localizerCommon["Success"],
+                        Detail = _localizerCommon["Success"] + _localizerCommon["Create"],
                         Duration = 5000
                     });
 
@@ -90,17 +89,22 @@ namespace WebUIFinal.Pages.ShippingCarrier
                 }
                 else
                 {
+                    string error = ":";
+                    res.Messages.ForEach(item =>
+                    {
+                        error += _localizer[item];
+                    });
                     _notificationService.Notify(new NotificationMessage()
                     {
                         Severity = NotificationSeverity.Error,
                         Summary = "Error",
-                        Detail = "Failed to create shipping carrier",
+                        Detail = "Failed to create" + error,
                         Duration = 5000
                     });
                 }
             }
 
-            if (Title.Contains("Edit"))//update
+            if (Title.Contains(_localizerCommon["Detail.Edit"]))//update
             {
                 var res = await _shippingCarrierServices.UpdateAsync(_model);
                 if (res.Succeeded)
@@ -117,11 +121,16 @@ namespace WebUIFinal.Pages.ShippingCarrier
                 }
                 else
                 {
+                    string error = ":";
+                    res.Messages.ForEach(item =>
+                    {
+                        error += _localizer[item];
+                    });
                     _notificationService.Notify(new NotificationMessage()
                     {
                         Severity = NotificationSeverity.Error,
                         Summary = "Error",
-                        Detail = "Failed to edit shipping carrier",
+                        Detail = "Failed to edit shipping carrier" + error,
                         Duration = 5000
                     });
                 }
@@ -134,8 +143,8 @@ namespace WebUIFinal.Pages.ShippingCarrier
             {
                 var confirm = await _dialogService.Confirm($"Are you sure you want to delete shipping carrier: {shippingCarrier.ShippingCarrierName}?", "Delete shipping carrier", new ConfirmOptions()
                 {
-                    OkButtonText = "Yes",
-                    CancelButtonText = "No",
+                    OkButtonText = _localizerCommon["Yes"],
+                    CancelButtonText = _localizerCommon["No"],
                     AutoFocusFirstElement = true,
                 });
 
@@ -153,7 +162,7 @@ namespace WebUIFinal.Pages.ShippingCarrier
                         Duration = 5000
                     });
 
-                    _navigation.NavigateTo("/numbersequencelist", true);
+                    _navigation.NavigateTo("/shippingcarrierlistlist", true);
                     StateHasChanged();
                 }
                 else

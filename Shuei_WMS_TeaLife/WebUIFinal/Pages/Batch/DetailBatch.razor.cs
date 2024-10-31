@@ -1,9 +1,9 @@
 ﻿using Application.DTOs.Response.Account;
-using Domain.Enums;
+
 using Microsoft.AspNetCore.Components;
 using Radzen;
 using WebUIFinal.Core;
-using BatchEntity = Domain.Entity.WMS.Batches;
+using BatchEntity = FBT.ShareModels.WMS.Batches;
 
 namespace WebUIFinal.Pages.Batch
 {
@@ -92,7 +92,7 @@ namespace WebUIFinal.Pages.Batch
                     {
                         Severity = NotificationSeverity.Error,
                         Summary = "Error",
-                        Detail = "Failed to create",
+                        Detail = res.Messages.FirstOrDefault(),
                         Duration = 5000
                     });
                 }
@@ -118,7 +118,7 @@ namespace WebUIFinal.Pages.Batch
                     {
                         Severity = NotificationSeverity.Error,
                         Summary = "Error",
-                        Detail = "Failed to edit",
+                        Detail = res.Messages.FirstOrDefault(),
                         Duration = 5000
                     });
                 }

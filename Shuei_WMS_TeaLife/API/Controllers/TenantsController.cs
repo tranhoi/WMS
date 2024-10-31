@@ -2,10 +2,6 @@
 using Application.Extentions;
 using Application.Models;
 using Application.Services;
-using Domain.Entity.authp.Commons;
-using Domain.Entity.Commons;
-using Domain.Entity.WMS;
-using Infrastructure.Data;
 using Infrastructure.Repos;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;

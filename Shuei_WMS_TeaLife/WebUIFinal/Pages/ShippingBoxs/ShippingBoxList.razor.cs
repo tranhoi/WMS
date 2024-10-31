@@ -1,9 +1,4 @@
-﻿using Application.DTOs.Response.ShippingBoxs;
-using Microsoft.AspNetCore.Components;
-using Microsoft.Extensions.Localization;
-using Radzen;
-using Radzen.Blazor;
-using ShippingBoxModel = Domain.Entity.WMS.Outbound.ShippingBox;
+﻿using ShippingBoxModel = FBT.ShareModels.WMS.ShippingBox;
 
 namespace WebUIFinal.Pages.ShippingBoxs
 {
@@ -17,6 +12,7 @@ namespace WebUIFinal.Pages.ShippingBoxs
         {
             await base.OnInitializedAsync();
             await RefreshDataAsync();
+            Constants.PagingSummaryFormat = _CLoc["DisplayPage"] + " {0} " + _CLoc["Of"] + " {1} <b>(" + _CLoc["Total"] + " {2} " + _CLoc["Records"] + ")</b>";
         }
 
         async Task DeleteItemAsync(ShippingBoxModel model)
@@ -69,11 +65,9 @@ namespace WebUIFinal.Pages.ShippingBoxs
             }
         }
 
-        void EditItemAsync(Guid shippingBoxId) => _navigation.NavigateTo($"/addshippingbox/{_localizer["Edit Shipping Box"]}|" + shippingBoxId);
+        void EditItemAsync(Guid shippingBoxId) => _navigation.NavigateTo($"/addshippingbox/Edit|" + shippingBoxId);
 
-        void AddNewItemAsync() => _navigation.NavigateTo($"/addshippingbox/{_localizer["Create Shipping Box"]}");
-
-        void NavigateDetailPage(Guid shippingBoxId) => _navigation.NavigateTo($"/addshippingbox/{_localizer["Shipping Box Detail"]}|{shippingBoxId}");
+        void AddNewItemAsync() => _navigation.NavigateTo($"/addshippingbox/Create");
 
         async Task RefreshDataAsync()
         {

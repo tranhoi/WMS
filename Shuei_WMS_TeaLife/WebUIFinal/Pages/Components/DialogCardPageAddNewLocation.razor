@@ -1,7 +1,6 @@
 ﻿@page "/addlocation/{Title}"
 @using Application.Extentions
-@using Domain.Enums
-@using Domain.Entity.WMS
+@using FBT.ShareModels.WMS
 @using Microsoft.AspNetCore.Authorization
 @inject IStringLocalizer<CommonResources> _localizer
 
@@ -12,23 +11,29 @@
 }
 else
 {
-    <RadzenRow>
+    <RadzenRow Gap="2rem" Class="rz-p-0 rz-p-lg-2">
         <RadzenColumn Size="12" SizeSM="12">
             <RadzenLink Text="@_localizer["Detail.BackToList"]" Path="/locationlist" Icon="arrow_back_ios" Style="margin-bottom: 1rem;" />
         </RadzenColumn>
     </RadzenRow>
     <RadzenTabs />
-    <RadzenRow AlignItems="AlignItems.Start">
-        <RadzenColumn Size="12" SizeSM="12">
+    <RadzenRow Gap="2rem" Class="rz-p-0 rz-p-lg-2">
+        <RadzenColumn Size="12" SizeSM="6">
             <RadzenText TextStyle="TextStyle.Body1"><strong>@Title</strong></RadzenText>
+        </RadzenColumn>
+        <RadzenColumn Size="12" SizeSM="6">
+            <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.End" AlignItems="AlignItems.Center" Gap="10px" class="mb-2">
+                <RadzenButton Click=@(args => DeleteItemLocationAsync(_model)) Variant="Variant.Flat" Shade="Shade.Dark"
+                              Text="@_localizer["Delete"]" Icon="delete" ButtonStyle="ButtonStyle.Danger" Visible="_visibleBtnSubmit" />
+            </RadzenStack>
         </RadzenColumn>
     </RadzenRow>
     <RadzenTemplateForm Data="@_model" Submit="@((Location args) => { Submit(args); })">
-        <RadzenRow Gap="2rem" class="rz-p-0 rz-p-lg-4">
+        <RadzenRow Gap="2rem" Class="rz-p-0 rz-p-lg-2">
             <RadzenColumn Size="12" SizeMD="12">
                 <RadzenFieldset Text="@_localizer["Location.Information"]" Disabled="@_disable">
                     <RadzenStack Gap="5px">
-                        <RadzenRow AlignItems="AlignItems.Center" class="mt-4">
+                        <RadzenRow AlignItems="AlignItems.Center">
                             <RadzenColumn SizeXS="12" SizeSM="4">
                                 <RadzenFormField Text="@_localizer["Location.CD"]" Variant="Variant.Outlined" Style="display:flex;flex-direction:column;align-items:stretch;width:100%">
                                     <RadzenTextBox Name="_txtLocationCode" @bind-Value="@_model.LocationCD" Placeholder="Typing..." />
@@ -78,7 +83,7 @@ else
                                 </RadzenFormField>
                             </RadzenColumn>
                         </RadzenRow>
-                        <RadzenRow AlignItems="AlignItems.Center" class="mt-4">
+                        <RadzenRow AlignItems="AlignItems.Center">
                             <RadzenColumn SizeXS="12" SizeSM="12">
                                 <RadzenFormField Text="@_localizer["Remarks"]" Variant="Variant.Outlined" Style="display:flex;flex-direction:column;align-items:stretch;width:100%">
                                     <RadzenTextArea @bind-Value=@_model.Remarks oninput="event.target.style.height = Math.max(event.target.clientHeight, event.target.scrollHeight) + 'px';"
@@ -90,18 +95,18 @@ else
                 </RadzenFieldset>
             </RadzenColumn>
         </RadzenRow>
-        <RadzenRow Gap="2rem" class="rz-p-0 rz-p-lg-4">
+        <RadzenRow Gap="2rem" Class="rz-p-0 rz-p-lg-2">
             <RadzenColumn Size="12" SizeMD="12">
                 <RadzenFieldset Text="@_localizer["Bin.List"]">
                     <RadzenStack Orientation=Orientation.Vertical JustifyContent="JustifyContent.Center" AlignItems="AlignItems.Stretch" Gap="5px">
                         <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.End" AlignItems="AlignItems.Center" Gap=" 5px">
                             <RadzenButton Click=@(args => PrintLable()) Variant="Variant.Flat" Shade="Shade.Dark"
-                                          Text="@_localizer["PrintLabel"]" Icon="print" ButtonStyle="ButtonStyle.Success" />
+                                          Text="@_localizer["PrintLabel"]" Icon="print" ButtonStyle="ButtonStyle.Success" Visible="@(Title.Contains(_localizer["Detail.Create"])?false:true)" />
                             <RadzenButton Click=@(args => AddBin()) Variant="Variant.Flat" Shade="Shade.Dark"
-                                          Text="@_localizer["Create"]" Icon="add_circle" ButtonStyle="ButtonStyle.Success" Visible="@_visibleBtnSubmit" />
+                                          Text="@_localizer["Create"]" Icon="add_circle" ButtonStyle="ButtonStyle.Success" Visible="true" />
                         </RadzenStack>
                         <RadzenDataGrid @ref="_profileGrid" Data="@_dataGrid" TItem="Bin" AllowFiltering="true" class="custom-grid"
-                                        FilterPopupRenderMode="PopupRenderMode.OnDemand" AllowPaging="true" PageSize="5" PageSizeText="@_localizer["items per page"]" AllowSorting="true"
+                                        FilterPopupRenderMode="PopupRenderMode.OnDemand" AllowPaging="true" PageSize="10" PageSizeText="@_localizer["items per page"]" AllowSorting="true"
                                         EmptyText="@_localizer["No records to display."]"
                                         AllowColumnPicking="false" AllowColumnResize="true" AllowGrouping="false"
                                         GridLines="Radzen.DataGridGridLines.Both" AllowAlternatingRows="false"
@@ -109,32 +114,17 @@ else
                                         AllowRowSelectOnRowClick="@allowRowSelectOnRowClick" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
                                         SelectionMode="DataGridSelectionMode.Multiple" @bind-Value=@_selectedDataBinList>
                             <Columns>
-                                <RadzenDataGridColumn TItem="Bin" Filterable="false" TextAlign="TextAlign.Center" Visible="@_visibleBtnSubmit"
-                                                      Frozen="true" FrozenPosition="FrozenColumnPosition.Left" Width="170px">
+                                <RadzenDataGridColumn Width="200px" Property="@nameof(Bin.BinCode)" TextAlign="TextAlign.Center" CssClass="rz-grid-col-flex-start">
                                     <HeaderTemplate>
-                                        <RadzenText Text="@_localizer["Action"]" />
+                                        @_localizer["Bin.Code"]
                                     </HeaderTemplate>
                                     <Template Context="data">
-                                        <RadzenStack Orientation="Radzen.Orientation.Horizontal" JustifyContent="Radzen.JustifyContent.Center" AlignItems="AlignItems.Center" Gap="2px" Wrap="Radzen.FlexWrap.Wrap">
-                                            <RadzenButton ButtonStyle="ButtonStyle.Light" Icon="visibility" Variant="Variant.Flat" Shade="Shade.Lighter"
-                                                          Size="ButtonSize.Medium" class="my-1 ms-1" Click="@(args => ViewItemAsync(data))"
-                                                          @onclick:stopPropagation="true" />
-                                            <RadzenButton ButtonStyle="ButtonStyle.Light" Icon="edit" Variant="Variant.Flat" Shade="Shade.Lighter"
-                                                          Size="ButtonSize.Medium" class="my-1 ms-1" Click="@(args => EditItemAsync(data))"
-                                                          @onclick:stopPropagation="true" />
-                                            <RadzenButton ButtonStyle="ButtonStyle.Danger" Icon="delete" Variant="Variant.Flat" Shade="Shade.Lighter"
-                                                          Size="ButtonSize.Medium" class="my-1 ms-1"
-                                                          Click="@(args => DeleteItemAsync(data))"
-                                                          @onclick:stopPropagation="true" />
-                                        </RadzenStack>
+                                        <a class="text-green" @onclick="@(() => EditItemAsync(data))" style="cursor:pointer;">
+                                            @data.BinCode
+                                        </a>
                                     </Template>
                                 </RadzenDataGridColumn>
-                                <RadzenDataGridColumn TItem="Bin" Width="200px" Property="BinCode" Title="@_localizer["Bin.Code"]" />
                                 <RadzenDataGridColumn TItem="Bin" Width="200px" Property="Remarks" Title="@_localizer["Remarks"]" />
-                                @* <RadzenDataGridColumn TItem="Bin" Width="200px" Property="CreateAt" Title="@_localizer["CreatedDate"]" />
-                                <RadzenDataGridColumn TItem="Bin" Width="200px" Property="LocationCD" Title="@_localizer["Location.CD"]" />
-                                <RadzenDataGridColumn TItem="Bin" Width="200px" Property="LocationName" Title="@_localizer["Location.Name"]" />
-                                <RadzenDataGridColumn TItem="Bin" Width="200px" Property="LocationId" Title="Location Id" /> *@
                             </Columns>
                         </RadzenDataGrid>
 
@@ -143,7 +133,8 @@ else
             </RadzenColumn>
         </RadzenRow>
         <RadzenStack Orientation="Radzen.Orientation.Horizontal" JustifyContent="Radzen.JustifyContent.Center" Gap="1rem" Class="rz-mt-8 rz-mb-4">
-            <RadzenButton ButtonType="Radzen.ButtonType.Submit" Size="ButtonSize.Large" Icon="save" Text="@_localizer["Save"]" Visible="@_visibleBtnSubmit" />
+            <RadzenButton Click=@(_ => _navigation.NavigateTo("/locationlist")) Style="background-color:cadetblue" Size="ButtonSize.Large" Icon="cancel" Text="@_localizer["Cancel"]" />
+            <RadzenButton ButtonType="Radzen.ButtonType.Submit" Size="ButtonSize.Large" Icon="save" Text="@_localizer["Save"]" Visible="true" />
         </RadzenStack>
     </RadzenTemplateForm>
 }

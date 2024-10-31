@@ -15,7 +15,7 @@ public class DesignTimeApplicationDbContext : IDesignTimeDbContextFactory<Applic
     public ApplicationDbContext CreateDbContext(string[] args)
     {
         var builder =new DbContextOptionsBuilder<ApplicationDbContext>();
-        builder.UseSqlServer(@"Server=49.212.161.31;Initial Catalog=FBT_DEV;Persist Security Info=False;User ID=sa;Password=@shuei249;MultipleActiveResultSets=True;Encrypt=True;TrustServerCertificate=True;Connection Timeout=300;", b =>
+        builder.UseSqlServer(@"Server=49.212.161.31;Initial Catalog=FBT_DEV2;Persist Security Info=False;User ID=sa;Password=@shuei249;MultipleActiveResultSets=True;Encrypt=True;TrustServerCertificate=True;Connection Timeout=300;", b =>
         {
             b.MigrationsHistoryTable("__EFMigrationsHistoryWMS");
         });

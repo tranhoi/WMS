@@ -1,12 +1,9 @@
 ﻿using Application.Extentions;
-using Application.Services.Base;
 using Application.Services.Inbound;
-using Domain.Entity.Common;
-using Domain.Entity.Commons;
-using Domain.Entity.WMS.Inbound;
 using Infrastructure.Data;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using Radzen;
 using RestEase;
 
 namespace Infrastructure.Repos
@@ -49,7 +46,7 @@ namespace Infrastructure.Repos
                 return await Result<WarehousePutAwayStaging>.FailAsync($"{ex.Message}{Environment.NewLine}{ex.InnerException}");
             }
         }
-
+       
         public async Task<Result<WarehousePutAwayStaging>> DeleteAsync([Body] WarehousePutAwayStaging model)
         {
             try
@@ -127,5 +124,18 @@ namespace Infrastructure.Repos
                 return await Result<List<WarehousePutAwayStaging>>.FailAsync($"{ex.Message}{Environment.NewLine}{ex.InnerException}");
             }
         }
+        public async Task<Result<List<WarehousePutAwayStaging>>> GetByPutAwayLineIdAsync(Guid putAwayLineId)
+        {
+            try
+            {
+                return await Result<List<WarehousePutAwayStaging>>.SuccessAsync(await dbContext.WarehousePutAwayStagings.Where(x => x.PutAwayLineId == putAwayLineId).ToListAsync());
+            }
+            catch (Exception ex)
+            {
+                return await Result<List<WarehousePutAwayStaging>>.FailAsync($"{ex.Message}{Environment.NewLine}{ex.InnerException}");
+            }
+        }
+      
+     
     }
 }

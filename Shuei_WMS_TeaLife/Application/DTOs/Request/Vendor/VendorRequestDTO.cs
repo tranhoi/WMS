@@ -1,4 +1,4 @@
-﻿using Domain.Enums;
+﻿
 using System.ComponentModel.DataAnnotations;
 
 namespace Application.DTOs.Request.Vendor

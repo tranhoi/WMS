@@ -40,32 +40,35 @@ namespace Infrastructure.Repos
         public ICurrencyPairSetting SCurrencyPairSetting { get; set; }
 
         public ITenants STennats { get; set; }
-        public IUserToTenant  SUserToTenant { get; set; }
+        public IUserToTenant SUserToTenant { get; set; }
 
-        public ISuppliers  SSuppliers { get; set; }
+        public ISuppliers SSuppliers { get; set; }
 
-        public IArrivalInstructions   SArrivalInstructions { get; set; }
-        public IArrivalInstructionDetails  SArrivalInstructionDetails { get; set; }
-        public IWarehousePutAway  SWarehousePutAways { get; set; }
-        public IWarehousePutAwayLine  SWarehousePutAwayLines { get; set; }
-        public IWarehousePutAwayStaging  SWarehousePutAwayStagings { get; set; }
-        public IWarehouseReceiptOrder  SWarehouseReceiptOrders { get; set; }
-        public IWarehouseReceiptOrderLine  SWarehouseReceiptOrderLines { get; set; }
-        public IWarehouseReceiptStaging  SWarehouseReceiptStagings { get; set; }
-        public IWarehouseTran    SWarehouseTrans { get; set; }
-        public INumberSequences  SNumberSequences { get; set; }
-        public IBatches SBatches{ get; set; }
+        public IArrivalInstructions SArrivalInstructions { get; set; }
+        public IArrivalInstructionDetails SArrivalInstructionDetails { get; set; }
+        public IWarehousePutAway SWarehousePutAways { get; set; }
+        public IWarehousePutAwayLine SWarehousePutAwayLines { get; set; }
+        public IWarehousePutAwayStaging SWarehousePutAwayStagings { get; set; }
+        public IWarehouseReceiptOrder SWarehouseReceiptOrders { get; set; }
+        public IWarehouseReceiptOrderLine SWarehouseReceiptOrderLines { get; set; }
+        public IWarehouseReceiptStaging SWarehouseReceiptStagings { get; set; }
+        public IWarehouseTran SWarehouseTrans { get; set; }
+        public INumberSequences SNumberSequences { get; set; }
+        public IBatches SBatches { get; set; }
         public IShippingBox ShippingBoxs { get; set; }
 
         public IWarehousePickingList SWarehousePickingList { get; set; }
         public IWarehousePickingLine SWarehousePickingLine { get; set; }
         public IWarehousePickingStaging SWarehousePickingStaging { get; set; }
-        public IWarehousePackingList SWarehousePackingList    { get; set; }
-        public IWarehousePackingLine SWarehousePackingLine    { get; set; }
-        public IWarehouseShipment SWarehouseShipment    { get; set; }
+        public IWarehouseShipment SWarehouseShipment { get; set; }
         public IWarehouseShipmentLine SWarehouseShipmentLine { get; set; }
-        public IShippingBox  SShippingBox { get; set; }
-        public IShippingCarrier  SShippingCarrier { get; set; }
+        public IShippingBox SShippingBox { get; set; }
+        public IShippingCarrier SShippingCarrier { get; set; }
+        public IPackingList SPackingList { get; set; }
+        public ICategories SCategories { get; set; }
+        public IReturnOrder SReturnOrder { get; set; }
+        public IInventTransfer  SInventTransfer { get; set; }
+        public IInventTransferLines  SInventTransferLine { get; set; }
 
         public Repository(IProducts sProduct = null, ILocations sLocations = null, IDevices sDevices = null
             , IProductJanCodes sProductJanCodes = null, IVendors sVendors = null, IBins sBins = null
@@ -81,9 +84,10 @@ namespace Infrastructure.Repos
             , IWarehouseReceiptOrderLine sWarehouseReceiptOrderLines = null, IWarehouseReceiptStaging sWarehouseReceiptStagings = null
             , IWarehouseTran sWarehouseTrans = null, INumberSequences sNumberSequences = null, IBatches sBatches = null
             , IWarehousePickingList sWarehousePickingList = null, IWarehousePickingLine sWarehousePickingLine = null
-            , IWarehousePickingStaging sWarehousePickingStaging = null, IWarehousePackingList sWarehousePackingList = null
-            , IWarehousePackingLine sWarehousePackingLine = null, IWarehouseShipment sWarehouseShipment = null
-            , IWarehouseShipmentLine sWarehouseShipmentLine = null, IShippingBox sShippingBox = null, IShippingCarrier sShippingCarrier = null)
+            , IWarehousePickingStaging sWarehousePickingStaging = null
+            , IPackingList sPackingList = null, IWarehouseShipment sWarehouseShipment = null
+            , IWarehouseShipmentLine sWarehouseShipmentLine = null, IShippingBox sShippingBox = null, IShippingCarrier sShippingCarrier = null
+            , ICategories sICategories = null, IReturnOrder sReturnOrder = null, IInventTransfer sInventTransfer = null, IInventTransferLines sInventTransferLine = null)
         {
             SProducts = sProduct;
             SLocations = sLocations;
@@ -120,12 +124,15 @@ namespace Infrastructure.Repos
             SWarehousePickingList = sWarehousePickingList;
             SWarehousePickingLine = sWarehousePickingLine;
             SWarehousePickingStaging = sWarehousePickingStaging;
-            SWarehousePackingList = sWarehousePackingList;
-            SWarehousePackingLine = sWarehousePackingLine;
             SWarehouseShipment = sWarehouseShipment;
             SWarehouseShipmentLine = sWarehouseShipmentLine;
             SShippingBox = sShippingBox;
             SShippingCarrier = sShippingCarrier;
+            SCategories = sICategories;
+            SPackingList = sPackingList;
+            SReturnOrder = sReturnOrder;
+            SInventTransfer = sInventTransfer;
+            SInventTransferLine = sInventTransferLine;
         }
     }
 }

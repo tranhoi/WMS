@@ -27,58 +27,63 @@
         td {
             border: 1px solid #444;
             border-collapse: collapse;
-            /* text-align: center; */
             height: 2rem;
             padding: 5px;
         }
 
-        #printableArea {
-            position: absolute;
-            left: 0;
-            top: 0;
-            page-break-after: always; /* Tạo ngắt trang sau mỗi label */
-            margin: 0; /* Loại bỏ khoảng cách margin khi in */
+        .evenNum {
+            margin-bottom: 8%;
+            padding-top: 10%;
         }
     </style>
 </head>
 
 <body>
-    <p style="color: #000; font-size: 1.8rem; height: 32px; text-align: center;">
-        @Model.Title
-    </p>
+    @for (var i = 0; i < Model.Data.ReceiptInfoInputs.Count; i++)
+    {
+    <div style="height: 41%; width: 100%;" class="@(i % 2 == 0 ? " " : " evenNum")">
+        <p style="color: #000; font-size: 1.8rem; height: 32px; text-align: center;">
+            @Model.Data.Title
+        </p>
+        <p style="color: #333; font-size: 1.2rem; margin-left: 5%; margin-top: 1%;">
+            <text>NO：@Model.Data.ReceiptInfoInputs[i].Code</text>
+            <text style="padding-left: 52%; text-align: right;">交易时间：@Model.Data.ReceiptInfoInputs[i].TradeTime.ToString("yyyy-MM-dd HH:mm:ss")</text>
+        </p>
+
+        <table width="90%" style="margin-left: 5%; margin-top: 1%;">
+            <tr style="font-size: 1rem;">
+                <td style="text-align: center; width: 11%;">交款姓名</td>
+                <td colspan="2">@Model.Data.ReceiptInfoInputs[i].Name</td>
+                <td style="text-align: center; width: 13%;">身份证号码</td>
+                <td colspan="3">@Model.Data.ReceiptInfoInputs[i].IdNo</td>
+            </tr>
+            <tr style="font-size: 1rem;">
+                <td style="text-align: center">交易金额</td>
+                <td colspan="6">
+                    <span>￥：@Model.Data.ReceiptInfoInputs[i].Amount</span>
+                    <span style="padding: 0 2% 0 2%;">人民币(大写):</span>
+                    <span>@Model.Data.ReceiptInfoInputs[i].UppercaseAmount</span>
+                </td>
+            </tr>
+            <tr style="font-size: 1rem;">
+                <td style="text-align: center">收款方式</td>
+                <td colspan="2">@Model.Data.ReceiptInfoInputs[i].PaymentMethod</td>
+                <td style="text-align: center; width: 13%;">交易状态</td>
+                <td colspan="3">@Model.Data.ReceiptInfoInputs[i].TradeStatus</td>
+            </tr>
+
+            <tr style="font-size: 1rem;">
+                <td style="text-align: center">收款事由</td>
+                <td style="width: 22.3%;">@Model.Data.ReceiptInfoInputs[i].Remark</td>
+                <td style="text-align: center; width: 11%;">入学年级</td>
+                <td style="width: 22.3%;" colspan="2">@Model.Data.ReceiptInfoInputs[i].Grade</td>
+                <td style="text-align: center; width: 11%;">专业</td>
+                <td style="width: 22.3%;">@Model.Data.ReceiptInfoInputs[i].Profession</td>
+            </tr>
 
 
-    <div id="printableArea" style="display: flex;flex-direction:row; flex-wrap: wrap; justify-content: left; margin: 0 auto;">
-        @foreach (var label in @Model.Data)
-        {
-        <div style="display: flex; width: 49%; height: 110px; align-items: center; border: 1px solid #000; padding: 1px; margin: 1px;">
-            <div>
-                @if (!string.IsNullOrEmpty(@label.QrValue))
-                {
-                <img src="@label.QrValue" alt="QR Code" style="width:100%" />
-                }
-            </div>
-
-            <div style="margin-left: 10px; display: flex; flex-direction: column; justify-content: start; align-items:start">
-                <div class="info-line" style="display: flex;">
-                    <strong style="width: 100px;">@label.Title1</strong>
-                    <span>@label.Content1</span>
-                </div>
-                <div class="info-line" style="display: flex;">
-                    <strong style="width: 100px;">@label.Title2</strong>
-                    <span>@label.Content2</span>
-                </div>
-                <div class="info-line" style="display: flex;">
-                    <strong style="width: 100px;">@label.Title3</strong>
-                    <span>@label.Content3</span>
-                </div>
-                <div class="info-line" style="display: flex;">
-                    <strong style="width: 100px;">@label.Title4</strong>
-                    <span>@label.Content4</span>
-                </div>
-            </div>
-        </div>
-        }
+        </table>
     </div>
+    }
 </body>
 </html>

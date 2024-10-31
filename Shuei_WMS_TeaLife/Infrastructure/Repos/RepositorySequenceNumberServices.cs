@@ -1,8 +1,8 @@
-﻿using Domain.Enums;
+﻿
 using Application.Extentions;
 using Application.Services;
-using Domain.Entity.Commons;
-using Domain.Entity.WMS;
+
+
 using Infrastructure.Data;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using DocumentFormat.OpenXml.Office2010.Excel;
 
 namespace Infrastructure.Repos
 {
@@ -85,6 +86,18 @@ namespace Infrastructure.Repos
         {
             try
             {
+                var existPrefix = await dbContext.SequencesNumber.Where(x => x.Prefix == model.Prefix).FirstOrDefaultAsync();
+                if (existPrefix != null)
+                {
+                    return await Result<NumberSequences>.FailAsync($"Current Prefix No: {model.Prefix} is already created");
+                }
+
+                var existJournal = await dbContext.SequencesNumber.Where(x => x.JournalType == model.JournalType).FirstOrDefaultAsync();
+                if (existJournal != null)
+                {
+                    return await Result<NumberSequences>.FailAsync($"Current JournalType No: {model.JournalType} is already created");
+                }
+
                 await dbContext.SequencesNumber.AddAsync(model);
                 await dbContext.SaveChangesAsync();
                 return await Result<NumberSequences>.SuccessAsync(model, $"Insert sequence number sucessfull.");
@@ -119,6 +132,33 @@ namespace Infrastructure.Repos
             catch (Exception ex)
             {
                 return await Result<NumberSequences>.FailAsync($"{ex.Message}{Environment.NewLine}{ex.InnerException}");
+            }
+        }
+
+        public async Task<Result<NumberSequences>> GetNumberSequenceByType([Path] string type)
+        {
+            try
+            {
+                var result = await dbContext.SequencesNumber.FirstOrDefaultAsync(x=> x.JournalType == type);
+                return await Result<NumberSequences>.SuccessAsync(result);
+            }
+            catch (Exception ex)
+            {
+                return await Result<NumberSequences>.FailAsync($"{ex.Message}{Environment.NewLine}{ex.InnerException}");
+            }
+        }
+
+        public async Task<Result<bool>> IncreaseNumberSequenceByType([Path] string type)
+        {
+            try
+            {
+                var result = await dbContext.SequencesNumber.Where(x => x.JournalType == type)
+                    .ExecuteUpdateAsync(x => x.SetProperty(xx => xx.CurrentSequenceNo, xx => xx.CurrentSequenceNo + 1));
+                return await Result<bool>.SuccessAsync(true);
+            }
+            catch (Exception ex)
+            {
+                return await Result<bool>.FailAsync($"{ex.Message}{Environment.NewLine}{ex.InnerException}");
             }
         }
     }

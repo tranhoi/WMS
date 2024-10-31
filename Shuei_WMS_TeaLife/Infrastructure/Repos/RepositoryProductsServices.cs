@@ -1,13 +1,14 @@
 ﻿using Application.DTOs.Request.Products;
 using Application.DTOs.Response.Product;
-using Domain.Enums;
+
 using Application.Extentions;
 using Application.Services;
 using Infrastructure.Data;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using RestEase;
-using Product = Domain.Entity.Commons.Product;
+using Product = FBT.ShareModels.Entities.Product;
+using DocumentFormat.OpenXml.InkML;
 
 namespace Infrastructure.Repos
 {
@@ -127,6 +128,12 @@ namespace Infrastructure.Repos
         {
             try
             {
+                var existCD = await dbContext.Products.Where(x => x.ProductCode == model.ProductCode).FirstOrDefaultAsync();
+                if (existCD != null)
+                {
+                    return await Result<Product>.FailAsync($"Product code: {model.ProductCode} is already created");
+                }
+
                 await dbContext.Products.AddAsync(model);
                 await dbContext.SaveChangesAsync();
                 return await Result<Product>.SuccessAsync(model);
@@ -223,6 +230,7 @@ namespace Infrastructure.Repos
                         ProductCode = _.x.ProductCode,
                         ProductName = _.x.ProductName,
                         ProductStatus = _.x.ProductStatus,
+                        UnitId = _.x.UnitId,
                         UnitName = _.y.UnitName,
                         ProductStatusString = ((EnumProductStatus)_.x.ProductStatus).ToString(),
                         StockAvailableQuantity = _.x.StockAvailableQuanitty,
@@ -240,6 +248,41 @@ namespace Infrastructure.Repos
             catch (Exception ex)
             {
                 return await Result<ProductDto>.FailAsync($"{ex.Message}{Environment.NewLine}{ex.InnerException}");
+            }
+        }
+
+        public async Task<Result<IEnumerable<ProductDto>>> SearchByProductCodeAsync(string code)
+        {
+            try
+            {
+                var result = dbContext.Products.Where(_ => string.IsNullOrEmpty(code) || _.ProductCode.ToLower().Contains(code.ToLower()))
+                    .Join(dbContext.Units, x => x.UnitId, y => y.Id, (x, y) => new { x, y })
+                    .Select(_ => new ProductDto
+                    {
+                        Id = _.x.Id,
+                        ProductCode = _.x.ProductCode,
+                        ProductName = _.x.ProductName,
+                        ProductStatus = _.x.ProductStatus,
+                        UnitId = _.x.UnitId,
+                        UnitName = _.y.UnitName,
+                        ProductStatusString = ((EnumProductStatus)_.x.ProductStatus).ToString(),
+                        StockAvailableQuantity = _.x.StockAvailableQuanitty,
+                        StockAvailableQuantityTrans = (int)dbContext.WarehouseTrans.Where(t => t.ProductCode == _.x.ProductCode).Sum(t => t.Qty),
+                        QuantityShipment = (int)dbContext.WarehouseShipmentLines.Where(s => s.ProductCode == _.x.ProductCode 
+                            && s.Status == EnumShipmentOrderStatus.Open).Sum(s => s.ShipmentQty),
+                    }).AsEnumerable();
+                if (result != null)
+                {
+                    return await Result<IEnumerable<ProductDto>>.SuccessAsync(result);
+                }
+                else
+                {
+                    return await Result<IEnumerable<ProductDto>>.FailAsync("");
+                }
+            }
+            catch (Exception ex)
+            {
+                return await Result<IEnumerable<ProductDto>>.FailAsync($"{ex.Message}{Environment.NewLine}{ex.InnerException}");
             }
         }
     }

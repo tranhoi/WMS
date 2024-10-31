@@ -1,7 +1,7 @@
 ﻿using API.Controllers.Base;
 using Application.Services;
 using Application.Services.Base;
-using Domain.Entity.WMS;
+
 using Infrastructure.Repos;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;

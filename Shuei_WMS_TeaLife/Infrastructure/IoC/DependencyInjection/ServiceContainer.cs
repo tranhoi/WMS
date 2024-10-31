@@ -1,5 +1,5 @@
 ﻿using Application.Services.Authen;
-using Domain.Entity.WMS.Authentication;
+
 using Infrastructure.Data;
 using Infrastructure.Repos;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -12,6 +12,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Text;
 using System.Text.Json;
@@ -61,23 +62,27 @@ namespace Infrastructure.IoC.DependencyInjection
             }).AddJwtBearer(option =>
             {
                 var keyr = config["Jwt:Key"];
+                var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config["Jwt:Key"]!));
+                var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
 
                 // option.RequireHttpsMetadata = false;
                 option.TokenValidationParameters = new TokenValidationParameters
                 {
+                    ClockSkew = TimeSpan.Zero,
                     ValidateIssuer = false,
                     ValidateAudience = false,
                     ValidateIssuerSigningKey = true,
-                    ValidateLifetime = true,
+                    //SignatureValidator = delegate (string token, TokenValidationParameters parameters)
+                    //{
+                    //    var jwt = new JwtSecurityToken(token);
+                    //    return jwt;
+                    //},
+                    ValidateLifetime = true,                    
                     ValidIssuer = config["Jwt:Issuer"],
                     ValidAudience = config["Jwt:Audience"],
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config["Jwt:Key"]!))
+                    IssuerSigningKey = securityKey,
+                    
                 };
-
-                //option.TokenValidationParameters = new TokenValidationParameters()
-                //{
-                //    ClockSkew = new System.TimeSpan(0, 0, 5)
-                //};
 
                 option.Events = new JwtBearerEvents()
                 {

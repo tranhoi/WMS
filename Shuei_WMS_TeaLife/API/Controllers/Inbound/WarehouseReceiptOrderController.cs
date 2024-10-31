@@ -2,7 +2,7 @@
 using Application.DTOs;
 using Application.Extentions;
 using Application.Services.Inbound;
-using Domain.Entity.WMS.Inbound;
+
 using Infrastructure.Repos;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -42,5 +42,10 @@ namespace API.Controllers.Inbound
 
         [HttpPost(ApiRoutes.WarehouseReceiptOrder.SyncHTData)]
         public async Task<Result<WarehouseReceiptOrderDto>> SyncHTData([Body] WarehouseReceiptOrderDto receiptDto) => await _repository.SWarehouseReceiptOrders.SyncHTData(receiptDto);
+        [HttpPost(ApiRoutes.WarehouseReceiptOrder.CreateLineFromArrivalNo)]
+        public async Task<Result<WarehouseReceiptOrderDto>> CreateLineFromArrivalNo([Body] WarehouseReceiptOrderDto receiptDto) => await _repository.SWarehouseReceiptOrders.CreateLineFromArrivalNo(receiptDto);
+
+        [HttpPost(ApiRoutes.WarehouseReceiptOrder.AdjustActionReceiptOrder)]
+        public async Task<Result<WarehouseReceiptOrderDto>> AdjustActionReceiptOrder([Body] WarehouseReceiptOrderDto request) => await _repository.SWarehouseReceiptOrders.AdjustActionReceiptOrder(request);
     }
 }

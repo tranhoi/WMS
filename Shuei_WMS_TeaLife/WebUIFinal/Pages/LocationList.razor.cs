@@ -2,7 +2,7 @@
 using Radzen.Blazor;
 using Radzen;
 using WebUIFinal.Pages.Components;
-using Domain.Entity.WMS;
+
 
 namespace WebUIFinal.Pages
 {

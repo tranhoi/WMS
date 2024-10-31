@@ -1,7 +1,10 @@
 ﻿using API.Controllers.Base;
+using Application.DTOs;
+using Application.DTOs.Request.Picking;
+using Application.DTOs.Request.shipment;
 using Application.Extentions;
 using Application.Services.Outbound;
-using Domain.Entity.WMS.Outbound;
+
 using Infrastructure.Repos;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -17,7 +20,7 @@ namespace API.Controllers.Outbound
     {
         readonly Repository _repository;
 
-        public WarehousePickingListController(Repository repository = null!):base(repository.SWarehousePickingList) 
+        public WarehousePickingListController(Repository repository = null!) : base(repository.SWarehousePickingList)
         {
             _repository = repository;
         }
@@ -26,6 +29,29 @@ namespace API.Controllers.Outbound
         public async Task<Result<List<WarehousePickingList>>> GetByMasterCodeAsync([Path] string pickNo)
         {
             return await _repository.SWarehousePickingList.GetByMasterCodeAsync(pickNo);
+        }
+
+        [HttpPut(ApiRoutes.WarehousePickingList.GetWarehousePickingDTOAsync)]
+        public async Task<Result<List<WarehousePickingDTO>>> GetWarehousePickingDTOAsync([Body] PickingListSearchRequestDto model)
+        {
+            return await _repository.SWarehousePickingList.GetWarehousePickingDTOAsync(model);
+        }
+
+        [HttpDelete(ApiRoutes.WarehousePickingList.DeletePickingAsync)]
+        public async Task<Result> DeletePickingAsync(string pickNo)
+        {
+            return await _repository.SWarehousePickingList.DeletePickingAsync(pickNo);
+        }
+        [HttpPatch(ApiRoutes.WarehousePickingList.CompletePickingAsync)]
+        public async Task<Result> CompletePickingAsync(string pickNo)
+        {
+            return await _repository.SWarehousePickingList.CompletePickingAsync(pickNo);
+        }
+
+        [HttpPut(ApiRoutes.WarehousePickingList.SyncToHTAsync)]
+        public async Task<Result<List<WarehousePickingLineDTO>>> SyncToHTAsync([Body] List<WarehousePickingLineDTO> model)
+        {
+            return await _repository.SWarehousePickingList.SyncToHTAsync(model);
         }
     }
 }

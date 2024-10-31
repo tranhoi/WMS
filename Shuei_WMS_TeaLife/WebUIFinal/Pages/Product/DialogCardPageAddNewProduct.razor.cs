@@ -1,19 +1,11 @@
 ﻿using Application.DTOs.Request.Products;
-using Domain.Enums;
-using Domain.Entity.authp.Commons;
-using Domain.Entity.Commons;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
-using Radzen;
-using Radzen.Blazor;
 using System.Reflection.Metadata;
-using WebUIFinal.Core;
-using WebUIFinal.Core.Dto;
-using static QRCoder.Core.PayloadGenerator;
-using ProductCategoryModel = Domain.Entity.WMS.ProductCategory;
-using ProductModel = Domain.Entity.Commons.Product;
-using SupplierModel = Domain.Entity.Commons.Supplier;
-using UnitModel = Domain.Entity.WMS.Unit;
+using ProductCategoryModel = FBT.ShareModels.Entities.ProductCategory;
+using ProductModel = FBT.ShareModels.Entities.Product;
+using SupplierModel = FBT.ShareModels.Entities.Supplier;
+using UnitModel = FBT.ShareModels.WMS.Unit;
 
 namespace WebUIFinal.Pages.Product
 {
@@ -53,16 +45,17 @@ namespace WebUIFinal.Pages.Product
             {
                 await base.OnInitializedAsync();
 
-                if (Title.Contains(_localizer["Detail.View"])) isDisabled = true;
+                if (Title.Contains(_localizer["Detail.Create"])) _visibleBtnSubmit = false;
 
+                selectedStatus = EnumProductStatus.Activated;
+
+                await GetProductDetail();
                 await GetUnitsAsync();
                 await GetSupplierAsync();
                 await GetTenantsAsync();
                 await GetProductCategoryAsync();
                 await GetProductJanCodesAsync();
                 await GetCurencyAsync();
-
-                await GetProductDetail();
 
                 model.StockAvailableQuanitty = 100;
 
@@ -117,7 +110,7 @@ namespace WebUIFinal.Pages.Product
                 }
             }
 
-            if (ProductId.HasValue && ProductId > 0)
+            if (!Title.Contains(_localizer["Detail.Create"]))
             {
                 var product = await _productServices.GetByIdAsync((int)ProductId);
                 if (!product.Succeeded)
@@ -235,16 +228,26 @@ namespace WebUIFinal.Pages.Product
                 }
                 #endregion
 
-                model.ProductType = (int)selectedProductType;
-                model.ProductStatus = (int)selectedStatus;
+                model.ProductType = selectedProductType;
+                model.ProductStatus = selectedStatus;
 
                 var response = await _productServices.InsertAsync(arg);
 
                 if (productJanCodes != null)
                 {
                     productJanCodes.ForEach(_ => _.ProductId = response.Data.Id);
-
-                    await _productJanCodeService.AddRangeAsync(productJanCodes);
+                    var res = await _productJanCodeService.AddRangeAsync(productJanCodes);
+                    if (!res.Succeeded)
+                    {
+                        _notificationService.Notify(new NotificationMessage()
+                        {
+                            Severity = NotificationSeverity.Error,
+                            Summary = "Insert JAN code error",
+                            Detail = response.Messages.FirstOrDefault(),
+                            Duration = 5000
+                        });
+                        return;
+                    }
                 }
 
                 if (response.Succeeded)
@@ -265,9 +268,10 @@ namespace WebUIFinal.Pages.Product
                     {
                         Severity = NotificationSeverity.Error,
                         Summary = "Error",
-                        Detail = "Failed to create product",
+                        Detail = response.Messages.FirstOrDefault(),
                         Duration = 5000
                     });
+                    return;
                 }
             }
             else if (Title.Contains(_localizer["Detail.Edit"]))
@@ -297,8 +301,8 @@ namespace WebUIFinal.Pages.Product
                 }
                 #endregion
 
-                model.ProductType = (int)selectedProductType;
-                model.ProductStatus = (int)selectedStatus;
+                model.ProductType = selectedProductType;
+                model.ProductStatus = selectedStatus;
 
                 var response = await _productServices.UpdateAsync(model);
 
@@ -318,8 +322,6 @@ namespace WebUIFinal.Pages.Product
                         Detail = "Sucessfully edited product",
                         Duration = 5000
                     });
-
-                    //_navigation.NavigateTo("/productlist", true);
                 }
                 else
                 {
@@ -327,9 +329,10 @@ namespace WebUIFinal.Pages.Product
                     {
                         Severity = NotificationSeverity.Error,
                         Summary = "Error",
-                        Detail = "Failed to edit product",
+                        Detail = response.Messages.FirstOrDefault(),
                         Duration = 5000
                     });
+                    return;
                 }
             }
             _dialogService.Close("Success");
@@ -339,7 +342,7 @@ namespace WebUIFinal.Pages.Product
         {
             try
             {
-                var confirm = await _dialogService.Confirm(_localizer["Confirmation.Delete"] + _localizer["Product"] + $": {model.ProductName}?", _localizer["Delete"] + _localizer["Product"], new ConfirmOptions()
+                var confirm = await _dialogService.Confirm(_localizer["Confirmation.Delete"] + _localizer["Product"] + $": {model.ProductName}?", _localizer["Delete"] + " " + _localizer["Product.Name"], new ConfirmOptions()
                 {
                     OkButtonText = "Yes",
                     CancelButtonText = "No",
@@ -360,7 +363,7 @@ namespace WebUIFinal.Pages.Product
                         Duration = 5000
                     });
 
-                    _navigation.NavigateTo("/productlist", true);
+                    await RefreshDataAsync();
                 }
                 else
                 {
@@ -368,7 +371,7 @@ namespace WebUIFinal.Pages.Product
                     {
                         Severity = NotificationSeverity.Error,
                         Summary = "Error",
-                        Detail = $"Failed to delete product {model.ProductName}.",
+                        Detail = res.Messages.ToString(),
                         Duration = 5000
                     });
                 }
@@ -453,13 +456,13 @@ namespace WebUIFinal.Pages.Product
 
         async Task AddProductJanCode()
         {
-            ProductJanCode janInfor = new ProductJanCode()
+            ProductJanCodeDto janInfor = new ProductJanCodeDto()
             {
                 ProductId = model.Id
             };
 
             var res = await _dialogService.OpenAsync<DialogCardPageAddNewProductJanCode>(_localizer["Product.JanCodeCreate"],
-                    new Dictionary<string, object>() { { "productJanCode", janInfor }, { "VisibleBtnSubmit", true } },
+                    new Dictionary<string, object>() { { "productJanCode", janInfor }, { "VisibleBtnSubmit", false } },
                     new DialogOptions()
                     {
                         Width = "800",
@@ -515,8 +518,22 @@ namespace WebUIFinal.Pages.Product
         }
         async Task EditJanCodeItemAsync(ProductJanCode model)
         {
+            var modelEdit = new ProductJanCodeDto()
+            {
+                Id = model.Id,
+                ProductId = model.ProductId,
+                JanCode = model.JanCode,
+                Description = model.Description,
+                Status = model.Status,
+                DataKey = model.DataKey,
+                CreateAt = model.CreateAt,
+                CreateOperatorId = model.CreateOperatorId,
+                UpdateAt = model.UpdateAt,
+                UpdateOperatorId = model.UpdateOperatorId,
+            };
+
             var res = await _dialogService.OpenAsync<DialogCardPageAddNewProductJanCode>(_localizer["Product.JanCodeEdit"],
-                    new Dictionary<string, object>() { { "productJanCode", model }, { "VisibleBtnSubmit", true } },
+                    new Dictionary<string, object>() { { "productJanCode", modelEdit }, { "VisibleBtnSubmit", true } },
                     new DialogOptions()
                     {
                         Width = "1000",
@@ -526,6 +543,20 @@ namespace WebUIFinal.Pages.Product
                         CloseDialogOnOverlayClick = true
                     });
 
+            if (res != null)
+            {
+                var selectResult = (ProductJanCodeDto)res;
+
+                model.Id = selectResult.Id;
+                model.JanCode = selectResult.JanCode;
+                model.Description = selectResult.Description;
+
+                if (selectResult.IsDelete == true)
+                {
+                    DeleteJanCodeItemAsync(model);
+                }
+            }
+
             if (_productJanCodeProfileGrid != null)
                 await _productJanCodeProfileGrid.RefreshDataAsync();
         }
@@ -534,14 +565,14 @@ namespace WebUIFinal.Pages.Product
         {
             try
             {
-                var confirm = await _dialogService.Confirm(_localizer["Confirmation.Delete"] + _localizer["Product.JanCode"] + $": {dto.JanCode}?", _localizer["Delete"] + _localizer["Product.JanCode"], new ConfirmOptions()
-                {
-                    OkButtonText = "Yes",
-                    CancelButtonText = "No",
-                    AutoFocusFirstElement = true,
-                });
+                //var confirm = await _dialogService.Confirm(_localizer["Confirmation.Delete"] + _localizer["Product.JanCode"] + $": {dto.JanCode}?", _localizer["Delete"] + _localizer["Product.JanCode"], new ConfirmOptions()
+                //{
+                //    OkButtonText = "Yes",
+                //    CancelButtonText = "No",
+                //    AutoFocusFirstElement = true,
+                //});
 
-                if (confirm == null || confirm == false) return;
+                //if (confirm == null || confirm == false) return;
 
                 if (dto.Id != 0)
                 {

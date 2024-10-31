@@ -1,11 +1,5 @@
-﻿using Application.DTOs.Response.Account;
-using Domain.Enums;
-using Domain.Entity.authp.Commons;
-using Microsoft.AspNetCore.Components;
-using Radzen;
-using System.Security.Cryptography;
-using WebUIFinal.Core;
-using SupplierEntity = Domain.Entity.Commons.Supplier;
+﻿using Microsoft.AspNetCore.Components;
+using SupplierEntity = FBT.ShareModels.Entities.Supplier;
 
 namespace WebUIFinal.Pages.Supplier
 {
@@ -14,14 +8,19 @@ namespace WebUIFinal.Pages.Supplier
         [Parameter] public string Title { get; set; }
         public string? Id { get; set; }
 
+        private bool _visibleBtnSubmit = true;
         private bool isDisabled = false;
         private SupplierEntity _model = new SupplierEntity();
-        private int? selectStatus;
+        private EnumStatus selectStatus;
 
         List<TenantAuth> tenants = new();
 
         protected override async Task OnInitializedAsync()
         {
+            selectStatus = EnumStatus.Activated;
+
+            if (Title.Contains(_localizerCommon["Detail.Create"])) _visibleBtnSubmit = false;
+
             await RefreshDataAsync();
             await GetTenantsAsync();
             await base.OnInitializedAsync();
@@ -32,7 +31,6 @@ namespace WebUIFinal.Pages.Supplier
             {
                 if (Title.Contains("|"))
                 {
-                    if (Title.Contains(_localizerCommon["Detail.View"])) isDisabled = true;
                     var arr = Title.Split('|');
                     Title = arr[0];
                     Id = arr[1];
@@ -42,7 +40,7 @@ namespace WebUIFinal.Pages.Supplier
                     if (res.Succeeded)
                     {
                         _model = res.Data;
-                        selectStatus = _model.TenantId;
+                        selectStatus = _model.Status;
                     }
                 }
                 StateHasChanged();
@@ -76,7 +74,7 @@ namespace WebUIFinal.Pages.Supplier
 
             if (confirm == null || confirm == false) return;
 
-            arg.TenantId = (int)selectStatus;
+            arg.CompanyId = (int)selectStatus;
 
             if (Title.Contains(_localizerCommon["Detail.Create"])) // Add new number sequence
             {
@@ -90,8 +88,6 @@ namespace WebUIFinal.Pages.Supplier
                         Detail = "Successfully created",
                         Duration = 5000
                     });
-
-                    _navigation.NavigateTo("/supplierlist", true);
                 }
                 else
                 {
@@ -99,7 +95,7 @@ namespace WebUIFinal.Pages.Supplier
                     {
                         Severity = NotificationSeverity.Error,
                         Summary = "Error",
-                        Detail = "Failed to create",
+                        Detail = res.Messages.FirstOrDefault(),
                         Duration = 5000
                     });
                 }
@@ -116,8 +112,6 @@ namespace WebUIFinal.Pages.Supplier
                         Detail = "Successfully edited",
                         Duration = 5000
                     });
-
-                    _navigation.NavigateTo("/supplierlist", true);
                 }
                 else
                 {
@@ -125,17 +119,18 @@ namespace WebUIFinal.Pages.Supplier
                     {
                         Severity = NotificationSeverity.Error,
                         Summary = "Error",
-                        Detail = "Failed to edit",
+                        Detail = res.Messages.FirstOrDefault(),
                         Duration = 5000
                     });
                 }
             }
         }
-        async Task DeleteItemAsync(SupplierEntity _supplier)
+
+        async Task DeleteItemAsync()
         {
             try
             {
-                var confirm = await _dialogService.Confirm($"{_localizerCommon["Confirmation.Delete"]}: {_supplier.SupplierName}?", _localizerCommon["Delete"], new ConfirmOptions()
+                var confirm = await _dialogService.Confirm($"{_localizerCommon["Confirmation.Delete"]}: {_model.SupplierName}?", _localizerCommon["Delete"], new ConfirmOptions()
                 {
                     OkButtonText = "Yes",
                     CancelButtonText = "No",
@@ -144,7 +139,13 @@ namespace WebUIFinal.Pages.Supplier
 
                 if (confirm == null || confirm == false) return;
 
-                var res = await _suppliersServices.DeleteAsync(_supplier);
+                // Tạo thực thể Supplier từ model
+                var supplierToDelete = new SupplierEntity
+                {
+                    Id = _model.Id // Sử dụng Id làm khóa chính để xóa
+                };
+
+                var res = await _suppliersServices.DeleteAsync(supplierToDelete); // Gọi phương thức xóa với thực thể Supplier
 
                 if (res.Succeeded)
                 {
@@ -152,12 +153,11 @@ namespace WebUIFinal.Pages.Supplier
                     {
                         Severity = NotificationSeverity.Success,
                         Summary = "Success",
-                        Detail = $"Delete {_supplier.SupplierName} successfully.",
+                        Detail = res.Messages.FirstOrDefault(),
                         Duration = 5000
                     });
 
-                    _navigation.NavigateTo("/supplierlist", true);
-                    StateHasChanged();
+                    await RefreshDataAsync(); // Cập nhật lại dữ liệu sau khi xóa
                 }
                 else
                 {
@@ -165,7 +165,7 @@ namespace WebUIFinal.Pages.Supplier
                     {
                         Severity = NotificationSeverity.Error,
                         Summary = "Error",
-                        Detail = $"Failed to delete {_supplier.SupplierName}.",
+                        Detail = res.Messages.FirstOrDefault(),
                         Duration = 5000
                     });
                 }
@@ -176,7 +176,7 @@ namespace WebUIFinal.Pages.Supplier
                 {
                     Severity = NotificationSeverity.Error,
                     Summary = "Error",
-                    Detail = $"Failed to delete {_supplier.SupplierName}.",
+                    Detail = ex.Message,
                     Duration = 5000
                 });
             }

@@ -4,7 +4,7 @@ using Application.DTOs.Response.Account;
 using Application.Extentions;
 using Application.Services.Authen;
 using Application.Services.Authen.UI;
-using Domain.Entity.WMS.Authentication;
+
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -43,6 +43,7 @@ namespace API.Controllers
             return Ok(await account.LoginAccountHTAsync(model));
         }
 
+        [AllowAnonymous]
         [HttpPost(ApiRoutes.Identity.RefreshToken)]
         public async Task<ActionResult<GeneralResponse>> RefreshTokenAsync(RefreshTokenRequestDTO model)
         {

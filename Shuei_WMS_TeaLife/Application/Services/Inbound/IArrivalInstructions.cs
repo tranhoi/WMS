@@ -1,6 +1,6 @@
 ﻿using Application.Extentions;
 using Application.Services.Base;
-using Domain.Entity.Commons;
+
 using RestEase;
 using System;
 using System.Collections.Generic;
@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace Application.Services.Inbound
 {
-    [BasePath(ApiRoutes.ArrivalInstructionDetails.BasePath)]
+    [BasePath(ApiRoutes.ArrivalInstructions.BasePath)]
     public interface IArrivalInstructions : IRepository<int, ArrivalInstruction>
     {
     }

@@ -1,5 +1,5 @@
-﻿using Domain.Enums;
-using Domain.Entity.Commons;
+﻿
+
 using Microsoft.AspNetCore.Components;
 using Radzen;
 using WebUIFinal.Core;
@@ -8,7 +8,7 @@ namespace WebUIFinal.Pages.Product
 {
     public partial class DialogCardPageAddNewProductJanCode
     {
-        [Parameter] public ProductJanCode productJanCode { get; set; } = new ProductJanCode();
+        [Parameter] public ProductJanCodeDto productJanCode { get; set; } = new ProductJanCodeDto();
         [Parameter] public bool VisibleBtnSubmit { get; set; } = true;
 
         private EnumStatus selectedStatus;
@@ -16,7 +16,6 @@ namespace WebUIFinal.Pages.Product
         protected override async Task OnInitializedAsync()
         {
             await base.OnInitializedAsync();
-
             await RefreshDataAsync();
 
             StateHasChanged();
@@ -26,7 +25,7 @@ namespace WebUIFinal.Pages.Product
         {
             try
             {
-                selectedStatus = productJanCode.Status;
+                selectedStatus = EnumStatus.Activated;
 
                 StateHasChanged();
             }
@@ -72,6 +71,36 @@ namespace WebUIFinal.Pages.Product
             }
 
             _dialogService.Close(productJanCode);
+        }
+
+        async Task DeleteItemAsync()
+        {
+            try
+            {
+                var confirm = await _dialogService.Confirm($"{_localizer["Confirmation.Delete"]} {_localizer["Product.JanCode"]}: {productJanCode.JanCode}?", $"{_localizer["Delete"]} {_localizer["Product.JanCode"]}", new ConfirmOptions()
+                {
+                    OkButtonText = _localizer["Yes"],
+                    CancelButtonText = _localizer["No"],
+                    AutoFocusFirstElement = true,
+                });
+
+                if (confirm == null || confirm == false) return;
+
+                productJanCode.IsDelete = true;
+                _dialogService.Close(productJanCode);
+            }
+            catch (Exception ex)
+            {
+                _notificationService.Notify(new NotificationMessage()
+                {
+                    Severity = NotificationSeverity.Error,
+                    Summary = "Error",
+                    Detail = $"{ex.Message}{Environment.NewLine}{ex.InnerException}",
+                    Duration = 5000
+                });
+
+                return;
+            }
         }
     }
 }

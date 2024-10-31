@@ -1,11 +1,7 @@
-﻿using Application.DTOs;
-using Azure;
-using Domain.Entity.WMS;
-using Domain.Entity.WMS.Authentication;
-using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Forms;
+﻿using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
-using QRCoder.Core;
+using Blazored.LocalStorage;
+using System.Text.Json;
 using WebUIFinal.Core.Dto;
 
 namespace WebUIFinal.TemplateHtmlPrintLabel
@@ -13,24 +9,34 @@ namespace WebUIFinal.TemplateHtmlPrintLabel
     public partial class PrintViewer
     {
         [Parameter] public List<LabelInfoDto> LabelPrintModel { get; set; }
-        [Parameter] public string Title { get; set; } = string.Empty;
+
+        [Inject]
+        private ILocalStorageService _localStorage { get; set; }
 
         protected override async Task OnInitializedAsync()
         {
             await base.OnInitializedAsync();
 
-            if (LabelPrintModel != null)
+            try
             {
-                StateHasChanged();
+                LabelPrintModel = await _localStorage.GetItemAsync<List<LabelInfoDto>>("labelData");
+
+                if (LabelPrintModel == null)
+                {
+                    Console.WriteLine("No label data found in LocalStorage.");
+                }
+            }
+            catch (JsonException ex)
+            {
+                Console.WriteLine($"Error deserializing label data from LocalStorage: {ex.Message}");
             }
         }
+
         protected override async Task OnAfterRenderAsync(bool firstRender)
         {
             if (firstRender)
             {
-                // Đợi một giây để đảm bảo nội dung đã được render
-                await Task.Delay(2000);
-                // Gọi hàm in
+                await Task.Delay(1000);
                 _ = _jsRuntime.InvokeVoidAsync("printLabel");
             }
         }

@@ -1,8 +1,8 @@
-﻿using Domain.Enums;
+﻿
 using Microsoft.AspNetCore.Components;
 using Radzen;
 using WebUIFinal.Core;
-using NumberSequenceEntity = Domain.Entity.WMS.NumberSequences;
+using NumberSequenceEntity = FBT.ShareModels.WMS.NumberSequences;
 
 namespace WebUIFinal.Pages.NumberSequence
 {
@@ -93,8 +93,6 @@ namespace WebUIFinal.Pages.NumberSequence
                         Detail = "Sucessfully created number sequence",
                         Duration = 5000
                     });
-
-                    _navigation.NavigateTo("/numbersequencelist", true);
                 }
                 else
                 {
@@ -102,7 +100,7 @@ namespace WebUIFinal.Pages.NumberSequence
                     {
                         Severity = NotificationSeverity.Error,
                         Summary = "Error",
-                        Detail = "Failed to create number sequence",
+                        Detail = res.Messages.FirstOrDefault(),
                         Duration = 5000
                     });
                 }
@@ -119,8 +117,6 @@ namespace WebUIFinal.Pages.NumberSequence
                         Detail = "Sucessfully edited number sequence",
                         Duration = 5000
                     });
-
-                    _navigation.NavigateTo("/numbersequencelist", true);
                 }
                 else
                 {
@@ -128,7 +124,7 @@ namespace WebUIFinal.Pages.NumberSequence
                     {
                         Severity = NotificationSeverity.Error,
                         Summary = "Error",
-                        Detail = "Failed to edit number sequence",
+                        Detail = res.Messages.FirstOrDefault(),
                         Duration = 5000
                     });
                 }

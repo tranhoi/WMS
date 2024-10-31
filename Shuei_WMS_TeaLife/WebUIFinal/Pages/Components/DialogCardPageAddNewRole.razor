@@ -26,7 +26,7 @@ else
         </RadzenColumn>
     </RadzenRow>
     <RadzenTemplateForm Data="@_model" Submit="@((CreateRoleRequestDTO args) => { Submit(args); })">
-        <RadzenRow Gap="2rem" class="rz-p-0 rz-p-lg-4">
+        <RadzenRow Gap="2rem" Class="rz-p-0 rz-p-lg-2">
             <RadzenColumn Size="12" SizeMD="12">
                 <RadzenFormField Text="@_localizer["RoleName"]" Variant="Variant.Outlined" Style="display:flex;flex-direction:column;align-items:stretch;width:100%">
                     <RadzenTextBox Name="_txtName" @bind-Value="@_model.Name" Placeholder="Typing..." />

@@ -1,9 +1,9 @@
-﻿using Domain.Enums;
+﻿
 using Application.Extentions;
 using Application.Models;
 using Application.Services;
-using Domain.Entity.Commons;
-using Domain.Entity.WMS;
+
+
 using Infrastructure.Data;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
@@ -102,6 +102,12 @@ namespace Infrastructure.Repos
         {
             try
             {
+                var existCD = await dbContext.ProductCategories.Where(x => x.CategoryName == model.CategoryName).FirstOrDefaultAsync();
+                if (existCD != null)
+                {
+                    return await Result<ProductCategory>.FailAsync($"Category name: {model.CategoryName} is already created");
+                }
+
                 await dbContext.ProductCategories.AddAsync(model);
                 await dbContext.SaveChangesAsync();
                 return await Result<ProductCategory>.SuccessAsync(model);

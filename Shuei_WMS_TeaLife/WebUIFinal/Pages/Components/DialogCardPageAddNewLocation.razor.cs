@@ -1,19 +1,8 @@
-﻿using Application.DTOs;
-using Application.DTOs.Request.Account;
-using Application.DTOs.Response;
-using Application.DTOs.Response.Account;
-using Domain.Enums;
-using Application.Extentions;
-using Domain.Entity.authp.Commons;
-using Domain.Entity.Commons;
-using Domain.Entity.WMS;
-using Microsoft.AspNetCore.Components;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
-using Radzen;
-using Radzen.Blazor;
-using System.Security.Cryptography;
-using WebUIFinal.Pages.Device;
+﻿using Microsoft.AspNetCore.Components;
 using WebUIFinal.TemplateHtmlPrintLabel;
+using System.Text.Json;
+using static System.Runtime.InteropServices.JavaScript.JSType;
+using System.Reflection;
 
 namespace WebUIFinal.Pages.Components
 {
@@ -54,14 +43,13 @@ namespace WebUIFinal.Pages.Components
             {
                 _selectStatus = EnumStatus.Activated;
 
+                if (Title.Contains($"{_localizer["Detail.Create"]}"))
+                {
+                    _visibleBtnSubmit = false;
+                }
+
                 if (Title.Contains("|"))
                 {
-                    if (Title.Contains($"{_localizer["Detail.View"]}"))
-                    {
-                        _visibleBtnSubmit = false;
-                        _disable = true;
-                    }
-
                     var arr = Title.Split('|');
                     Title = arr[0];
                     _id = arr[1];
@@ -174,6 +162,7 @@ namespace WebUIFinal.Pages.Components
                 else if (Title.Contains(_localizer["Detail.Edit"]))
                 {
                     var response = await _locationServices.UpdateAsync(_model);
+                    resMess = response.Messages.FirstOrDefault();
 
                     if (!response.Succeeded)
                     {
@@ -187,8 +176,6 @@ namespace WebUIFinal.Pages.Components
 
                         return;
                     }
-
-                    resMess = response.Messages.FirstOrDefault();
                 }
 
                 //BIN
@@ -263,29 +250,25 @@ namespace WebUIFinal.Pages.Components
         async Task PrintLable()
         {
             var dataPrint = await _binServices.GetLabelByLocationIdAsync(_model.Id);
-            var res = await _dialogService.OpenAsync<PrintViewer>(string.Empty,
-                    new Dictionary<string, object>() { { "LabelPrintModel", dataPrint }, { "Title", $"{_localizer["PrintLabelFor"]} {_localizer["Bin"]}" } },
-                    new DialogOptions()
-                    {
-                        Width = "1000px",
-                        Height = "1000px",
-                        Resizable = true,
-                        Draggable = true,
-                        ShowClose = false,
-                        CloseDialogOnOverlayClick = true
-                    });
-
-            //if (res == "Success")
-            //{
-            //    RefreshDataAsync();
-            //}
+            _navigation.NavigateTo($"/printlabel?labelData={JsonSerializer.Serialize(dataPrint)}");
+            //var res = await _dialogService.OpenAsync<PrintViewer>(string.Empty,
+            //        new Dictionary<string, object>() { { "LabelPrintModel", dataPrint }, { "Title", $"{_localizer["PrintLabelFor"]} {_localizer["Bin"]}" } },
+            //        new DialogOptions()
+            //        {
+            //            Width = "1000px",
+            //            Height = "1000px",
+            //            Resizable = true,
+            //            Draggable = true,
+            //            ShowClose = false,
+            //            CloseDialogOnOverlayClick = true
+            //        });
         }
 
         async Task AddBin()
         {
             try
             {
-                Bin binInfor = new Bin()
+                BinDto binInfor = new BinDto()
                 {
                     LocationId = _model.Id
                 };
@@ -304,7 +287,7 @@ namespace WebUIFinal.Pages.Components
 
                 if (res != null)
                 {
-                    var selectResult = (Bin)res;
+                    var selectResult = (BinDto)res;
 
                     var returnModel = _dataGrid.FirstOrDefault(x => x.BinCode == selectResult.BinCode);
 
@@ -332,6 +315,87 @@ namespace WebUIFinal.Pages.Components
                     Severity = NotificationSeverity.Error,
                     Summary = "Error",
                     Detail = $"{ex.Message}{Environment.NewLine}{ex.InnerException}",
+                    Duration = 5000
+                });
+
+                return;
+            }
+        }
+
+        async Task DeleteItemLocationAsync(Location model)
+        {
+            try
+            {
+                var confirm = await _dialogService.Confirm($"{_localizer["Confirmation.Delete"]} {_localizer["Location"]}: {model.LocationName}?", $"{_localizer["Delete"]} {_localizer["Location"]}", new ConfirmOptions()
+                {
+                    OkButtonText = "Yes",
+                    CancelButtonText = "No",
+                    AutoFocusFirstElement = true,
+                });
+
+                if (confirm == null || confirm == false) return;
+
+                #region delete bin of location
+                var responseBins = await _binServices.GetByLocationId(model.Id);
+                if (!responseBins.Succeeded)
+                {
+                    _notificationService.Notify(new NotificationMessage()
+                    {
+                        Severity = NotificationSeverity.Error,
+                        Summary = "Error",
+                        Detail = responseBins.Messages.ToString(),
+                        Duration = 5000
+                    });
+
+                    return;
+                }
+                var responseDeleteBin = await _binServices.DeleteRangeAsync(responseBins.Data);
+                if (!responseDeleteBin.Succeeded)
+                {
+                    _notificationService.Notify(new NotificationMessage()
+                    {
+                        Severity = NotificationSeverity.Error,
+                        Summary = "Error",
+                        Detail = responseBins.Messages.ToString(),
+                        Duration = 5000
+                    });
+
+                    return;
+                }
+                #endregion
+
+                var res = await _locationServices.DeleteAsync(model);
+
+                if (res.Succeeded)
+                {
+                    _notificationService.Notify(new NotificationMessage()
+                    {
+                        Severity = NotificationSeverity.Success,
+                        Summary = "Success",
+                        Detail = $"Delete location {model.LocationName} successfully.",
+                        Duration = 5000
+                    });
+
+                    await RefreshDataAsync();
+                }
+                else
+                {
+                    _notificationService.Notify(new NotificationMessage()
+                    {
+                        Severity = NotificationSeverity.Error,
+                        Summary = "Error",
+                        Detail = res.Messages.ToString(),
+                        Duration = 5000
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+                _notificationService.Notify(new NotificationMessage()
+                {
+                    Severity = NotificationSeverity.Error,
+                    Summary = "Error",
+                    Detail = ex.Message,
                     Duration = 5000
                 });
 
@@ -408,8 +472,23 @@ namespace WebUIFinal.Pages.Components
         {
             try
             {
+                var modelEdit = new BinDto()
+                {
+                    Id = model.Id,
+                    LocationId = model.LocationId,
+                    LocationName = model.LocationName,
+                    LocationCD = model.LocationCD,
+                    BinCode = model.BinCode,
+                    Remarks = model.Remarks,
+                    Status = model.Status,
+                    CreateAt = model.CreateAt,
+                    CreateOperatorId = model.CreateOperatorId,
+                    UpdateAt = model.UpdateAt,
+                    UpdateOperatorId = model.UpdateOperatorId,
+                    IsDelete = false
+                };
                 var res = await _dialogService.OpenAsync<DialogCardPageAddNewBin>($"{_localizer["Detail.Edit"]} {_localizer["Bin"]}",
-                   new Dictionary<string, object>() { { "_model", model }, { "VisibleBtnSubmit", true } },
+                   new Dictionary<string, object>() { { "_model", modelEdit }, { "VisibleBtnSubmit", true } },
                    new DialogOptions()
                    {
                        Width = "1000",
@@ -421,6 +500,18 @@ namespace WebUIFinal.Pages.Components
 
                 if (res != null)
                 {
+                    var selectResult = (BinDto)res;
+
+                    model.Id = selectResult.Id;
+                    model.BinCode = selectResult.BinCode;
+                    model.Remarks = selectResult.Remarks;
+
+                    if (selectResult.IsDelete == true)
+                    {
+                        _dataGrid.Remove(model);
+                        _listRemoveBin.Add(model);
+                    }
+
                     await _profileGrid.RefreshDataAsync();
                 }
             }

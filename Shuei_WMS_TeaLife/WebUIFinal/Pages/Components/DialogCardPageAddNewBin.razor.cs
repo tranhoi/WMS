@@ -1,25 +1,20 @@
-﻿using Application.DTOs.Response;
-using Application.DTOs.Response.Account;
-using Domain.Enums;
-using Application.Extentions;
-using Domain.Entity.authp.Commons;
-using Domain.Entity.WMS;
-using Microsoft.AspNetCore.Components;
-using Radzen;
-using Radzen.Blazor;
-using System.Security.Cryptography;
+﻿using Microsoft.AspNetCore.Components;
 
 namespace WebUIFinal.Pages.Components
 {
     public partial class DialogCardPageAddNewBin
     {
-        [Parameter] public Bin _model { get; set; } = new Bin();
+        [Parameter] public BinDto _model { get; set; } = new BinDto();
         [Parameter] public bool VisibleBtnSubmit { get; set; } = true;
+
+        bool _visibleBtnSubmit = true;
 
         protected override async Task OnInitializedAsync()
         {
             await base.OnInitializedAsync();
 
+            if (_model.Id == Guid.Empty)
+                _visibleBtnSubmit = false;
             await RefreshDataAsync();
 
             StateHasChanged();
@@ -45,7 +40,7 @@ namespace WebUIFinal.Pages.Components
             }
         }
 
-        async void Submit(Bin arg)
+        async void Submit(BinDto arg)
         {
             if (_model.Id == Guid.Empty)
             {
@@ -96,6 +91,36 @@ namespace WebUIFinal.Pages.Components
                 Detail = "Add bin click",
                 Duration = 1000
             });
+        }
+
+        async Task DeleteItemAsync()
+        {
+            try
+            {
+                var confirm = await _dialogService.Confirm($"{_localizer["Confirmation.Delete"]} {_localizer["Bin"]}: {_model.BinCode}?", $"{_localizer["Delete"]} {_localizer["Bin"]}", new ConfirmOptions()
+                {
+                    OkButtonText = "Yes",
+                    CancelButtonText = "No",
+                    AutoFocusFirstElement = true,
+                });
+
+                if (confirm == null || confirm == false) return;
+
+                _model.IsDelete = true;
+                _dialogService.Close(_model);
+            }
+            catch (Exception ex)
+            {
+                _notificationService.Notify(new NotificationMessage()
+                {
+                    Severity = NotificationSeverity.Error,
+                    Summary = "Error",
+                    Detail = $"{ex.Message}{Environment.NewLine}{ex.InnerException}",
+                    Duration = 5000
+                });
+
+                return;
+            }
         }
     }
 }

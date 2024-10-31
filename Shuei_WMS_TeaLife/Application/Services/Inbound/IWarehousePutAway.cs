@@ -1,7 +1,7 @@
 ﻿using Application.DTOs;
 using Application.Extentions;
 using Application.Services.Base;
-using Domain.Entity.WMS.Inbound;
+
 using RestEase;
 
 namespace Application.Services.Inbound
@@ -14,5 +14,14 @@ namespace Application.Services.Inbound
 
         [Post(ApiRoutes.WarehousePutAway.InsertWarehousePutAwayOrder)]
         Task<Result<IEnumerable<WarehousePutAwayDto>>> InsertWarehousePutAwayOrder([Body] IEnumerable<WarehousePutAwayDto> request);
+
+        [Get(ApiRoutes.WarehousePutAway.GetPutAwayAsync)]
+        Task<Result<WarehousePutAwayDto>> GetPutAwayAsync(string PutAwayNo);
+
+        [Post(ApiRoutes.WarehousePutAway.SyncHTData)]
+        Task<Result<WarehousePutAwayDto>> SyncHTData([Body] WarehousePutAwayDto putAwayDto);
+
+        [Post(ApiRoutes.WarehousePutAway.AdjustActionPutAway)]
+        Task<Result<WarehousePutAwayDto>> AdjustActionPutAway([Body] WarehousePutAwayDto request);
     }
 }

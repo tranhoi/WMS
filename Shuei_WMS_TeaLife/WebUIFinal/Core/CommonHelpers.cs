@@ -14,7 +14,7 @@
             }
         }
 
-        public static String EnumConvertToString(this Enum eff)
+        public static string EnumConvertToString(this Enum eff)
         {
             return Enum.GetName(eff.GetType(), eff);
         }

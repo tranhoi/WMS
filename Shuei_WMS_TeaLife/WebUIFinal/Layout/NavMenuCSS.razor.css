@@ -17,6 +17,8 @@
     background-color: transparent;
     border: 0;
     cursor: pointer;
+    font-size:13px;
+    font-weight: 500;
 }
 
 .management-button:hover,
@@ -36,6 +38,8 @@
     margin-left: 1.25rem;
     text-decoration: none;
     transition: all 0s ease-out;
+    font-size:12px;
+    font-weight: 500;
 }
 
 .nav-link.active div {
@@ -178,8 +182,11 @@
         margin-left: 10px;
         margin-top: 5px;
     }
-
 .nav-sm .navbar-main .child-menu {
+    display:none !important;
+}
+.nav-sm .navbar-main .active {
+    /*display: block !important;*/
     left: 100%;
     position: absolute;
     top: 0;
@@ -187,3 +194,27 @@
     z-index: 4000;
     background: #3E5367;
 }
+/*.sub-menu:before {
+    background: #425668;
+    bottom: auto;
+    content: "";
+    height: 8px;
+    left: 23px;
+    margin-top: 15px;
+    position: absolute;
+    right: auto;
+    width: 8px;
+    z-index: 1;
+    border-radius: 50%;
+}
+.sub-menu:last-child::after {
+    bottom: 50%;
+}
+.sub-menu:after {
+    border-left: 1px solid #425668;
+    bottom: 0;
+    content: "";
+    left: 27px;
+    position: absolute;
+    top: 0;
+}*/

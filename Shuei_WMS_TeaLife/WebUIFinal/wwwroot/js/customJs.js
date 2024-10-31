@@ -1,10 +1,11 @@
-﻿function printQRCode() {
-    var printWindow = window.open('', '_blank');
-    var qrCodeImage = document.getElementById("qrCodeImage").src;
-    printWindow.document.write('<html><head><title>Print QR Code</title></head>');
-    printWindow.document.write('<body><img src="' + qrCodeImage + '" /></body></html>');
-    printWindow.document.close();
-    printWindow.focus();
-    printWindow.print();
-    printWindow.close();
+﻿//focus vao element textbox và xóa data
+function FocusElementText(objId) {
+   
+    if (document.getElementById(objId) == null) return;
+
+    var _element = document.getElementById(objId);
+
+    _element.value = "";
+
+    _element.focus();
 }

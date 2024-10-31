@@ -1,6 +1,6 @@
 ﻿using Application.Extentions;
 using Application.Services.Base;
-using Domain.Entity.WMS;
+
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;

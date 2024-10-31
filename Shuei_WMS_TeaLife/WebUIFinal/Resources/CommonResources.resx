@@ -378,9 +378,6 @@
   <data name="Product.BackProductList" xml:space="preserve">
     <value />
   </data>
-  <data name="Product.SelectSupplierCode" xml:space="preserve">
-    <value />
-  </data>
   <data name="Edit" xml:space="preserve">
     <value />
   </data>
@@ -600,13 +597,76 @@
   <data name="Product image" xml:space="preserve">
     <value>Product image</value>
   </data>
-  <data name="aaaaaaaaaaaaaaaaaaaaaaaaa" xml:space="preserve">
-    <value>aa</value>
-  </data>
   <data name="Permission information" xml:space="preserve">
     <value>Permission information</value>
   </data>
   <data name="Nav.Issue.ShippingBox" xml:space="preserve">
     <value>Shipping Box</value>
+  </data>
+  <data name="Clear Filter" xml:space="preserve">
+    <value>Clear Filter</value>
+  </data>
+  <data name="Clear" xml:space="preserve">
+    <value>Clear</value>
+  </data>
+  <data name="Yes" xml:space="preserve">
+    <value>Yes</value>
+  </data>
+  <data name="No" xml:space="preserve">
+    <value>No</value>
+  </data>
+  <data name="Success" xml:space="preserve">
+    <value>Success</value>
+  </data>
+  <data name="Error" xml:space="preserve">
+    <value>Error</value>
+  </data>
+  <data name="Nav.Issue.ShippingCarrier" xml:space="preserve">
+    <value>ShippingCarrier</value>
+  </data>
+  <data name="Manager" xml:space="preserve">
+    <value>Manager</value>
+  </data>
+  <data name="Confirm" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Product.SelectSupplierCode" xml:space="preserve">
+    <value>Select Supplier Code</value>
+  </data>
+  <data name="Supplier" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Warning" xml:space="preserve">
+    <value>Warning</value>
+  </data>
+  <data name="Print" xml:space="preserve">
+    <value>Print</value>
+  </data>
+  <data name="On" xml:space="preserve">
+    <value>On</value>
+  </data>
+  <data name="Off" xml:space="preserve">
+    <value>Off</value>
+  </data>
+  <data name="Nav.Issue.Shipment" xml:space="preserve">
+    <value>Shipment</value>
+  </data>
+  <data name="Require.Bin" xml:space="preserve">
+    <value>Missing Bin</value>
+  </data>
+  <data name="Require.LotNo" xml:space="preserve">
+    <value>Lot No is required</value>
+  </data>
+  <data name="Require.ProductCode" xml:space="preserve">
+    <value>Product code is required.</value>
+  </data>
+  <data name="Require.OrderQty" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Nav.Dashboard" xml:space="preserve">
+    <value>Dashboard</value>
+  </data>
+  <data name="Nav.ReceiptPlan" xml:space="preserve">
+    <value>Receipt plan</value>
   </data>
 </root>

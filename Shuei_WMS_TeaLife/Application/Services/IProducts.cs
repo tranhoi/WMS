@@ -2,7 +2,7 @@
 using Application.DTOs.Response.Product;
 using Application.Extentions;
 using Application.Services.Base;
-using Domain.Entity.Commons;
+
 using RestEase;
 
 namespace Application.Services
@@ -19,5 +19,8 @@ namespace Application.Services
 
         [Get(ApiRoutes.Product.GetByProductCodeAsync)]
         Task<Result<ProductDto>> GetByProductCodeAsync(string code);
+        
+        [Get(ApiRoutes.Product.SearchByProductCodeAsync)]
+        Task<Result<IEnumerable<ProductDto>>> SearchByProductCodeAsync(string code);
     }
 }

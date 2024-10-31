@@ -2,7 +2,7 @@
 using Radzen;
 using Radzen.Blazor;
 using WebUIFinal.Core;
-using ProductModel = Domain.Entity.Commons.Product;
+using ProductModel = FBT.ShareModels.Entities.Product;
 
 namespace WebUIFinal.Pages.Product
 {

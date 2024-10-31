@@ -1,8 +1,7 @@
-﻿@page "/devicelist"
+﻿@page "/Devicelist"
 @using Application.Extentions
-@using Domain.Enums
-@using Domain.Entity.WMS
 @using Microsoft.AspNetCore.Authorization
+@using DeviceEntity=FBT.ShareModels.WMS.Device
 
 @inject IStringLocalizer<CommonResources> _localizerCommon
 @inject IStringLocalizer<DeviceResources> _localizer
@@ -15,14 +14,14 @@
 else
 {
     <RadzenTemplateForm Data="@_searchModel" Submit="@((SearchModel args) => { OnSearch(args); })">
-        <RadzenRow Gap="2rem" class="rz-p-0 rz-p-lg-4">
+        <RadzenRow Gap="2rem" Class="rz-p-0 rz-p-lg-2">
             <RadzenColumn Size="12" SizeMD="12">
                 <RadzenFieldset Text="@($"{_localizerCommon["Search"]} {_localizer["Device"]}")">
                     <RadzenStack Gap="5px">
                         <RadzenRow AlignItems="AlignItems.Center">
                             <RadzenColumn SizeXS="12" SizeSM="3">
                                 <RadzenFormField Text="@($"{_localizer["Device"]} {_localizerCommon["Name"]}")" Variant="Variant.Outlined" Style="width:100%">
-                                    <RadzenTextBox Name="deviceName" @bind-Value="@_searchModel.Name" Placeholder="Enter device name" />
+                                    <RadzenTextBox Name="DeviceEntityName" @bind-Value="@_searchModel.Name" Placeholder="Enter DeviceEntity name" />
                                 </RadzenFormField>
                             </RadzenColumn>
                             <RadzenColumn SizeXS="12" SizeSM="3">
@@ -48,35 +47,36 @@ else
         </RadzenRow>
     </RadzenTemplateForm>
 
-    <RadzenRow Gap="2rem" Class="rz-p-0 rz-p-lg-4">
+    <RadzenRow Gap="2rem" Class="rz-p-0 rz-p-lg-2">
         <RadzenColumn SizeXS="12" SizeMD="12">
             <RadzenStack>
                 <RadzenFieldset Text="@($"{_localizer["Device"]}{_localizer["Manager"]}")">
                     <RadzenStack Orientation="Radzen.Orientation.Vertical" JustifyContent="Radzen.JustifyContent.Center" AlignItems="AlignItems.Stretch" Gap="5px">
                         <RadzenStack Orientation="Radzen.Orientation.Horizontal" JustifyContent="Radzen.JustifyContent.End" AlignItems="AlignItems.Center" Gap="1rem" Wrap="Radzen.FlexWrap.Wrap" class="rz-mt-2">
                             <RadzenButton Click=@(args => AddNewItemAsync()) Variant="Variant.Flat" Shade="Shade.Dark"
-                                          Text="@($"{_localizer["AddNew"]}")" Icon="add_circle" ButtonStyle="ButtonStyle.Success" />
+                                              Text="@($"{_localizerCommon["Create"]}")" Icon="add_circle" ButtonStyle="ButtonStyle.Success" />
                         </RadzenStack>
 
-                        <RadzenDataGrid Data="@filteredData" TItem="Device" AllowFiltering="true" FilterPopupRenderMode="PopupRenderMode.OnDemand"
-                                        AllowPaging="true" PageSize="5" PageSizeText="@_localizerCommon["items per page"]" AllowSorting="true" EmptyText="@_localizerCommon["No records to display."]"
-                                        AllowColumnPicking="false" AllowColumnResize="true" AllowGrouping="false" GridLines="Radzen.DataGridGridLines.Both" ShowPagingSummary="@_showPagerSummary" PagingSummaryFormat="@_pagingSummaryFormat" PageSizeOptions="@_pageSizeOptions">
+                        <RadzenDataGrid Data="@filteredData" TItem="DeviceEntity" AllowFiltering="true" FilterPopupRenderMode="PopupRenderMode.OnDemand"
+                                        AllowPaging="true" PageSize="5" PageSizeText="@_localizerCommon["items per page"]" AllowSorting="true" 
+                                        EmptyText="@_localizerCommon["No records to display."]"
+                                        AllowColumnPicking="false" AllowColumnResize="true" AllowGrouping="false" GridLines="Radzen.DataGridGridLines.Both" 
+                                        ShowPagingSummary="@_showPagerSummary" PagingSummaryFormat="@_pagingSummaryFormat" PageSizeOptions="@_pageSizeOptions">
                             <Columns>
-                                <RadzenDataGridColumn TItem="Device" Filterable="false" TextAlign="TextAlign.Center" Frozen="true" FrozenPosition="FrozenColumnPosition.Left" Width="150px">
-                                    <HeaderTemplate><RadzenText Text="@($"{_localizer["Actions"]}")" /></HeaderTemplate>
+                                <RadzenDataGridColumn Width="200px" Property="@nameof(DeviceEntity.Name)" TextAlign="TextAlign.Center" CssClass="rz-grid-col-flex-start">
+                                    <HeaderTemplate>
+                                        @_localizer["Name"]
+                                    </HeaderTemplate>
                                     <Template Context="data">
-                                        <RadzenStack Orientation="Radzen.Orientation.Horizontal" JustifyContent="Radzen.JustifyContent.Center" AlignItems="AlignItems.Center" Gap="2px" Wrap="Radzen.FlexWrap.Wrap">
-                                            <RadzenButton ButtonStyle="ButtonStyle.Light" Icon="visibility" Variant="Variant.Flat" Shade="Shade.Lighter" Size="ButtonSize.Medium" class="my-1 ms-1" Click="@(() => ViewItemAsync(data))" @onclick:stopPropagation="true" />
-                                            <RadzenButton ButtonStyle="ButtonStyle.Light" Icon="edit" Variant="Variant.Flat" Shade="Shade.Lighter" Size="ButtonSize.Medium" class="my-1 ms-1" Click="@(() => EditItemAsync(data))" @onclick:stopPropagation="true" />
-                                            <RadzenButton ButtonStyle="ButtonStyle.Danger" Icon="delete" Variant="Variant.Flat" Shade="Shade.Lighter" Size="ButtonSize.Medium" class="my-1 ms-1" Click="@(() => DeleteItemAsync(data))" @onclick:stopPropagation="true" />
-                                        </RadzenStack>
+                                        <NavLink class="nav-link" href="@($"/detaildevice/{_localizerCommon["Detail.Edit"]} {_localizer["Device"]}|{data.Id}")" Match="NavLinkMatch.All" style="padding: 0!important;">
+                                            @data.Name
+                                        </NavLink>
                                     </Template>
                                 </RadzenDataGridColumn>
-                                <RadzenDataGridColumn TItem="Device" Width="200px" Property="Name" Title="@($"{_localizer["Name"]}")" TextAlign="TextAlign.Center" />
-                                <RadzenDataGridColumn TItem="Device" Width="200px" Property="Type" Title="@($"{_localizer["Type"]}")" TextAlign="TextAlign.Center" />
-                                <RadzenDataGridColumn TItem="Device" Width="200px" Property="Model" Title="@($"{_localizer["Model"]}")" TextAlign="TextAlign.Center" />
-                                <RadzenDataGridColumn TItem="Device" Width="200px" Property="ActiveUser" Title="@($"{_localizer["ActiveUser"]}")" TextAlign="TextAlign.Center" />
-                                <RadzenDataGridColumn TItem="Device" Width="200px" Property="Status" Title="@($"{_localizer["Status"]}")" TextAlign="TextAlign.Center" />
+                                <RadzenDataGridColumn TItem="DeviceEntity" Width="200px" Property="Type" Title="@($"{_localizer["Type"]}")" TextAlign="TextAlign.Center" />
+                                <RadzenDataGridColumn TItem="DeviceEntity" Width="200px" Property="Model" Title="@($"{_localizer["Model"]}")" TextAlign="TextAlign.Center" />
+                                <RadzenDataGridColumn TItem="DeviceEntity" Width="200px" Property="ActiveUser" Title="@($"{_localizer["ActiveUser"]}")" TextAlign="TextAlign.Center" />
+                                <RadzenDataGridColumn TItem="DeviceEntity" Width="200px" Property="Status" Title="@($"{_localizer["Status"]}")" TextAlign="TextAlign.Center" />
                             </Columns>
                         </RadzenDataGrid>
                     </RadzenStack>
@@ -95,9 +95,9 @@ else
 
     private bool isDisabled = false;
     private SearchModel _searchModel = new SearchModel();
-    IEnumerable<Device> filteredData;
+    IEnumerable<DeviceEntity> filteredData;
 
-    private IEnumerable<Device> OnSearch(SearchModel args)
+    private IEnumerable<DeviceEntity> OnSearch(SearchModel args)
     {
         filteredData = _dataGrid;
 

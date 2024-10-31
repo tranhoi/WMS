@@ -1,11 +1,11 @@
 ﻿using Application.DTOs;
-using Domain.Enums;
+
 using Application.Extentions;
 using Application.Models;
 using Application.Services;
 using DocumentFormat.OpenXml.Office2010.Excel;
-using Domain.Entity.Commons;
-using Domain.Entity.WMS;
+
+
 using Infrastructure.Data;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
@@ -52,6 +52,12 @@ namespace Infrastructure.Repos
         {
             try
             {
+                var existCD = await dbContext.Bins.Where(x => x.LocationId == model.LocationId && x.BinCode == model.BinCode).FirstOrDefaultAsync();
+                if (existCD != null)
+                {
+                    return await Result<Bin>.FailAsync($"Bin code: {model.BinCode} is already created");
+                }
+
                 await dbContext.Bins.AddAsync(model);
                 await dbContext.SaveChangesAsync();
                 return await Result<Bin>.SuccessAsync(model);
@@ -192,7 +198,7 @@ namespace Infrastructure.Repos
 
                 res.Add(new LabelInfoDto()
                 {
-                    Title="BIN",
+                    Title = "BIN",
                     QrValue = GlobalVariable.GenerateQRCode($"{dataInfo.LocationCD}|{dataInfo.LocationName}|{dataInfo.BinCode}"),
                     Title1 = "Location Name:",
                     Content1 = dataInfo.LocationName,

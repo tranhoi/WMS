@@ -1,17 +1,11 @@
 ﻿using Application.DTOs.Request.Account;
-using Application.DTOs.Response.Account;
-using Domain.Enums;
-using Domain.Entity.authp.Commons;
-using Domain.Entity.WMS;
-using Mapster;
 using Microsoft.AspNetCore.Components;
-using Radzen;
-using Radzen.Blazor;
-using QRCoder;
 using Microsoft.JSInterop;
 using QRCoder.Core;
 using WebUIFinal.TemplateHtmlPrintLabel;
 using WebUIFinal.Pages.Account;
+using System.Text.Json;
+
 
 namespace WebUIFinal.Pages.Components
 {
@@ -139,14 +133,12 @@ namespace WebUIFinal.Pages.Components
                         _selectedTenantList.Add(r);
                     }
                     #endregion
-
-                    if (Title.Contains($"{_localizer["Detail.View"]}"))
-                    {
-                        _visibleBtnSubmit = false;
-                        _disable = true;
-                    }
                 }
 
+                if (Title.Contains($"{_localizer["Detail.Create"]}"))
+                {
+                    _visibleBtnSubmit = false;                    
+                }
                 //Title = Title.Contains("View") ? $"{_localizer["Detail.View"]} User" : Title.Contains("Edit") ? $"{_localizer["Detail.Edit"]} User" : $"{_localizer["Detail.Create"]} User";
 
                 _selectStatus = EnumStatus.Activated;
@@ -215,6 +207,18 @@ namespace WebUIFinal.Pages.Components
                 if (Title.Contains(_localizer["Detail.Create"]))//Add
                 {
                     var res = await _authenServices.CreateAccountAsync(arg);
+
+                    if (!res.Flag)
+                    {
+                        _notificationService.Notify(new NotificationMessage()
+                        {
+                            Severity = NotificationSeverity.Error,
+                            Summary = "Fail",
+                            Detail = res.Message,
+                            Duration = 5000
+                        });
+                        return;
+                    }
 
                     var user = await _authenServices.UserGetByEmailAsync(arg.Email);
 
@@ -340,18 +344,18 @@ namespace WebUIFinal.Pages.Components
             try
             {
                 var dataPrint = await _authenServices.GetLabelByIdAsync(_id);
-
-                var res = await _dialogService.OpenAsync<PrintViewer>(string.Empty,
-                        new Dictionary<string, object>() { { "LabelPrintModel", dataPrint }, { "Title", $"Print label for use" } },
-                        new DialogOptions()
-                        {
-                            Width = "1000px",
-                            Height = "1000px",
-                            Resizable = true,
-                            Draggable = true,
-                            ShowClose = false,
-                            CloseDialogOnOverlayClick = true
-                        });
+                _navigation.NavigateTo($"/printlabel?labelData={JsonSerializer.Serialize(dataPrint)}");
+                //var res = await _dialogService.OpenAsync<PrintViewer>(string.Empty,
+                //        new Dictionary<string, object>() { { "LabelPrintModel", dataPrint }, { "Title", $"Print label for use" } },
+                //        new DialogOptions()
+                //        {
+                //            Width = "210mm",  // A4 width
+                //            Height = "297mm", // A4 height
+                //            Resizable = true,
+                //            Draggable = true,
+                //            ShowClose = false,
+                //            CloseDialogOnOverlayClick = true
+                //        });
             }
             catch (Exception ex)
             {
@@ -368,7 +372,9 @@ namespace WebUIFinal.Pages.Components
 
         async Task PrintLable1()
         {
-            var dataPrint = await _authenServices.GetReportBase64(_id);
+            //var dataPrint = await _authenServices.GetReportBase64(_id);
+            var dataPrint = await _authenServices.GeneratePdf();
+
             var res = await _dialogService.OpenAsync<ReportViewer>($"Print label for use",
                   new Dictionary<string, object>() { { "_pdfBase64", dataPrint } },
                   new DialogOptions()
@@ -419,6 +425,61 @@ namespace WebUIFinal.Pages.Components
         private async Task PrintQRCode()
         {
             await _jsRuntime.InvokeVoidAsync("printQRCode");
+        }
+
+        async Task DeleteItemAsync(CreateAccountRequestDTO model)
+        {
+            try
+            {
+                var d=new UpdateDeleteRequestDTO() { 
+                Id=_id,
+                Name=model.UserName
+                };
+
+                var confirm = await _dialogService.Confirm($"{_localizer["Confirmation.Delete"]} {_localizer["User"]}: {d.Name}?", $"{_localizer["Delete"]} {_localizer["User"]}", new ConfirmOptions()
+                {
+                    OkButtonText = "Yes",
+                    CancelButtonText = "No",
+                    AutoFocusFirstElement = true,
+                });
+
+                if (confirm == null || confirm == false) return;
+
+                var res = await _authenServices.DeleteUserAsync(d);
+
+                if (res.Flag)
+                {
+                    _notificationService.Notify(new NotificationMessage()
+                    {
+                        Severity = NotificationSeverity.Success,
+                        Summary = "Success",
+                        Detail = res.Message,
+                        Duration = 5000
+                    });
+                }
+                else
+                {
+                    _notificationService.Notify(new NotificationMessage()
+                    {
+                        Severity = NotificationSeverity.Error,
+                        Summary = "Error",
+                        Detail = res.Message,
+                        Duration = 5000
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+                _notificationService.Notify(new NotificationMessage()
+                {
+                    Severity = NotificationSeverity.Error,
+                    Summary = "Error",
+                    Detail = ex.Message,
+                    Duration = 5000
+                });
+
+                return;
+            }
         }
     }
 }

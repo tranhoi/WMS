@@ -2,8 +2,8 @@
 using Application.DTOs;
 using Application.Extentions;
 using Application.Services.Inbound;
-using Domain.Entity.Commons;
-using Domain.Entity.WMS.Inbound;
+
+
 using Infrastructure.Repos;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -25,9 +25,9 @@ namespace API.Controllers.Inbound
         }
 
         [HttpGet(ApiRoutes.WarehousePutAwayLine.GetByMasterCodeAsync)]
-        public async Task<Result<List<WarehousePutAwayLine>>> GetByMasterCodeAsync([Path] string putAwayNo)
+        public async Task<Result<List<WarehousePutAwayLine>>> GetByMasterCodeAsync([Path] string PutAwayNo)
         {
-            return await _repository.SWarehousePutAwayLines.GetByMasterCodeAsync(putAwayNo);
+            return await _repository.SWarehousePutAwayLines.GetByMasterCodeAsync(PutAwayNo);
         }
 
         [HttpGet(ApiRoutes.WarehousePutAwayLine.GetLabelById)]
@@ -40,5 +40,11 @@ namespace API.Controllers.Inbound
         {
             return await _repository.SWarehousePutAwayLines.GetLabelByPutAwayNo(putAwayNo);
         }
+        [HttpGet(ApiRoutes.WarehousePutAwayStaging.GetByPutAwayLineIdAsync)]
+        public async Task<Result<List<WarehousePutAwayStaging>>> GetByPutAwayLineIdAsync([Path] Guid putAwayLineId)
+        {
+            return await _repository.SWarehousePutAwayStagings.GetByPutAwayLineIdAsync(putAwayLineId);
+        }
+
     }
 }

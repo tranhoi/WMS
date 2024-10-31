@@ -1,7 +1,7 @@
 ﻿using API.Controllers.Base;
 using Application.Extentions;
 using Application.Services.Outbound;
-using Domain.Entity.WMS.Outbound;
+
 using Infrastructure.Repos;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;

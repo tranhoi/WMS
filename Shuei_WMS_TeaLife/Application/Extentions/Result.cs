@@ -120,7 +120,7 @@ namespace Application.Extentions
             return Task.FromResult(Fail(messages));
         }
 
-        public new static Result<T> Success()
+        public new static Result<T> Success(DTOs.ReturnOrderDto? returnOrderDto)
         {
             return new Result<T> { Succeeded = true };
         }

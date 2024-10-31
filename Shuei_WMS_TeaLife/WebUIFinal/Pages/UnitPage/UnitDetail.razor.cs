@@ -1,5 +1,5 @@
-﻿using Domain.Enums;
-using Domain.Entity.WMS;
+﻿
+
 using Microsoft.AspNetCore.Components;
 using Radzen;
 
@@ -21,7 +21,9 @@ namespace WebUIFinal.Pages.UnitPage
         {
             await base.OnInitializedAsync();
 
+            if (Title.Contains($"{_localizerCommon["Detail.Create"]}")) _visibleBtnSubmit = false;
 
+            _selectStatus = EnumStatus.Activated;
             await RefreshDataAsync();
         }
         async Task RefreshDataAsync()
@@ -32,12 +34,6 @@ namespace WebUIFinal.Pages.UnitPage
 
                 if (Title.Contains("|"))
                 {
-                    if (Title.Contains("View"))
-                    {
-                        _visibleBtnSubmit = false;
-                        _disable = true;
-                    }
-
                     var arr = Title.Split('|');
                     Title = arr[0];
                     _id = arr[1];
@@ -82,7 +78,9 @@ namespace WebUIFinal.Pages.UnitPage
 
             arg.Status = _selectStatus;
 
-            if (Title.Contains(_localizer["Detail.Create"]))//Add
+            var loal = _localizerCommon["Detail.Create"];
+
+            if (Title.Contains(_localizerCommon["Detail.Create"]))//Add
             {
                 var res = await _unitsService.InsertAsync(_model);
                 if (res.Succeeded)
@@ -132,11 +130,11 @@ namespace WebUIFinal.Pages.UnitPage
             }
         }
 
-        async Task DeleteItemAsync(Unit Unit)
+        async Task DeleteItemAsync(Unit model)
         {
             try
             {
-                var confirm = await _dialogService.Confirm($"Are you sure you want to delete Unit: {Unit.UnitName}?", "Delete Unit", new ConfirmOptions()
+                var confirm = await _dialogService.Confirm($"{_localizerCommon["Confirmation.Delete"]}: {model.UnitName}?", _localizerCommon["Delete"], new ConfirmOptions()
                 {
                     OkButtonText = "Yes",
                     CancelButtonText = "No",
@@ -145,7 +143,7 @@ namespace WebUIFinal.Pages.UnitPage
 
                 if (confirm == null || confirm == false) return;
 
-                var res = await _unitsService.DeleteAsync(Unit);
+                var res = await _unitsService.DeleteAsync(model);
 
                 if (res.Succeeded)
                 {
@@ -153,7 +151,7 @@ namespace WebUIFinal.Pages.UnitPage
                     {
                         Severity = NotificationSeverity.Success,
                         Summary = "Success",
-                        Detail = $"Delete Unit {Unit.UnitName} successfully.",
+                        Detail = res.Messages.FirstOrDefault(),
                         Duration = 5000
                     });
 
@@ -169,6 +167,8 @@ namespace WebUIFinal.Pages.UnitPage
                         Duration = 5000
                     });
                 }
+
+                await RefreshDataAsync();
             }
             catch (Exception ex)
             {
@@ -176,7 +176,7 @@ namespace WebUIFinal.Pages.UnitPage
                 {
                     Severity = NotificationSeverity.Error,
                     Summary = "Error",
-                    Detail = $"Failed to delete Unit {Unit.UnitName}.",
+                    Detail = ex.Message,
                     Duration = 5000
                 });
 

@@ -23,55 +23,29 @@
             </RadzenColumn>
             <RadzenColumn Size="7">
                 <RadzenStack Orientation="Radzen.Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="Radzen.JustifyContent.End" Gap="4px">
-                    <Microsoft.AspNetCore.Components.Authorization.AuthorizeView>
-                        <Authorized>
-                            <RadzenAppearanceToggle />
-                            @* <RadzenLabel Style="color:black">@context.User?.Identity?.Name</RadzenLabel> *@
-                            <RadzenLabel Style="color:black">@GlobalVariable.UserAuthorizationInfo?.EmailName</RadzenLabel>
-                            <RadzenProfileMenu Click="OnParentClicked" Style="background-color:#EDEDED">
-                                <Template>
-                                    <RadzenIcon Icon="account_circle" />
-                                </Template>
-                                <ChildContent>
-                                    <RadzenProfileMenuItem Visible="true" Text="@_localizer["Profile.UserInfo"]" Path="/adduser/View User|" Icon="manage_accounts"></RadzenProfileMenuItem>
-                                    <RadzenProfileMenuItem Visible="@context.User.IsInRole(ConstantExtention.Roles.WarehouseAdmin)" Text="@_localizer["Profile.UserManager"]" Path="/userlist" Icon="people_alt"></RadzenProfileMenuItem>
-                                    <RadzenProfileMenuItem Visible="true" Text="@_localizer["Profile.ChangePassword"]" Path="/changepass" Icon="password"></RadzenProfileMenuItem>
-                                    <RadzenProfileMenuItem Text="@_localizer["Profile.Logout"]" Icon="logout"></RadzenProfileMenuItem>
-                                </ChildContent>
-                            </RadzenProfileMenu>
-                        </Authorized>
-                    </Microsoft.AspNetCore.Components.Authorization.AuthorizeView>
+                    @*  <Microsoft.AspNetCore.Components.Authorization.AuthorizeView>
+                    <Authorized> *@
+                    <RadzenAppearanceToggle />
+                    @* <RadzenLabel Style="color:black">@context.User?.Identity?.Name</RadzenLabel> *@
+                    <RadzenLabel Style="color:black">@GlobalVariable.UserAuthorizationInfo?.EmailName</RadzenLabel>
+                    <RadzenProfileMenu Click="OnParentClicked" Style="background-color:#EDEDED">
+                        <Template>
+                            <RadzenIcon Icon="account_circle" />
+                        </Template>
+                        <ChildContent>
+                            <RadzenProfileMenuItem Visible="true" Text="@_localizer["Profile.UserInfo"]" Path="/adduser/View User|" Icon="manage_accounts"></RadzenProfileMenuItem>
+                            @* <RadzenProfileMenuItem Visible="@context.User.IsInRole(ConstantExtention.Roles.WarehouseAdmin)" Text="@_localizer["Profile.UserManager"]" Path="/userlist" Icon="people_alt"></RadzenProfileMenuItem> *@
+                            <RadzenProfileMenuItem Visible="true" Text="@_localizer["Profile.ChangePassword"]" Path="/changepass" Icon="password"></RadzenProfileMenuItem>
+                            <RadzenProfileMenuItem Text="@_localizer["Profile.Logout"]" Icon="logout"></RadzenProfileMenuItem>
+                        </ChildContent>
+                    </RadzenProfileMenu>
+                    @*  </Authorized>
+                    </Microsoft.AspNetCore.Components.Authorization.AuthorizeView> *@
                 </RadzenStack>
             </RadzenColumn>
         </RadzenRow>
     </RadzenHeader>
-    <RadzenSidebar Responsive="true" Style="background-color:#CC686F; width:max-content;overflow:visible">
-        <RadzenStack Orientation="Radzen.Orientation.Vertical" JustifyContent="Radzen.JustifyContent.Center"
-                     AlignItems="AlignItems.Center" Gap="5px" class="rz-pt-4">
-            @if (_sidebarExpanded)
-            {
-                <RadzenImage Path="images/tealife.png" style="width: 100px; height: 75px;"></RadzenImage>
-                <RadzenText TextStyle="TextStyle.DisplayH5">FBT-WMS</RadzenText>
-                <LanguageSwitcher></LanguageSwitcher>
-            }
-            else
-            {
-                <RadzenImage Path="images/tealife.png" style="width: 25px; height: 25px;"></RadzenImage>
-
-            }
-            <Microsoft.AspNetCore.Components.Authorization.AuthorizeView>
-                <Authorized>
-                    <RadzenStack Orientation="Radzen.Orientation.Horizontal" JustifyContent="Radzen.JustifyContent.Center" AlignItems="AlignItems.Center" Gap="5px">
-                        @* <RadzenText TextStyle="TextStyle.Body1">@_localizer["Welcome"]</RadzenText> *@
-                        <RadzenText TextStyle="TextStyle.Body1"> <strong>@GlobalVariable.UserAuthorizationInfo.FullName</strong></RadzenText>
-                    </RadzenStack>
-                </Authorized>
-            </Microsoft.AspNetCore.Components.Authorization.AuthorizeView>
-        </RadzenStack>
-
-        @* <NavMenu /> *@
-        <NavMenuCSS SidebarToggle="@_sidebarExpanded" />
-    </RadzenSidebar>
+    <NavMenuCSS SidebarToggle="@_sidebarExpanded" />
     <RadzenBody>
         <RadzenBreadCrumb>
             @if (GlobalVariable.BreadCrumbData != null && GlobalVariable.BreadCrumbData.Count > 0)
@@ -82,8 +56,8 @@
                 }
             }
         </RadzenBreadCrumb>
-        <div class=" rz-p-0 rz-p-md-12">
-            <RadzenPanel class="rz-p-4 rz-border-radius-2 rz-mx-4">
+        <div class=" rz-p-0 rz-p-md-0">
+            <RadzenPanel class="rz-p-0 rz-border-radius-1 rz-mx-1">
                 @Body
             </RadzenPanel>
         </div>

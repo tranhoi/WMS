@@ -1,15 +1,12 @@
-﻿using Domain.Enums;
-using Domain.Entity.authp.Commons;
-using Microsoft.AspNetCore.Components;
-using Microsoft.Extensions.Localization;
-using Radzen;
-using ShippingBoxModel = Domain.Entity.WMS.Outbound.ShippingBox;
+﻿using Microsoft.AspNetCore.Components;
+using ShippingBoxModel = FBT.ShareModels.WMS.ShippingBox;
 
 namespace WebUIFinal.Pages.ShippingBoxs
 {
     public partial class DialogCardPageAddNewShippingBox
     {
-        [Parameter] public string Title { get; set; }
+        [Parameter] public string Mode { get; set; }
+        public string Title { get; set; }
         public Guid? ShippingBoxId { get; set; }
 
         private EnumStatus selectedStatus;
@@ -28,7 +25,7 @@ namespace WebUIFinal.Pages.ShippingBoxs
             {
                 await base.OnInitializedAsync();
 
-                if (Title.Contains("Detail")) isDisabled = true;
+                selectedStatus = EnumStatus.Activated;
 
                 await GetShippingBoxDetail();
                 await GetTenantsAsync();
@@ -52,46 +49,52 @@ namespace WebUIFinal.Pages.ShippingBoxs
 
         private async Task GetShippingBoxDetail()
         {
-            if (Title.Contains("|"))
+            if (Mode.StartsWith("Edit"))
             {
-                var sub = Title.Split('|');
-                Title = sub[0];
+                Title = _localizer["EditShippingBox"];
+                var sub = Mode.Split('|');
+                Mode = sub[0];
 
                 if (Guid.TryParse(sub[1], out Guid x))
                 {
                     ShippingBoxId = x;
                 }
-            }
-
-            if (ShippingBoxId.HasValue && ShippingBoxId != Guid.Empty)
-            {
-                var shippingBox = await _shippingBoxServices.GetByIdAsync((Guid)ShippingBoxId);
-                if (shippingBox == null)
+                if (ShippingBoxId.HasValue && ShippingBoxId != Guid.Empty)
                 {
-                    _notificationService.Notify(new NotificationMessage()
+                    var shippingBox = await _shippingBoxServices.GetByIdAsync((Guid)ShippingBoxId);
+                    if (shippingBox == null)
                     {
-                        Severity = NotificationSeverity.Error,
-                        Summary = _localizer["Error"],
-                        Detail = _localizer["Result shipping box null"],
-                        Duration = 1000
-                    });
+                        _notificationService.Notify(new NotificationMessage()
+                        {
+                            Severity = NotificationSeverity.Error,
+                            Summary = _CLoc["Error"],
+                            Detail = _localizer["ShippingBoxIsNotExisted"],
+                            Duration = 1000
+                        });
 
-                    return;
+                        return;
+                    }
+
+                    model = shippingBox.Data;
+                    selectedStatus = shippingBox.Data.Status;
                 }
-
-                model = shippingBox.Data;
-                selectedStatus = shippingBox.Data.Status;
             }
+            else
+            {
+                Title = _localizer["CreateShippingBox"];
+            }
+
+
         }
 
         async void Submit(ShippingBoxModel arg)
         {
-            if (Title.Contains("Create"))
+            if (Mode.StartsWith("Create"))
             {
-                var confirm = await _dialogService.Confirm(_localizer["Do you want to create a new shipping box:"] + $" {arg.BoxName}?", _localizer["Create shipping box"], new ConfirmOptions()
+                var confirm = await _dialogService.Confirm(_localizer["DoYouWantToCreateANewShippingBox"], _localizer["CreateShippingBox"], new ConfirmOptions()
                 {
-                    OkButtonText = _localizer["Yes"],
-                    CancelButtonText = _localizer["No"],
+                    OkButtonText = _CLoc["Yes"],
+                    CancelButtonText = _CLoc["No"],
                     AutoFocusFirstElement = true,
                 });
 
@@ -106,31 +109,36 @@ namespace WebUIFinal.Pages.ShippingBoxs
                     _notificationService.Notify(new NotificationMessage()
                     {
                         Severity = NotificationSeverity.Success,
-                        Summary = _localizer["Success"],
-                        Detail = _localizer["Successfully created shipping box"],
+                        Summary = _CLoc["Success"],
+                        Detail = _localizer["SuccessfullyCreatedShippingBox"],
                         Duration = 5000
                     });
 
-                    _navigation.NavigateTo("/shippingboxlist", true);
+                    //_navigation.NavigateTo("/shippingboxlist", true);
                 }
                 else
                 {
+                    string error = "";
+                    response.Messages.ForEach(item =>
+                    {
+                        error += _localizer[item];
+                    });
                     _notificationService.Notify(new NotificationMessage()
                     {
                         Severity = NotificationSeverity.Error,
-                        Summary = _localizer["Error"],
-                        Detail = _localizer["Failed to create shipping box"],
+                        Summary = _CLoc["Error"],
+                        Detail = _localizer["FailedToCreateShippingBox"] + error,
                         Duration = 5000
                     });
                 }
             }
 
-            if (Title.Contains("Edit"))
+            if (Mode.Contains("Edit"))
             {
-                var confirm = await _dialogService.Confirm(_localizer["Do you want to update shipping box:"] + $" {arg.BoxName}?", _localizer["Update shipping box"], new ConfirmOptions()
+                var confirm = await _dialogService.Confirm(_localizer["DoYouWantToUpdateShippingBox"], _localizer["UpdateShippingBox"], new ConfirmOptions()
                 {
-                    OkButtonText = _localizer["Yes"],
-                    CancelButtonText = _localizer["No"],
+                    OkButtonText = _CLoc["Yes"],
+                    CancelButtonText = _CLoc["No"],
                     AutoFocusFirstElement = true,
                 });
 
@@ -145,35 +153,40 @@ namespace WebUIFinal.Pages.ShippingBoxs
                     _notificationService.Notify(new NotificationMessage()
                     {
                         Severity = NotificationSeverity.Success,
-                        Summary = _localizer["Success"],
-                        Detail = _localizer["Successfully edited shipping box"],
+                        Summary = _CLoc["Success"],
+                        Detail = _localizer["SuccessfullyEditedShippingBox"],
                         Duration = 5000
                     });
 
-                    _navigation.NavigateTo("/shippingboxlist", true);
+                    //_navigation.NavigateTo("/shippingboxlist", true);
                 }
                 else
                 {
+                    string error = ":";
+                    response.Messages.ForEach(item =>
+                    {
+                        error += _localizer[item];
+                    });
                     _notificationService.Notify(new NotificationMessage()
                     {
                         Severity = NotificationSeverity.Error,
-                        Summary = _localizer["Error"],
-                        Detail = _localizer["Failed to edit shipping box"],
+                        Summary = _CLoc["Error"],
+                        Detail = _localizer["FailedToEditShippingBox"] + error,
                         Duration = 5000
                     });
                 }
             }
-            _dialogService.Close(_localizer["Success"]);
+            _dialogService.Close(_CLoc["Success"]);
         }
 
         async Task DeleteItemAsync(ShippingBoxModel model)
         {
             try
             {
-                var confirm = await _dialogService.Confirm(_localizer["Are you sure you want to delete shipping box:"] + $" {model.BoxName}?", _localizer["Delete shipping box"], new ConfirmOptions()
+                var confirm = await _dialogService.Confirm($"{model.BoxName}" + _localizer["AreYouSureYouWantToDeleteShippingBox"], _localizer["DeleteShippingBox"], new ConfirmOptions()
                 {
-                    OkButtonText = _localizer["Yes"],
-                    CancelButtonText = _localizer["No"],
+                    OkButtonText = _CLoc["Yes"],
+                    CancelButtonText = _CLoc["No"],
                     AutoFocusFirstElement = true,
                 });
 
@@ -186,8 +199,8 @@ namespace WebUIFinal.Pages.ShippingBoxs
                     _notificationService.Notify(new NotificationMessage()
                     {
                         Severity = NotificationSeverity.Success,
-                        Summary = _localizer["Success"],
-                        Detail = _localizer["Delete shipping box"] + $" {model.BoxName} " + _localizer["successfully"],
+                        Summary = _CLoc["Success"],
+                        Detail = _localizer["DeleteShippingBox"] + $" {model.BoxName} " + _localizer["successfully"],
                         Duration = 5000
                     });
 
@@ -198,8 +211,8 @@ namespace WebUIFinal.Pages.ShippingBoxs
                     _notificationService.Notify(new NotificationMessage()
                     {
                         Severity = NotificationSeverity.Error,
-                        Summary = _localizer["Error"],
-                        Detail = _localizer["Failed to delete shipping box"] + $" {model.BoxName}",
+                        Summary = _CLoc["Error"],
+                        Detail = _localizer["FailedToEditShippingBox"] + $" {model.BoxName}",
                         Duration = 5000
                     });
                 }
@@ -209,7 +222,7 @@ namespace WebUIFinal.Pages.ShippingBoxs
                 _notificationService.Notify(new NotificationMessage()
                 {
                     Severity = NotificationSeverity.Error,
-                    Summary = _localizer["Error"],
+                    Summary = _CLoc["Error"],
                     Detail = ex.Message,
                     Duration = 5000
                 });
